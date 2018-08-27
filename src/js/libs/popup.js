@@ -20,7 +20,6 @@
  *		on_load: function(params){...},
  *		on_change: function(params, canvas_preview, w, h){...},
  *		on_finish: function(params){...},
- *		on_cancel: function(params){...},
  * };
  * this.POP.show(settings);
  * 
@@ -55,7 +54,7 @@ var template = `
 		<div id="params_content"></div>
 	</div>
 	<div class="buttons">
-		<button type="button" id="popup_ok" class="button trn">Ok</button>
+		<button type="submit" id="popup_ok" class="button trn">Ok</button>
 		<button type="button" id="popup_cancel" class="button trn">Cancel</button>
 	</div>
 `;
@@ -73,7 +72,6 @@ class Dialog_class {
 		this.active = false;
 		this.title = null;
 		this.onfinish = false;
-		this.oncancel = false;
 		this.preview = false;
 		this.onload = false;
 		this.onchange = false;
@@ -109,7 +107,6 @@ class Dialog_class {
 		this.title = config.title || '';
 		this.parameters = config.params || [];
 		this.onfinish = config.on_finish || false;
-		this.oncancel = config.on_cancel || false;
 		this.preview = config.preview || false;
 		this.onchange = config.on_change || false;
 		this.onload = config.on_load || false;
@@ -124,11 +121,6 @@ class Dialog_class {
 	 * hides dialog
 	 */
 	hide() {
-		var params = this.get_params();
-
-		if (this.oncancel) {
-			this.oncancel(params);
-		}
 		document.getElementById("popup").style.display = 'none';
 		this.parameters = [];
 		this.active = false;
@@ -140,7 +132,6 @@ class Dialog_class {
 		this.className = '';
 		this.comment = '';
 		this.onfinish = false;
-		this.oncancel = false;
 	}
 
 	/* ----------------- private functions ---------------------------------- */
@@ -200,15 +191,6 @@ class Dialog_class {
 		}
 
 		this.hide();
-	}
-	
-	//"Cancel" pressed
-	cancel() {
-		var params = this.get_params();
-
-		if (this.oncancel) {
-			this.oncancel(params);
-		}
 	}
 
 	get_params() {
@@ -314,9 +296,6 @@ class Dialog_class {
 		var _this = this;
 		document.getElementById('popup_ok').addEventListener('click', function (event) {
 			_this.save();
-		});
-		document.getElementById('popup_cancel').addEventListener('click', function (event) {
-			_this.cancel();
 		});
 		var targets = document.querySelectorAll('#popup input');
 		for (var i = 0; i < targets.length; i++) {
@@ -463,6 +442,13 @@ class Dialog_class {
 						if (parameter.type == 'textarea') {
 							html += '<td><textarea style="height:80px;" id="pop_data_' + parameter.name + '" placeholder="' + parameter.placeholder + '">' + parameter.value + '</textarea></td>';
 						}
+						
+						//INIZIO MODIFICHE GABRIELE NEGLIA
+						//gestione input type password
+						else if (parameter.type == 'password'){
+							html += '<td><input type="password" style="width:100%;" id="pop_data_' + parameter.name + '" placeholder="' + parameter.value + '"></td>' 
+						}
+						//FINE MODIFICHE GABRIELE NEGLIA
 						else {
 							var input_type = "text";
 							if (parameter.placeholder != undefined && parameter.placeholder != '' && !isNaN(parameter.placeholder))
