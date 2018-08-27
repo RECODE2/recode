@@ -58,7 +58,50 @@ function aggiustaOrder(j){
     } else j.layers[0].order = 1;
     return j;
 
-} //copio nel nuovo JSON
+}
+
+function setMergeDx(j){
+    j = aggiustaOrder(j);
+    var k = 0;
+    for(var i = 0; i < j.layers.length; i++){
+       j.layers[i].order = j.layers[i].order + k;
+       k++;
+    }
+    return j;
+
+} 
+
+function setMergeSx(j){
+    j = aggiustaOrder(j);
+    var k = 1;
+    for(var i = 0; i < j.layers.length; i++){
+       j.layers[i].order = j.layers[i].order + k;
+       k++;
+    }
+    return j;
+    
+} 
+
+function incrementMerge(j){
+    for(var i = 0; i < j.layers.length; i++){
+       j.layers[i].order = j.layers[i].order + 2;
+    }
+    return j;
+    
+}
+
+function decrementMerge(j){
+    if(j.layers[0].order != 1){
+
+    for(var i = 0; i < j.layers.length; i++){
+        j.layers[i].order = j.layers[i].order - 2;
+     }
+    } else{
+        console.log("Ehi, non puoi più andare indietro")
+    }
+     return j;
+
+}//copio nel nuovo JSON
     
 
 
