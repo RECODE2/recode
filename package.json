@@ -1,20 +1,26 @@
 {
-  "name": "miniPaint",
-  "version": "4.1.0",
-  "author": "Vilius L.",
-  "description": "Online graphics editing tool lets create, edit images using HTML5 technologies.",
+  "name": "vomida",
+  "version": "1.1.0",
+  "author": "Vestita, Neglia, Mantellini",
+  "description": "Image editor web-based with VCS for image.",
   "keywords": [
     "canvas",
     "drawing",
     "paint",
     "layers",
-    "effects"
+    "effects",
+    "vcs"
   ],
   "scripts": {
-    "server": "webpack-dev-server --mode development --open",
-    "dev": "webpack --mode development",
+    "dev1": "webpack --mode development",
     "build": "webpack --mode production",
-    "start": "node app.js"
+    "builda": "webpack -c webpack.config.js",
+    "port": "webpack-dev-server --mode production --host 0.0.0.0 --port 80",
+    "start": "node app.js",
+    "heroku-postbuild": "webpack -p",
+    "installgit": "yarn add nodegit",
+    "installgitlfs": "yarn add nodegit-lfs",
+    "start2": "webpack-dev-server --mode development --open"
   },
   "repository": {
     "type": "git",
@@ -41,6 +47,9 @@
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
+    "cytoscape": "^3.2.16",
+    "cytoscape-dagre": "^2.2.1",
+    "dagre": "^0.8.2",
     "deep-equal": "^1.0.1",
     "ejs": "^2.6.1",
     "exif-js": "^2.3.0",

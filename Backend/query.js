@@ -212,12 +212,40 @@ function insertCommitFile(req,res){
         if (err) throw err;
     });
 }
+
+function elencoDatiRevG(idRepository, callback){
+    var queryA = "SELECT * FROM revg WHERE repository="+idRepository;
+    connection.query(queryA, function (err, result) {
+        if (err) console.log("Errore!"+err);
+        console.log(result);
+        return callback(result);
+    });}
+
+
+function leggiDatiUtente(nomeutente, callback){
+    var queryA = "SELECT * FROM utenti where nickname="+"'"+nomeutente+"'";
+    connection.query(queryA, function (err, result) {
+        if (err) console.log("Errore!"+err);
+        console.log(result);
+        return callback(result);
+    });
+}
+
+ function modificaDatiUtente(req, callback){
+    var nickname = req.session.nickname;
+    var nome = req.body.nome;
+    var password = req.body.password;
+    var cognome = req.body.cognome;
+    var mail = req.body.mail;
+
+    var queryA = "UPDATE utenti SET password='"+password+"', nome='"+nome+"', cognome='"+cognome+"', mail='"+mail+"' WHERE nickname='"+nickname+"'";
+    connection.query(queryA, function (err, result) {
+        if (err) console.log("Errore!"+err);
+        console.log(result);
+        return callback(result);
+    });
+}
     
-
-
-
-
-
 exports.creaConnessione = creaConnessione;
 exports.chiudiConnessione = chiudiConnessione;
 exports.usaDB = usaDB;
@@ -233,3 +261,6 @@ exports.branchMaster = branchMaster;
 exports.setIdBranchMaster = setIdBranchMaster;
 exports.insertCommitFile = insertCommitFile;
 exports.saveCommit = saveCommit;
+exports.elencoDatiRevG = elencoDatiRevG;
+exports.leggiDatiUtente = leggiDatiUtente;
+exports.modificaDatiUtente = modificaDatiUtente;

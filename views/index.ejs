@@ -27,6 +27,26 @@
 	<meta property="og:site_name" content="miniPaint" />
 	
 	<script src="dist/bundle.js"></script>
+	<style>
+		body {
+	  font-family: helvetica;
+	  font-size: 14px;
+	}
+	
+	#cy {
+	  width: 100%;
+	  height: 100%;
+	  position: absolute;
+	  left: 0;
+	  top: 0;
+	  z-index: 999;
+	}
+	
+	h1 {
+	  opacity: 0.5;
+	  font-size: 1em;
+	}
+	</style>
 </head>
 <body>
 	<div class="wrapper">
@@ -89,11 +109,12 @@
 	<div class="ddsmoothmenu" id="main_menu">
 		<ul>
 			<li>
-				<a class="trn" href="#" id = "ciao5"> <%- username %></a>
+				<a class="trn" href="#"><%= username %></a>
 				<ul>
-					<li><a class="trn" data-target="utente/utente.login" href="#">Login</a></li>
-					<li><a class="trn" data-target="utente/utente.registrazione" href="#">Registrazione</a></li>
-					<li><a class="trn b" data-target="utente/utente.logout" href="#">Logout</a></li>
+					<li id="idlogin"><a class="trn" data-target="utente/utente.login" href="#">Login</a></li>
+					<li id="idregistrazione"><a class="trn" data-target="utente/utente.registrazione" href="#">Registrazione</a></li>
+					<li id="idmodificadati"><a class="trn b" data-target="utente/utente.modificadati" href="#">Modifica dati</a></li>
+					<li id="idlogout"><a class="trn b" data-target="utente/utente.logout" href="#">Logout</a></li>
 				</ul>
 			</li>
 			<li>
@@ -254,7 +275,7 @@
 				</ul>
 			</li>
 			<li>
-				<a class="trn" href="#">VCS</a>
+				<a class="trn" href="#" id="idvcs">VCS</a>
 				<ul>
 				<li class="more">
 				<a class="trn" href="#">Repository</a>
@@ -272,7 +293,7 @@
 				<li><a class="trn dots" data-target="vcs/newBranch.newBranch" href="#">New Branch</a></li>
 				<li><a class="trn dots" data-target="vcs/operazioniVCS.merge" href="#">Merge</a></li>
 				<li><a class="trn dots" data-target="vcs/addRevision.addRevision" href="#">Add Revision</a></li>
-				<li><a class="trn dots" data-target="vcs/commit.commit" href="#">Commit...</a></li>
+				<li><a class="trn dots" data-target="vcs/commit.commit" href="#">Commit</a></li>
 				</ul>
 				</li>
 				</ul>

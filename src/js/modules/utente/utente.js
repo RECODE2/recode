@@ -21,28 +21,7 @@ class Utente_class {
 				{name: "cognome", title: "Inserisci Cognome:", value:"" },
 				{name: "mail", title: "Inserisci Email:", value:"" },
             ],
-
             on_finish: function (params) {
-                 /*request({
-                    url: 'http://localhost:8081/registrazione',
-                    method: 'POST',
-                    data: {
-						nickname : params.nickname,
-						password : params.password,
-						nome : params.nome,
-						cognome : params.cognome,
-						mail : params.mail,
-					},
-                  }, function(err, res, body) {
-					  window.location="http://localhost:8081/";
-					  alertify.error(body.messaggio);
-					  window.setTimeout(function(){
-
-						// Move to a new location or you can do something else
-						window.location.href = "http://localhost:8081/";
-				
-					}, 2500);
-				  });*/
 				  $.ajax({
 					url: 'http://localhost:8081/registrazione',
 					type: 'POST',
@@ -94,8 +73,15 @@ class Utente_class {
 						alertify.error(messaggio);
 						window.setTimeout(function(){
 
-							// Move to a new location or you can do something else
-							window.location.href = "http://localhost:8081/";
+
+						localStorage.setItem('idlogin', 'false');
+						localStorage.setItem('idregistrazione', 'false');
+						localStorage.setItem('idlogout','true');
+						localStorage.setItem('idvcs', 'true');
+						localStorage.setItem('idmodificadati','true');
+
+						// Move to a new location or you can do something else
+						window.location.href = "http://localhost:8081/";
 					
 						}, 2500);
 						//window.location="http://localhost:8081/";
@@ -117,6 +103,12 @@ class Utente_class {
 						url: 'http://localhost:8081/logout',
 						method: 'POST',
 					}, function(err, res, body) {
+
+						localStorage.setItem('idlogin', 'true');
+						localStorage.setItem('idregistrazione', 'true');
+						localStorage.setItem('idvcs','false');
+						localStorage.setItem('idmodificadati','false');
+
 						window.location="http://localhost:8081/";
 					});
 			}
@@ -124,6 +116,48 @@ class Utente_class {
 		this.POP.show(settings);
     }
 
+	modificadati() {
+		$.ajax({
+			url: 'http://localhost:8081/leggidatiutente',
+			type: 'POST',
+			success: function(result){
+				this.POP = new Dialog_class();
+				this.POP.hide();
+				var settings = {
+					title: 'Modifica dati utente',
+					params: [
+						{name: "password", title: "Inserisci Password:",type: "password" ,value: ""},
+						{name: "nome", title: "Inserisci Nome:", value: result[0].nome},
+						{name: "cognome", title: "Inserisci Cognome:", value: result[0].cognome},
+						{name: "mail", title: "Inserisci Email:", value: result[0].mail},
+					],
+		
+					on_finish: function (params) {
+						$.ajax({
+						  url: 'http://localhost:8081/modificadatiutente',
+						  type: 'POST',
+						  data: {
+								  password : params.password,
+								  nome : params.nome,
+								  cognome : params.cognome,
+								  mail : params.mail,
+						  }
+					  }).done (function(messaggio) {
+						  //alert(messaggio);
+						  var _this = this;
+						  alertify.error(messaggio);
+						  //window.location="http://localhost:8081/";
+					  });
+				  }
+				};
+				this.POP.show(settings);
+
+			}
+		})
+
+
+	}
+	
 }
 
 export default Utente_class;
