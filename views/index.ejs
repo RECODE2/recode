@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="x-ua-compatible" content="IE=edge" />
+	<title>Vomida - image editor</title>
+	<meta name="description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<meta name="keywords" content="photo, image, picture, transparent, layers, free, edit, html5, canvas, javascript, online, photoshop, gimp, effects, sharpen, blur, magic wand tool, clone tool, rotate, resize, photoshop online, online tools, tilt shift, sprites, keypoints" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="shortcut icon" href="images/favicon.png?v2" />
+	<!-- Google -->
+	<meta itemprop="name" content="miniPaint" />
+	<meta itemprop="description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<meta itemprop="image" content="http://viliusle.github.io/miniPaint/images/preview.jpg" />
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="miniPaint" />
+	<meta name="twitter:description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<meta name="twitter:image" content="http://viliusle.github.io/miniPaint/images/preview.jpg" />
+	<meta name="twitter:image:alt" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<!-- Facebook, Pinterest -->
+	<meta property="og:title" content="miniPaint" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="http://viliusle.github.io/miniPaint/" />
+	<meta property="og:image" content="http://viliusle.github.io/miniPaint/images/preview.jpg" />
+	<meta property="og:description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<meta property="og:site_name" content="miniPaint" />
+	
+	<script src="dist/bundle.js"></script>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="submenu">
+			<a class="logo" href="">Vomida</a>
+			<div class="block attributes" id="action_attributes"></div>
+			<div class="clear"></div>
+		</div>
+		
+		<div class="sidebar_left" id="tools_container"></div>
+		
+		<div class="main_wrapper" id="main_wrapper">
+			<div class="canvas_wrapper" id="canvas_wrapper">
+				<div id="mouse"></div>
+				<div class="transparent-grid" id="canvas_minipaint_background"></div>
+				<canvas id="canvas_minipaint">
+					<div class="trn error">
+						Your browser does not support canvas or JavaScript is not enabled.
+					</div>
+				</canvas>
+			</div>
+		</div>
+
+		<div class="sidebar_right">
+			<div class="preview block">
+				<h2 class="trn toggle" data-target="toggle_preview">Preview</h2>
+				<div id="toggle_preview"></div>
+			</div>
+			
+			<div class="colors block">
+				<h2 class="trn toggle" data-target="toggle_colors">Colors</h2>
+				<input
+					title="Click to change color" 
+					type="color" 
+					class="color_area" 
+					id="main_color" 
+					value="#0000ff"	/>
+				<div class="content" id="toggle_colors"></div>
+			</div>
+			
+			<div class="block" id="info_base">
+				<h2 class="trn toggle toggle-full" data-target="toggle_info">Information</h2>
+				<div class="content" id="toggle_info"></div>
+			</div>
+			
+			<div class="details block" id="details_base">
+				<h2 class="trn toggle toggle-full" data-target="toggle_details">Layer details</h2>
+				<div class="content" id="toggle_details"></div>
+			</div>
+			
+			<div class="layers block">
+				<h2 class="trn">Layers</h2>
+				<div class="content" id="layers_base"></div>
+			</div>
+		</div>
+	</div>
+	<div class="mobile_menu">
+		<button class="right_mobile_menu" id="mobile_menu_button" type="button"></button>
+	</div>
+	<div class="ddsmoothmenu" id="main_menu">
+		<ul>
+			<li>
+				<a class="trn" href="#" id = "ciao5"> <%- username %></a>
+				<ul>
+					<li><a class="trn" data-target="utente/utente.login" href="#">Login</a></li>
+					<li><a class="trn" data-target="utente/utente.registrazione" href="#">Registrazione</a></li>
+					<li><a class="trn b" data-target="utente/utente.logout" href="#">Logout</a></li>
+				</ul>
+			</li>
+			<li>
+				<a class="trn" href="#">File</a>
+				<ul>
+					<li><a class="trn" data-target="file/new.new" href="#">New</a></li>
+					<li><div class="mid-line"></div></li>
+					<li class="more">
+						<a class="trn" href="#">Open</a>
+						<ul>
+						<li><a class="trn dots" data-target="file/open.open_file" href="#">Open File</a></li>
+						<li><a class="trn dots" data-target="file/open.open_dir" href="#">Open Directory</a></li>
+						<li><a class="trn dots" data-target="file/open.open_url" href="#">Open URL</a></li>
+						<li><a class="trn dots" data-target="file/open.open_data_url" href="#">Open Data URL</a></li>
+						</ul>
+					</li>
+					<li><a class="trn dots" data-target="file/search.search" href="#">Search images</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn dots" data-target="file/save.save" data-key="S" href="#">Save as</a></li>
+					<li><a class="trn dots" data-target="file/save.save_data_url" href="#">Save as data URL</a></li>
+					<li><a class="trn dots" data-target="file/print.print" data-key="Ctrl-P" href="#">Print</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn" data-target="file/quicksave.quicksave" data-key="F9" href="#">Quick save</a></li>
+					<li><a class="trn" data-target="file/quickload.quickload" data-key="F10" href="#">Quick load</a></li>
+				</ul>
+			</li>
+			<li>
+				<a class="trn" href="#">Edit</a>
+				<ul>
+					<li><a class="trn" data-target="edit/undo.undo" href="#">Undo</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn" data-target="edit/selection.delete" data-key="Del" href="#">Delete selection</a></li>
+					<li><a class="trn" data-target="layer/new.new_selection" href="#">Copy selection</a></li>
+					<li><a class="trn" data-target="edit/paste.paste" data-key="Ctrl+V" href="#">Paste</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn" data-target="edit/selection.select_all" href="#">Select all</a></li>
+				</ul>
+			</li>
+			<li>
+				<a class="trn" href="#">Image</a>
+				<ul>
+					<li><a class="trn dots" data-target="image/information.information" href="#">Information</a></li>
+					<li><a class="trn dots" data-target="image/size.size" href="#">Size</a></li>
+					<li><a class="trn dots" data-target="image/trim.trim" data-key="T" href="#">Trim</a>
+					<li class="more">
+						<a class="trn" href="#">Zoom</a>
+						<ul>
+							<li><a class="trn" data-target="image/zoom.in" href="#">Zoom In</a></li>
+							<li><a class="trn" data-target="image/zoom.out" href="#">Zoom Out</a></li>
+							<li><div class="mid-line"></div></li>
+							<li><a class="trn" data-target="image/zoom.original" href="#">Original size</a></li>
+							<li><a class="trn" data-target="image/zoom.auto" href="#">Fit window</a></li>
+						</ul>
+					</li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn dots" data-target="image/resize.resize" href="#">Resize</a></li>
+					<li><a class="trn dots" data-target="image/rotate.rotate" href="#">Rotate</a></li>
+					<li class="more">
+						<a class="trn" href="#">Flip</a>
+						<ul>
+							<li><a class="trn" data-target="image/flip.vertical" href="#">Vertical</a></li>
+							<li><a class="trn" data-target="image/flip.horizontal" href="#">Horizontal</a></li>
+						</ul>
+					</li>
+					<li><a class="trn dots" data-target="image/translate.translate" href="#">Translate</a></li>
+					<li><a class="trn dots" data-target="image/opacity.opacity" href="#">Opacity</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn dots" data-target="image/color_corrections.color_corrections" href="#">Color corrections</a></li>
+					<li><a class="trn" data-target="image/auto_adjust.auto_adjust" href="#">Auto adjust colors</a></li>
+					<li><a class="trn" data-target="image/decrease_colors.decrease_colors" href="#">Decrease color depth</a></li>
+					<li><a class="trn dots" data-target="image/palette.palette" href="#">Color palette</a></li>
+					<li><a class="trn dots" data-target="image/grid.grid" data-key="G" href="#">Grid</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn dots" data-target="image/histogram.histogram" data-key="H" href="#">Histogram</a></li>
+				</ul>
+			</li>
+			<li>
+				<a class="trn" href="#">Layers</a>
+				<ul>
+					<li><a class="trn" data-target="layer/new.new" data-key="N" href="#">New</a></li>
+					<li><a class="trn" data-target="layer/new.new_selection" href="#">New from selection</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn" data-target="layer/duplicate.duplicate" href="#">Duplicate</a></li>
+					<li><a class="trn" data-target="layer/visibility.toggle" href="#">Show / Hide</a></li>
+					<li><a class="trn" data-target="layer/delete.delete" href="#">Delete</a></li>
+					<li><a class="trn" data-target="layer/raster.raster" href="#">Convert to raster</a></li>
+					<li><div class="mid-line"></div></li>
+					<li class="more">
+						<a class="trn" href="#">Move</a>
+						<ul>
+							<li><a class="trn" data-target="layer/move.up" href="#">Up</a></li>
+							<li><a class="trn" data-target="layer/move.down" href="#">Down</a></li>
+						</ul>
+					</li>
+					<li><a class="trn dots" data-target="layer/composition.composition" href="#">Composition</a></li>
+					<li><a class="trn dots" data-target="layer/rename.rename" href="#">Rename</a></li>
+					<li><a class="trn" data-target="layer/clear.clear" href="#">Clear</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn" data-target="layer/differences.differences" href="#">Differences Down</a></li>
+					<li><a class="trn" data-target="layer/merge.merge" href="#">Merge Down</a></li>
+					<li><a class="trn" data-target="layer/flatten.flatten" href="#">Flatten Image</a></li>
+				</ul>
+			</li>
+			<li>
+				<a class="trn" href="#">Effects</a>
+				<ul id="effects_list">
+					<li><div class="mid-line"></div></li>
+					<li class="more">
+						<a class="trn" href="#">CSS filters</a>
+						<ul>
+							<li><a class="trn dots" data-target="effects/blur.blur" href="#">Gaussian Blur</a>
+							<li><a class="trn dots" data-target="effects/brightness.brightness" href="#">Brightness</a>
+							<li><a class="trn dots" data-target="effects/contrast.contrast" href="#">Contrast</a>
+							<li><a class="trn dots" data-target="effects/grayscale.grayscale" href="#">Grayscale</a>
+							<li><a class="trn dots" data-target="effects/hue_rotate.hue_rotate" href="#">Hue Rotate</a>
+							<li><a class="trn dots" data-target="effects/negative.negative" href="#">Negative</a>
+							<li><a class="trn dots" data-target="effects/saturate.saturate" href="#">Saturate</a>
+							<li><a class="trn dots" data-target="effects/sepia.sepia" href="#">Sepia</a>
+							<li><a class="trn dots" data-target="effects/shadow.shadow" href="#">Shadow</a>
+						</ul>
+					</li>
+					<li><a class="trn dots" data-target="effects/black_and_white.black_and_white" href="#">Black and White</a>
+					<li><a class="trn dots" data-target="effects/box_blur.box_blur" href="#">Box Blur</a>
+					<li><a class="trn dots" data-target="effects/denoise.denoise" href="#">Denoise</a>
+					<li><a class="trn dots" data-target="effects/dither.dither" href="#">Dither</a>
+					<li><a class="trn dots" data-target="effects/dot_screen.dot_screen" href="#">Dot Screen</a>
+					<li><a class="trn dots" data-target="effects/edge.edge" href="#">Edge</a>
+					<li><a class="trn dots" data-target="effects/emboss.emboss" href="#">Emboss</a>
+					<li><a class="trn dots" data-target="effects/enrich.enrich" href="#">Enrich</a>
+					<li><a class="trn dots" data-target="effects/grains.grains" href="#">Grains</a>
+					<li><a class="trn dots" data-target="effects/heatmap.heatmap" href="#">Heatmap</a>
+					<li><a class="trn dots" data-target="effects/mosaic.mosaic" href="#">Mosaic</a>
+					<li><a class="trn dots" data-target="effects/oil.oil" href="#">Oil</a>
+					<li><a class="trn dots" data-target="effects/sharpen.sharpen" href="#">Sharpen</a>
+					<li><a class="trn dots" data-target="effects/solarize.solarize" href="#">Solarize</a>
+					<li><a class="trn dots" data-target="effects/tilt_shift.tilt_shift" href="#">Tilt Shift</a>
+					<li><a class="trn dots" data-target="effects/vignette.vignette" href="#">Vignette</a>
+					<li><a class="trn dots" data-target="effects/vibrance.vibrance" href="#">Vibrance</a>
+					<li><a class="trn dots" data-target="effects/vintage.vintage" href="#">Vintage</a>
+					<li><a class="trn dots" data-target="effects/zoom_blur.zoom_blur" href="#">Zoom Blur</a>
+				</ul>
+			</li>
+			<li>
+				<a class="trn" href="#">Tools</a>
+				<ul>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn dots" data-target="tools/borders.borders" href="#">Borders</a></li>
+					<li><a class="trn" data-target="tools/sprites.sprites" href="#">Sprites</a></li>
+					<li><a class="trn" data-target="tools/keypoints.keypoints" href="#">Key-points</a></li>
+					<li><a class="trn dots" data-target="tools/content_fill.content_fill" href="#">Content fill</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn dots" data-target="tools/color_to_alpha.color_to_alpha" href="#">Color to alpha</a></li>
+					<li><a class="trn dots" data-target="tools/color_zoom.color_zoom" href="#">Color Zoom</a></li>
+					<li><a class="trn dots" data-target="tools/replace_color.replace_color" href="#">Replace Color</a></li>
+					<li><a class="trn dots" data-target="tools/restore_alpha.restore_alpha" href="#">Restore alpha</a></li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn dots" data-target="tools/settings.settings" href="#">Settings</a></li>	
+				</ul>
+			</li>
+			<li>
+				<a class="trn" href="#">VCS</a>
+				<ul>
+				<li class="more">
+				<a class="trn" href="#">Repository</a>
+				<ul>
+				<li><a class="trn dots" data-target="vcs/repository.creaRepository" href="#">Crea</a></li>
+				<li><a class="trn dots" data-target="vcs/repository.elencoSceltaRepository" href="#">Elenco/Scegli</a></li>
+				<li><a class="trn dots" data-target="vcs/repository.modificaRepository" href="#">Modifica</a></li>
+				<li><a class="trn dots" data-target="vcs/repository.revisionGraph" href="#">Revision Graph</a></li>
+				</ul>
+				</li>
+				<li><div class="mid-line"></div></li>
+				<li class="more">
+				<a class="trn" href="#">Operazioni VCS</a>
+				<ul>
+				<li><a class="trn dots" data-target="vcs/newBranch.newBranch" href="#">New Branch</a></li>
+				<li><a class="trn dots" data-target="vcs/operazioniVCS.merge" href="#">Merge</a></li>
+				<li><a class="trn dots" data-target="vcs/addRevision.addRevision" href="#">Add Revision</a></li>
+				<li><a class="trn dots" data-target="vcs/commit.commit" href="#">Commit...</a></li>
+				</ul>
+				</li>
+				</ul>
+			</li>
+			<li>
+				<a class="trn" href="#">Help</a>
+				<ul>
+					<li><a class="trn dots" data-target="help/shortcuts.shortcuts" href="#">Keyboard Shortcuts</a></li>
+					<li><a class="trn external" target="_blank" href="https://github.com/viliusle/miniPaint/issues">Report issues</a></li>
+					<li class="more">
+						<a class="trn" href="#">Language</a>
+						<ul>
+							<li><a data-target="help/translate.translate.en" href="#">English</a>
+							<li><div class="mid-line"></div></li>
+							<li><a data-target="help/translate.translate.zh" href="#">简体中文）</a>
+							<li><a data-target="help/translate.translate.es" href="#">Español</a>
+							<li><a data-target="help/translate.translate.fr" href="#">French</a>	
+							<li><a data-target="help/translate.translate.de" href="#">German</a>	
+							<li><a data-target="help/translate.translate.it" href="#">Italiano</a>
+							<li><a data-target="help/translate.translate.ja" href="#">Japanese</a>
+							<li><a data-target="help/translate.translate.ko" href="#">Korean</a>		
+							<li><a data-target="help/translate.translate.lt" href="#">Lietuvių</a>
+							<li><a data-target="help/translate.translate.pt" href="#">Portuguese</a>	
+							<li><a data-target="help/translate.translate.ru" href="#">Russian</a>	
+							<li><a data-target="help/translate.translate.tr" href="#">Turkish</a>	
+						</ul>
+					</li>
+					<li><div class="mid-line"></div></li>
+					<li><a class="trn dots" data-target="help/about.about" href="#">About</a></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+	<div class="hidden" id="tmp"></div>
+	<div id="popup"></div>
+</body>
+</html>

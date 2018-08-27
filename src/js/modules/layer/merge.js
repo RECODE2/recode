@@ -41,6 +41,7 @@ class Layer_merge_class {
 		params.type = 'image';
 		params.name = config.layer.name + ' + merged';
 		params.order = current_order;
+		
 		params.data = canvas.toDataURL("image/png");
 		this.Base_layers.insert(params);
 

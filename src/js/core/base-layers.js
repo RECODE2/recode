@@ -327,7 +327,7 @@ class Base_layers_class {
 
 			//prepare image
 			if (layer.type == 'image') {
-
+				
 				if (config.layers.length == 1 && config.layer.width == 0
 					&& config.layer.height == 0 && config.layer.data == null) {
 					//remove first empty layer?
@@ -398,15 +398,26 @@ class Base_layers_class {
 				//create new layer
 				config.layers.push(layer);
 				config.layer = _this.get_layer(layer.id);
-				_this.auto_increment++;
+				if (layer.id == 1){
+					_this.auto_increment = 2;
+				} else{
+					_this.auto_increment++;
+				}
 
 				if (config.layer == null) {
 					config.layer = config.layers[0];
 				}
 			}
 
-			if (layer.id >= _this.auto_increment)
+			if(layer.id == 1){
+				_this.auto_increment = 2;
+			}
+			if(layer.id > 2){
 				_this.auto_increment = layer.id + 1;
+			}
+
+			/*if (layer.id >= _this.auto_increment)
+				_this.auto_increment = layer.id + 1;*/
 
 			if (need_autoresize == true) {
 				_this.autoresize(config.layer.width, config.layer.height);

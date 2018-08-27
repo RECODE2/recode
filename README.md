@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # miniPaint
 
 Online image editor lets you create, edit images using HTML5 technologies.
@@ -50,3 +51,6 @@ MIT License
 
 ## Support
 Please use the GitHub issues for support, features, issues or use mail www.viliusl@gmail.com for contacts.
+=======
+# vomidax
+>>>>>>> 43d756bfa2ac50225a3d73a8a1e99bd79c629111

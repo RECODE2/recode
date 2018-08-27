@@ -1,4 +1,4 @@
-var menu_template = `
+/*var menu_template = `
 	<ul>
 		<li>
 			<a class="trn" href="#">File</a>
@@ -192,4 +192,4 @@ var menu_template = `
 	</ul>
 `;
 
-export default menu_template;
+export default menu_template;*/

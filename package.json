@@ -13,7 +13,8 @@
   "scripts": {
     "server": "webpack-dev-server --mode development --open",
     "dev": "webpack --mode development",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -33,13 +34,30 @@
     "webpack-dev-server": "^3.1.5"
   },
   "dependencies": {
+    "ajax-request": "^1.2.3",
     "alertifyjs": "^1.11.0",
     "babel-polyfill": "^6.26.0",
     "blueimp-canvas-to-blob": "^3.14.0",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
+    "deep-equal": "^1.0.1",
+    "ejs": "^2.6.1",
     "exif-js": "^2.3.0",
+    "express-session": "^1.15.6",
     "file-saver": "^1.3.3",
+    "filesaver": "0.0.13",
+    "fs-extra": "^7.0.0",
+    "fs-path": "0.0.24",
     "gif.js.optimized": "^1.0.1",
     "hermite-resize": "git+https://github.com/viliusle/Hermite-resize.git",
-    "jquery": "^3.3.1"
+    "install": "^0.12.1",
+    "jquery": "^3.3.1",
+    "merge-json": "0.1.0-b.3",
+    "morgan": "^1.9.0",
+    "mysql": "^2.16.0",
+    "nodegit": "^0.22.2",
+    "npm": "^6.4.0",
+    "promisify-node": "^0.5.0"
   }
 }

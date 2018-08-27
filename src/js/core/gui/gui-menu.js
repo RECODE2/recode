@@ -13,7 +13,7 @@ import ddsmoothmenu from './../../libs/menu.js';
 class GUI_menu_class {
 
 	render_main() {
-		document.getElementById('main_menu').innerHTML = menu_template;
+		//document.getElementById('main_menu').innerHTML = menu_template;
 		ddsmoothmenu.init({
 			mainmenuid: "main_menu",
 			method: 'toggle', //'hover' (default) or 'toggle'
