@@ -89,10 +89,9 @@ function datiRepo(req, res, callback) {
 }
 
 function login(req, callback) {
-    var controllo = false;
     var queryL = "SELECT * FROM utenti WHERE nickname='" + req.body.nickname + "' and password='" + req.body.password + "'"
     connection.query(queryL, function (err, result) {
-        controllo = false;
+        var controllo = false;
         if (err) {
             console.log("C'è un errore nella query: " + err);
             return callback(err);
@@ -102,14 +101,12 @@ function login(req, callback) {
         }
         if (!result.length) {
             console.log("Utente non trovato!");
-            console.log("BLABLA");
             controllo = false;
         }
         else {
             console.log("utente trovato: " + result[0].nickname);
             controllo = true;
         }
-
         return callback(result[0]);
     });
 }
@@ -120,7 +117,6 @@ function registrazione(req, callback) {
     var nome = req.body.nome;
     var cognome = req.body.cognome;
     var mail = req.body.mail;
-
     var queryR = "INSERT INTO `vit`.`utenti` (`nickname`, `password`, `nome`, `cognome`, `mail`) VALUES ('" + nickname + "', '" + password + "', '" + nome + "', '" + cognome + "', '" + mail + "');";
     connection.query(queryR, function (err, result) {
         controllo = false;
@@ -130,7 +126,7 @@ function registrazione(req, callback) {
         else {
             console.log("Query ok!");
         }
-        return callback(result);
+        return callback(result, err);
     });
 }
 
@@ -245,6 +241,114 @@ function leggiDatiUtente(nomeutente, callback){
         return callback(result);
     });
 }
+
+function infoRepo(req, callback) {
+    var repo = req.session.idRepository;
+    var queryR = "SELECT r.nome, r.descrizione FROM repository r where r.idRepository="+repo;
+    connection.query(queryR, function(err, result) {
+        if (err) {
+            console.log("C'è un errore nella query: " + err);
+        }
+        else{
+            console.log("Query ok!");
+        }
+        return callback(result);
+    })
+}
+
+function modificaRepo(req, callback) {
+    var repo = req.session.idRepository;
+    var nome = req.body.nome;
+    var descrizione = req.body.descrizione;
+    var queryR = "UPDATE repository SET `nome`='"+nome+"', `descrizione`='"+descrizione+"' WHERE `idRepository`="+repo;
+    connection.query(queryR, function(err, result) {
+        if (err) {
+            console.log("C'è un errore nella query: " + err);
+        }
+        else{
+            console.log("Query ok!");
+        }
+        return callback(result);
+    })
+}
+
+function elencoUtentiInvito(req, callback) {
+    var queryE = "SELECT u.nickname FROM utenti u WHERE u.nickname NOT IN (SELECT p.utente FROM partecipazione p where p.repository="+req.session.idRepository+")";
+    connection.query(queryE, function (err, result) {
+        var arrayR = [];
+        var i = 0;
+        var numRows = result.length;
+        while (i < numRows) {
+            arrayR[i] = result[i].nickname;
+            i++;
+        }
+        result = "";
+        result = arrayR;
+        return callback(result);
+    })
+}
+
+function invitaUtente(req, callback) {
+    var utente = req.body.utente;
+    var repo = req.session.idRepository;
+    var queryU = "INSERT INTO `vit`.`partecipazione` (`utente`, `repository`, `diritto`) VALUES ('"+utente+"', '"+repo+"', '1')";
+    connection.query(queryU, function (err, result) {
+        if (err) {
+            console.log("C'è un errore nella query: " + err);
+        }
+        else {
+            console.log("Query ok!");
+        }
+        return callback(result);
+    })
+}
+
+function verificaAdmin(req, callback){
+    var utente = req.session.nickname;
+    var repo = req.session.idRepository;
+    var queryV = "SELECT p.diritto FROM partecipazione p WHERE p.utente='"+utente+"' and p.repository="+repo;
+    connection.query(queryV, function(err, result){
+        if (err) {
+            console.log("C'è un errore nella query: " + err);
+        }
+        else {
+            console.log("Query ok!");
+        }
+        return callback(result);
+    }); 
+}
+
+function elencoUtentiElimina(req, callback) {
+    var repo = req.session.idRepository;
+    var queryE = "SELECT p.utente FROM partecipazione p WHERE p.diritto!=0 and p.repository="+repo;
+    connection.query(queryE, function (err, result) {
+        var arrayR = [];
+        var i = 0;
+        var numRows = result.length;
+        while (i < numRows) {
+            arrayR[i] = result[i].utente;
+            i++;
+        }
+        result = "";
+        result = arrayR;
+        return callback(result);
+    })
+}
+
+function eliminaUtente(req, callback) {
+    var utente = req.body.utente;
+    var repo = req.session.idRepository;
+    var queryU = "DELETE FROM partecipazione WHERE `utente`='"+utente+"' and`repository`="+repo;
+    connection.query(queryU, function (err, result) {
+        if (err) {
+            console.log("C'è un errore nella query: " + err);
+        }
+        else {
+            console.log("Query ok!");
+        }
+        return callback(result);
+    })
+}
     
 exports.creaConnessione = creaConnessione;
 exports.chiudiConnessione = chiudiConnessione;
@@ -264,3 +368,10 @@ exports.saveCommit = saveCommit;
 exports.elencoDatiRevG = elencoDatiRevG;
 exports.leggiDatiUtente = leggiDatiUtente;
 exports.modificaDatiUtente = modificaDatiUtente;
+exports.infoRepo = infoRepo;
+exports.modificaRepo = modificaRepo;
+exports.elencoUtentiInvito = elencoUtentiInvito;
+exports.invitaUtente = invitaUtente;
+exports.verificaAdmin = verificaAdmin;
+exports.elencoUtentiElimina = elencoUtentiElimina;
+exports.eliminaUtente = eliminaUtente;

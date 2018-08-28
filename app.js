@@ -68,38 +68,38 @@ app.post('/logout', function(req, res){
 
 // LOGIN
 app.post('/login', function(req, res){
-
-    ConnessioneDB.login(req,function(result){
-     var messaggio = "";
-      if (!result){
-        messaggio = "Errore nel login!";
+  ConnessioneDB.login(req,function(result){
+    var successo = false;
+    if (result){
+      successo = true;
+      req.session.nickname = result.nickname;
+      req.session.mail = result.mail;
+      if (req.body.remember) {
+        req.session.cookie.maxAge = 1000 * 60 * 3;
+      } else {
+        req.session.cookie.expires = false;
       }
-      else{
-        var messaggio = "Login ok!";
-        req.session.nickname = result.nickname;
-        req.session.mail = result.mail;
-
-        if (req.body.remember) {
-          req.session.cookie.maxAge = 1000 * 60 * 3;
-        } else {
-          req.session.cookie.expires = false;
-        }
-      }
-      res.send(messaggio);
+    }
+    res.send(successo);
   });
 });
 
 // REGISTRAZIONE NEGLIA MANTELLINI
 app.post('/registrazione', function(req, res){
-    ConnessioneDB.registrazione(req,function(result){
-    var messaggio = "";
-    if (!result){
-      messaggio = "Errore nella registrazione";
+  ConnessioneDB.registrazione(req,function(result, err){
+    var successo = "";
+    if (result){
+      successo="ok";
     }
     else{
-      var messaggio = "Registrazione ok ok!"
+      if(err.toString().includes("ER_DUP_ENTRY")){
+        successo="errore chiave";
+      }
+      else{
+        successo="errore";
+      }
     }
-    res.send(messaggio);
+    res.send(successo);
   });
 });
 
@@ -293,7 +293,7 @@ app.post('/revg',function(req,res){
 
 // CONTROLLA SELEZIONE REPO VESTITA
 // (Controlliamo se è stata selezionata la repo prima di aprire il revg)
-app.post('/controllaselezionerepo',function(req,res){
+app.post('/controllaSelezioneRepo',function(req,res){
   var repo=false;
   if(req.session.idRepository){
     repo=true;
@@ -321,7 +321,66 @@ app.post('/modificadatiutente',function(req,res){
       var messaggio = "Dati modificati!"
     }
     res.send(messaggio);
-  });
-})
+  })
+});
+
+app.post('/infoRepo', function(req, res){
+  ConnessioneDB.infoRepo(req, function(result){
+    res.send(result);
+  })
+});
+
+app.post('/modificaRepo', function(req, res){
+  ConnessioneDB.modificaRepo(req, function(result){
+    var successo = false;
+    if (result){
+      successo = true;
+      req.session.nameRepository = req.body.nome;
+    }
+    res.send(successo);
+  })
+});
+
+app.post('/elencoUtentiInvito', function(req, res){
+  ConnessioneDB.elencoUtentiInvito(req, function(result){
+    res.send(result);
+  })
+});
+
+app.post('/invitaUtente', function(req, res){
+  ConnessioneDB.invitaUtente(req,function(result){
+    var successo = false;
+    if (result){
+      successo = true;
+    }
+    res.send(successo);
+  })
+});
+
+app.post('/verificaAdmin', function(req, res){
+  ConnessioneDB.verificaAdmin(req, function(result){
+    var admin=false;
+    if(result[0].diritto==0){
+      admin=true;
+    }
+    res.send(admin);
+  })
+});
+
+app.post('/elencoUtentiElimina', function(req, res){
+  ConnessioneDB.elencoUtentiElimina(req, function(result){
+    res.send(result);
+  })
+});
+
+app.post('/eliminaUtente', function(req, res){
+  ConnessioneDB.eliminaUtente(req,function(result){
+    var successo = false;
+    if (result){
+      successo = true;
+    }
+    res.send(successo);
+  })
+});
 
 module.exports = app;
