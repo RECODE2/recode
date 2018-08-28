@@ -20,19 +20,18 @@ var morgan = require('morgan');
 var jsonD = require('./concat.js')
 var nomeUtente = "";
 
-/* DATABASE */
+// *** DATABASE ***
+// creiamo la connessione al database ed utilizziamo il db 'vit'
 mysql.createConnection(dbconfig.connection);
 ConnessioneDB.creaConnessione();
 ConnessioneDB.usaDB();
-
-
-/* APP - EXPRESS */
 app.use(session({
   resave: true,
 	secret: 'stringacasualepercrittografareilcookie',
 	saveUninitialized: true
  } ));
 app.use(flash());
+//SET APP
 app.use(bodyParser.urlencoded({limit: '80mb', extended: true}));
 app.use(bodyParser.json({limit: '80mb'}));
 app.use(cors());
@@ -45,9 +44,14 @@ app.listen(port, function () {
 //READ EJS ENGINE
 app.set('view engine', 'ejs');
 
+//GESTIONE COOKIE
+
+
+
 
 //SET PAGINA INIZIALE
 app.get('*', (req, res) => {
+  //res.sendFile(path.resolve(__dirname, 'index.html'));
   if(!req.session.nickname){
     nomeUtente = "Guest";
   }
@@ -59,51 +63,64 @@ app.get('*', (req, res) => {
 });
 });
 
+// *** LATO BACKEND ***
 
-// LOGOUT
+
+// *** LOGOUT
 app.post('/logout', function(req, res){
     req.session.destroy();
     res.send();
   });
 
-// LOGIN
+// *** LOGIN
 app.post('/login', function(req, res){
-  ConnessioneDB.login(req,function(result){
-    var successo = false;
-    if (result){
-      successo = true;
-      req.session.nickname = result.nickname;
-      req.session.mail = result.mail;
-      if (req.body.remember) {
-        req.session.cookie.maxAge = 1000 * 60 * 3;
-      } else {
-        req.session.cookie.expires = false;
-      }
-    }
-    res.send(successo);
-  });
-});
 
-// REGISTRAZIONE NEGLIA MANTELLINI
-app.post('/registrazione', function(req, res){
-  ConnessioneDB.registrazione(req,function(result, err){
-    var successo = "";
-    if (result){
-      successo="ok";
-    }
-    else{
-      if(err.toString().includes("ER_DUP_ENTRY")){
-        successo="errore chiave";
+    ConnessioneDB.login(req,function(result){
+     var messaggio = "";
+      if (!result){
+        messaggio = "Errore nel login!";
       }
       else{
-        successo="errore";
+        var messaggio = "Login ok!";
+        req.session.nickname = result.nickname;
+        req.session.mail = result.mail;
+
+        if (req.body.remember) {
+          req.session.cookie.maxAge = 1000 * 60 * 3;
+        } else {
+          req.session.cookie.expires = false;
+        }
+  
+      
       }
+      res.send(messaggio);
+  });
+});
+/*
+app.post('/login', function(req, res){
+  console.log(req.session.nickname);
+  ConnessioneDB.datiUtente(req,function(result){
+    console.log(result.mail + "PIPPO");
+    req.session.mail = result.mail;
+    console.log(req.session.mail);
+  });
+});*/
+
+
+//REGISTRAZIONE DAVGAB
+app.post('/registrazione', function(req, res){
+    ConnessioneDB.registrazione(req,function(result){
+    var messaggio = "";
+    if (!result){
+      messaggio = "Errore nella registrazione";
     }
-    res.send(successo);
+    else{
+      var messaggio = "Registrazione ok ok!"
+    }
+    res.send(messaggio);
   });
 });
 
-// CREAZIONE REPOSITORY VESTITA NEGLIA
 app.post('/creaRepository', function (req, res) {
   var nomeRepository = req.body.nomeRepo;
   console.log(req.session.nickname + " REPO");
@@ -124,14 +141,18 @@ app.post('/creaRepository', function (req, res) {
     var messaggio = "Repository inserita con successo"
   }
   res.send(messaggio);
+
   });
 
   ConnessioneDB.datiRepo(req,res, function(result){
+
   idRepository = result.idRepository;
-  var pathR = "/home/saso/Documents/vomidax/Server/" + result.idRepository;
+  var pathR = "C:/Users/Davide/Desktop/Server/" + result.idRepository;
   ConnessioneDB.partecipazioneRepo(req, idRepository);
   var repoDir = pathR+"/.git";
   fse.ensureDir(path.resolve(__dirname, repoDir)).then(function() {
+  //Inseriamo la repository sul DB
+
   //Creiamo la cartella .git all'interno della repository
   return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
 }).then(function(repo) {
@@ -189,33 +210,33 @@ filesaver.folder('JSON', pathR+"/JSON", function (err, data) {
   });
 }); 
 
-// ELENCO REPO MANTELLINI
 app.post('/elencoRepo', function(req, res){
   ConnessioneDB.elencoRepo(req, function(result){
+    
     res.send(result);
   })
 });
 
-// SETTA REPOSITORY MANTELLINI
 app.post('/settaRepo', function(req,res){
   req.session.nameRepository = req.body.nomeRepo;
   ConnessioneDB.datiRepo(req,res, function(result){
-    req.session.repository = "/home/saso/Documents/vomidax/Server/" + result.idRepository;
-
-    console.log(req.session.repository);
+    req.session.repository = "C:/Users/Davide/Desktop/Server/" + result.idRepository;
     req.session.idRepository = result.idRepository;
-    res.write(""+req.session.repository);
-    res.write(""+req.session.idRepository);
-    res.end();
-    //res.send(req.session.repository,req.session.idRepository);
+    res.write(res.toString(req.session.repository));
+    
+    ConnessioneDB.setIdBranchMaster(req,res, function(result){
+      req.session.branch = result;
+      res.write(res.toString(req.session.branch));
+      res.end()
+    });
   });
 });
 
-// ADD REVISION MANTELLINI
+
 app.post('/addRevision', function(req, res){
+  
   var nomedelfile = req.body.file_json_name;
   var dataFile = req.body.file_json_data;
-  dataFile = jsonD.aggiustaOrderR(JSON.parse(dataFile));
   fsPath.writeFile(req.session.repository +'/JSON/'+ nomedelfile, JSON.stringify(dataFile, null, '\t'), function(err){
     if(err) {
       throw err;
@@ -224,17 +245,23 @@ app.post('/addRevision', function(req, res){
     }
   });
 
+  
   var img = req.body.file_jpeg_data;
   var data = img.replace(/^data:image\/\w+;base64,/, "");
   var buf = new Buffer(data, 'base64');
 
+ //JSON
   fsPath.writeFile(req.session.repository + '/Immagini/'+ req.body.file_jpeg_name, buf, function(err){
     if(err) {
       throw err;
     } else {
       console.log('Scritto JPEG');
     }
-    var path = req.session.repository;    
+    
+    var path = req.session.repository;
+
+
+    
     var d = new Date();
     var anno = d.getFullYear();
     var mese = d.getMonth()+1;
@@ -243,12 +270,18 @@ app.post('/addRevision', function(req, res){
   
     ConnessioneDB.datiRepo(req,res, function(result){
     ConnessioneDB.insertAddRevision(path, req, result.idRepository);
+    
+
     });
   });
 
 }); 
   
-// NEW BRANCH MANTELLINI
+/*
+Da save.js prendiamo il nome del file e andiamo a creare una cartella
+sul desktop.. (è giusto un tentativo per dimostrare il passaggio da frontend
+a backend tramite ajax)
+*/
 app.post('/branch', function(req,res){
 
   console.log("Hai creato il branch"+ req.body.nameBranch);
@@ -260,13 +293,13 @@ app.get('/branch', function(req,res){
   console.log("Ti sei spostato sul branch" + "Da fare");
   //Query di select del branch
 });
+// FINE MODIFICHE DAVIDE MANTELLINI
 
-//COMMIT MANTELLINI
+//INIZIO MODIFICHE COMMIT DM
 app.post('/commit', function(req,res){
   fileName = req.body.file_json_name;
   fileData = req.body.file_json_data;
-  var j1 = JSON.parse(fileData);;
- 
+  var j1 = JSON.parse(fileData);
   //INSERIRE QUI LA FUNZIONE diffJSON non appena avrò il caricamento file col REVG
   fsPath.writeFile(req.session.repository +'/JSON/'+ fileName, JSON.stringify(j1, null, '\t'), function(err){
     if(err) {
@@ -280,107 +313,12 @@ app.post('/commit', function(req,res){
 
 
 })
+//FINE MODIFICHE COMMIT DM
 
-// REVISION GRAPH VESTITA
-app.post('/revg',function(req,res){
+app.post('/elencoFile', function(req,res){
+  
 
-  var repoAttuale = req.session.idRepository;
-  console.log("Repo attuale: " + repoAttuale);
-  ConnessioneDB.elencoDatiRevG(repoAttuale, function(result){
-    res.send(result);
-  });
-});
+})
 
-// CONTROLLA SELEZIONE REPO VESTITA
-// (Controlliamo se è stata selezionata la repo prima di aprire il revg)
-app.post('/controllaSelezioneRepo',function(req,res){
-  var repo=false;
-  if(req.session.idRepository){
-    repo=true;
-  }
-  res.send(repo);
-});
 
-// LEGGI DATI UTENTE VESTITA
-app.post('/leggidatiutente',function(req,res){
-  var nomeUtente = req.session.nickname;
-  console.log("Utente attuale: " + nomeUtente);
-  ConnessioneDB.leggiDatiUtente(nomeUtente,function(result){
-    res.send(result);
-  });
-});
-
-// MODIFICA DATI UTENTE VESTITA
-app.post('/modificadatiutente',function(req,res){
-  ConnessioneDB.modificaDatiUtente(req,function(result){
-    var messaggio = "";
-    if (!result){
-      messaggio = "Errore nella modifica";
-    }
-    else{
-      var messaggio = "Dati modificati!"
-    }
-    res.send(messaggio);
-  })
-});
-
-app.post('/infoRepo', function(req, res){
-  ConnessioneDB.infoRepo(req, function(result){
-    res.send(result);
-  })
-});
-
-app.post('/modificaRepo', function(req, res){
-  ConnessioneDB.modificaRepo(req, function(result){
-    var successo = false;
-    if (result){
-      successo = true;
-      req.session.nameRepository = req.body.nome;
-    }
-    res.send(successo);
-  })
-});
-
-app.post('/elencoUtentiInvito', function(req, res){
-  ConnessioneDB.elencoUtentiInvito(req, function(result){
-    res.send(result);
-  })
-});
-
-app.post('/invitaUtente', function(req, res){
-  ConnessioneDB.invitaUtente(req,function(result){
-    var successo = false;
-    if (result){
-      successo = true;
-    }
-    res.send(successo);
-  })
-});
-
-app.post('/verificaAdmin', function(req, res){
-  ConnessioneDB.verificaAdmin(req, function(result){
-    var admin=false;
-    if(result[0].diritto==0){
-      admin=true;
-    }
-    res.send(admin);
-  })
-});
-
-app.post('/elencoUtentiElimina', function(req, res){
-  ConnessioneDB.elencoUtentiElimina(req, function(result){
-    res.send(result);
-  })
-});
-
-app.post('/eliminaUtente', function(req, res){
-  ConnessioneDB.eliminaUtente(req,function(result){
-    var successo = false;
-    if (result){
-      successo = true;
-    }
-    res.send(successo);
-  })
-});
-
-module.exports = app;
+    module.exports = app;

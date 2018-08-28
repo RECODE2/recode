@@ -101,29 +101,7 @@ function decrementMerge(j){
     }
      return j;
 
-}//copio nel nuovo JSON
-    
-
-
-/*
-function aggiustaJSONCommit(j){
-    var idProv;
-    var z = 1;
-    var k = 0;
-    for (var i = 0 ; i < j.layers.length; i++){
-        idProv = j.layers[i].id;
-        j.layers[i].order = z;
-        j.layers[i].id = z;
-        if(j.layers[i].type == "image"){
-            j.data[k].id = z;
-            k++;
-        }
-        z++;
-    }
-
-    return j;
-
-}*/
+}
 
 function minArray(array){
     var min = array[0];
