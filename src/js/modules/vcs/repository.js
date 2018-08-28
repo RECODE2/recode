@@ -67,26 +67,31 @@ class VCS_class {
             url: 'http://localhost:8081/elencoRepo',
             type: 'POST',
             success: function (result) {
-                this.POP = new Dialog_class();
-                this.POP.hide();
-                var settings = {
-                    title: 'Elenco repository',
-                    params: [
-                        { name: "name", values: result },
-                    ],        
-                    on_finish: function (params) {
-                        $.ajax({
-                            url: 'http://localhost:8081/settaRepo',
-                            type: 'POST',
-                            data: { nomeRepo: params.name,
-                            },
-                            success: function(){
-                                alertify.success("Repository settata con successo");
-                            }
-                        });
-                    }
-                };
-                this.POP.show(settings);
+                if(result.length>0){
+                    this.POP = new Dialog_class();
+                    this.POP.hide();
+                    var settings = {
+                        title: 'Elenco repository',
+                        params: [
+                            { name: "name", values: result },
+                        ],        
+                        on_finish: function (params) {
+                            $.ajax({
+                                url: 'http://localhost:8081/settaRepo',
+                                type: 'POST',
+                                data: { nomeRepo: params.name,
+                                },
+                                success: function(){
+                                    alertify.success("Repository settata con successo");
+                                }
+                            });
+                        }
+                    };
+                    this.POP.show(settings);
+                }
+                else{
+                    alertify.error("ERRORE: attualmente non ci sono repository da visualizzare");
+                }
             }
         });
     }
@@ -133,7 +138,7 @@ class VCS_class {
                 });
             }
             else{
-                alertify.error("Non hai ancora selezionato la repository!"); 
+                alertify.error("ERRORE: Non hai ancora selezionato la repository!"); 
             }
         })
     }
@@ -244,7 +249,7 @@ class VCS_class {
                 });
             }
             else{
-                alertify.error("Non hai ancora selezionato la repository!");
+                alertify.error("ERRORE: Non hai ancora selezionato la repository!");
             }
         })
 
@@ -262,41 +267,46 @@ class VCS_class {
                                 url: 'http://localhost:8081/elencoUtentiInvito',
                                 type: 'POST',
                                 success: function (result) {
-                                    this.POP = new Dialog_class();
-                                    this.POP.hide();
-                                    var settings = {
-                                        title: 'Seleziona utente da invitare alla Repository',
-                                        params: [
-                                            { name: "utente", values: result },
-                                        ], 
-                                        on_finish: function (params) {
-                                            $.ajax({
-                                                url: 'http://localhost:8081/invitaUtente',
-                                                type: 'POST',
-                                                data: { utente: params.utente,
-                                                }
-                                            }).done (function(successo) {
-                                                if(successo){
-                                                    alertify.success("Utente invitato con successo")
-                                                }
-                                                else {
-                                                    alertify.error("ERRORE NELL'INVITO");
-                                                }
-                                            });
-                                        }
-                                    };
-                                    this.POP.show(settings);
+                                    if(result.length>0){
+                                        this.POP = new Dialog_class();
+                                        this.POP.hide();
+                                        var settings = {
+                                            title: 'Seleziona utente da invitare alla Repository',
+                                            params: [
+                                                { name: "utente", values: result },
+                                            ], 
+                                            on_finish: function (params) {
+                                                $.ajax({
+                                                    url: 'http://localhost:8081/invitaUtente',
+                                                    type: 'POST',
+                                                    data: { utente: params.utente,
+                                                    }
+                                                }).done (function(successo) {
+                                                    if(successo){
+                                                        alertify.success("Utente '"+params.utente+"' invitato con successo")
+                                                    }
+                                                    else {
+                                                        alertify.error("ERRORE NELL'INVITO");
+                                                    }
+                                                });
+                                            }
+                                        };
+                                        this.POP.show(settings);
+                                    }
+                                    else{
+                                        alertify.error("ERRORE: attualmente non ci sono utenti da invitare alla repository");
+                                    }
                                 }
                             });
                         }
                         else{
-                            alertify.error("Non hai i permessi per invitare gli utenti");
+                            alertify.error("ERRORE: Non hai i permessi per invitare gli utenti");
                         }
                     }
                 });
             }
             else{
-                alertify.error("Non hai ancora selezionato la repository!");
+                alertify.error("ERRORE: Non hai ancora selezionato la repository!");
             }
         })
     }
@@ -313,41 +323,46 @@ class VCS_class {
                                 url: 'http://localhost:8081/elencoUtentiElimina',
                                 type: 'POST',
                                 success: function (result) {
-                                    this.POP = new Dialog_class();
-                                    this.POP.hide();
-                                    var settings = {
-                                        title: 'Seleziona utente da eliminare dalla repository',
-                                        params: [
-                                            { name: "utente", values: result },
-                                        ],
-                                        on_finish: function (params) {
-                                            $.ajax({
-                                                url: 'http://localhost:8081/eliminaUtente',
-                                                type: 'POST',
-                                                data: { utente: params.utente,
-                                                }
-                                            }).done (function(successo) {
-                                                if(successo){
-                                                    alertify.success("Utente eliminato con successo")
-                                                }
-                                                else {
-                                                    alertify.error("ERRORE NELL'ELIMINAZIONE");
-                                                }
-                                            });
-                                        }
-                                    };
-                                    this.POP.show(settings);
+                                    if(result.length>0){
+                                        this.POP = new Dialog_class();
+                                        this.POP.hide();
+                                        var settings = {
+                                            title: 'Seleziona utente da eliminare dalla repository',
+                                            params: [
+                                                { name: "utente", values: result },
+                                            ],
+                                            on_finish: function (params) {
+                                                $.ajax({
+                                                    url: 'http://localhost:8081/eliminaUtente',
+                                                    type: 'POST',
+                                                    data: { utente: params.utente,
+                                                    }
+                                                }).done (function(successo) {
+                                                    if(successo){
+                                                        alertify.success("Utente '"+params.utente+"' eliminato con successo")
+                                                    }
+                                                    else {
+                                                        alertify.error("ERRORE NELL'ELIMINAZIONE");
+                                                    }
+                                                });
+                                            }
+                                        };
+                                        this.POP.show(settings);
+                                    }
+                                    else{
+                                        alertify.error("ERRORE: attualmente non ci sono utenti da eliminare dalla repository");
+                                    }
                                 }
                             });
                         }
                         else{
-                            alertify.error("Non hai i permessi per eliminare gli utenti");
+                            alertify.error("ERRORE: Non hai i permessi per eliminare gli utenti");
                         }
                     }
                 });
             }
             else{
-                alertify.error("Non hai ancora selezionato la repository!");
+                alertify.error("ERRORE: Non hai ancora selezionato la repository!");
             }
         })
     }
