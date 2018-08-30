@@ -76,26 +76,19 @@ app.post('/logout', function(req, res){
 
 // *** LOGIN
 app.post('/login', function(req, res){
-
-    ConnessioneDB.login(req,function(result){
-     var messaggio = "";
-      if (!result){
-        messaggio = "Errore nel login!";
+  ConnessioneDB.login(req,function(result){
+    var successo = false;
+    if (result){
+      successo = true;
+      req.session.nickname = result.nickname;
+      req.session.mail = result.mail;
+      if (req.body.remember) {
+        req.session.cookie.maxAge = 1000 * 60 * 3;
+      } else {
+        req.session.cookie.expires = false;
       }
-      else{
-        var messaggio = "Login ok!";
-        req.session.nickname = result.nickname;
-        req.session.mail = result.mail;
-
-        if (req.body.remember) {
-          req.session.cookie.maxAge = 1000 * 60 * 3;
-        } else {
-          req.session.cookie.expires = false;
-        }
-  
-      
-      }
-      res.send(messaggio);
+    }
+    res.send(successo);
   });
 });
 /*
@@ -109,17 +102,22 @@ app.post('/login', function(req, res){
 });*/
 
 
-//REGISTRAZIONE DAVGAB
+// REGISTRAZIONE NEGLIA MANTELLINI
 app.post('/registrazione', function(req, res){
-    ConnessioneDB.registrazione(req,function(result){
-    var messaggio = "";
-    if (!result){
-      messaggio = "Errore nella registrazione";
+  ConnessioneDB.registrazione(req,function(result, err){
+    var successo = "";
+    if (result){
+      successo="ok";
     }
     else{
-      var messaggio = "Registrazione ok ok!"
+      if(err.toString().includes("ER_DUP_ENTRY")){
+        successo="errore chiave";
+      }
+      else{
+        successo="errore";
+      }
     }
-    res.send(messaggio);
+    res.send(successo);
   });
 });
 
