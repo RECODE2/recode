@@ -17,24 +17,23 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var flash    = require('connect-flash');
 var morgan = require('morgan');
-var jsonD = require('./concat.js')
+//var jsonD = require('./concat.js')
 var nomeUtente = "";
 var fs = require('fs');
 
 
-/* DATABASE */
+// *** DATABASE ***
+// creiamo la connessione al database ed utilizziamo il db 'vit'
 mysql.createConnection(dbconfig.connection);
 ConnessioneDB.creaConnessione();
 ConnessioneDB.usaDB();
-
-
-/* APP - EXPRESS */
 app.use(session({
   resave: true,
 	secret: 'stringacasualepercrittografareilcookie',
 	saveUninitialized: true
  } ));
 app.use(flash());
+//SET APP
 app.use(bodyParser.urlencoded({limit: '80mb', extended: true}));
 app.use(bodyParser.json({limit: '80mb'}));
 app.use(cors());
@@ -47,9 +46,14 @@ app.listen(port, function () {
 //READ EJS ENGINE
 app.set('view engine', 'ejs');
 
+//GESTIONE COOKIE
+
+
+
 
 //SET PAGINA INIZIALE
 app.get('*', (req, res) => {
+  //res.sendFile(path.resolve(__dirname, 'index.html'));
   if(!req.session.nickname){
     nomeUtente = "Guest";
   }
@@ -61,14 +65,16 @@ app.get('*', (req, res) => {
 });
 });
 
+// *** LATO BACKEND ***
 
-// LOGOUT
+
+// *** LOGOUT
 app.post('/logout', function(req, res){
     req.session.destroy();
     res.send();
   });
 
-// LOGIN
+// *** LOGIN
 app.post('/login', function(req, res){
 
     ConnessioneDB.login(req,function(result){
@@ -86,12 +92,24 @@ app.post('/login', function(req, res){
         } else {
           req.session.cookie.expires = false;
         }
+  
+      
       }
       res.send(messaggio);
   });
 });
+/*
+app.post('/login', function(req, res){
+  console.log(req.session.nickname);
+  ConnessioneDB.datiUtente(req,function(result){
+    console.log(result.mail + "PIPPO");
+    req.session.mail = result.mail;
+    console.log(req.session.mail);
+  });
+});*/
 
-// REGISTRAZIONE NEGLIA MANTELLINI
+
+//REGISTRAZIONE DAVGAB
 app.post('/registrazione', function(req, res){
     ConnessioneDB.registrazione(req,function(result){
     var messaggio = "";
@@ -105,7 +123,6 @@ app.post('/registrazione', function(req, res){
   });
 });
 
-// CREAZIONE REPOSITORY VESTITA NEGLIA
 app.post('/creaRepository', function (req, res) {
   var nomeRepository = req.body.nomeRepo;
   console.log(req.session.nickname + " REPO");
@@ -126,14 +143,18 @@ app.post('/creaRepository', function (req, res) {
     var messaggio = "Repository inserita con successo"
   }
   res.send(messaggio);
+
   });
 
   ConnessioneDB.datiRepo(req,res, function(result){
+
   idRepository = result.idRepository;
-  var pathR = "/home/saso/Documents/vomidax/Server/" + result.idRepository;
+  var pathR = "C:/Users/Davide/Desktop/Server/" + result.idRepository;
   ConnessioneDB.partecipazioneRepo(req, idRepository);
   var repoDir = pathR+"/.git";
   fse.ensureDir(path.resolve(__dirname, repoDir)).then(function() {
+  //Inseriamo la repository sul DB
+
   //Creiamo la cartella .git all'interno della repository
   return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
 }).then(function(repo) {
@@ -191,33 +212,33 @@ filesaver.folder('JSON', pathR+"/JSON", function (err, data) {
   });
 }); 
 
-// ELENCO REPO MANTELLINI
 app.post('/elencoRepo', function(req, res){
   ConnessioneDB.elencoRepo(req, function(result){
+    
     res.send(result);
   })
 });
 
-// SETTA REPOSITORY MANTELLINI
 app.post('/settaRepo', function(req,res){
   req.session.nameRepository = req.body.nomeRepo;
   ConnessioneDB.datiRepo(req,res, function(result){
-    req.session.repository = "/home/saso/Documents/vomidax/Server/" + result.idRepository;
-
-    console.log(req.session.repository);
+    req.session.repository = "C:/Users/Davide/Desktop/Server/" + result.idRepository;
     req.session.idRepository = result.idRepository;
-    res.write(""+req.session.repository);
-    res.write(""+req.session.idRepository);
-    res.end();
-    //res.send(req.session.repository,req.session.idRepository);
+    res.write(res.toString(req.session.repository));
+    
+    ConnessioneDB.setIdBranchMaster(req,res, function(result){
+      req.session.branch = result;
+      res.write(res.toString(req.session.branch));
+      res.end()
+    });
   });
 });
 
-// ADD REVISION MANTELLINI
+
 app.post('/addRevision', function(req, res){
+  
   var nomedelfile = req.body.file_json_name;
   var dataFile = req.body.file_json_data;
-  dataFile = jsonD.aggiustaOrderR(JSON.parse(dataFile));
   fsPath.writeFile(req.session.repository +'/JSON/'+ nomedelfile, JSON.stringify(dataFile, null, '\t'), function(err){
     if(err) {
       throw err;
@@ -226,17 +247,23 @@ app.post('/addRevision', function(req, res){
     }
   });
 
+  
   var img = req.body.file_jpeg_data;
   var data = img.replace(/^data:image\/\w+;base64,/, "");
   var buf = new Buffer(data, 'base64');
 
+ //JSON
   fsPath.writeFile(req.session.repository + '/Immagini/'+ req.body.file_jpeg_name, buf, function(err){
     if(err) {
       throw err;
     } else {
       console.log('Scritto JPEG');
     }
-    var path = req.session.repository;    
+    
+    var path = req.session.repository;
+
+
+    
     var d = new Date();
     var anno = d.getFullYear();
     var mese = d.getMonth()+1;
@@ -245,12 +272,18 @@ app.post('/addRevision', function(req, res){
   
     ConnessioneDB.datiRepo(req,res, function(result){
     ConnessioneDB.insertAddRevision(path, req, result.idRepository);
+    
+
     });
   });
 
 }); 
   
-// NEW BRANCH MANTELLINI
+/*
+Da save.js prendiamo il nome del file e andiamo a creare una cartella
+sul desktop.. (è giusto un tentativo per dimostrare il passaggio da frontend
+a backend tramite ajax)
+*/
 app.post('/branch', function(req,res){
 
   console.log("Hai creato il branch"+ req.body.nameBranch);
@@ -262,13 +295,13 @@ app.get('/branch', function(req,res){
   console.log("Ti sei spostato sul branch" + "Da fare");
   //Query di select del branch
 });
+// FINE MODIFICHE DAVIDE MANTELLINI
 
-//COMMIT MANTELLINI
+//INIZIO MODIFICHE COMMIT DM
 app.post('/commit', function(req,res){
   fileName = req.body.file_json_name;
   fileData = req.body.file_json_data;
-  var j1 = JSON.parse(fileData);;
- 
+  var j1 = JSON.parse(fileData);
   //INSERIRE QUI LA FUNZIONE diffJSON non appena avrò il caricamento file col REVG
   fsPath.writeFile(req.session.repository +'/JSON/'+ fileName, JSON.stringify(j1, null, '\t'), function(err){
     if(err) {
@@ -282,7 +315,9 @@ app.post('/commit', function(req,res){
 
 
 })
+//FINE MODIFICHE COMMIT DM
 
+ 
 // REVISION GRAPH VESTITA
 app.post('/revg',function(req,res){
 
@@ -330,5 +365,7 @@ app.post('/readjson',function(req,res){
   var imgJson = JSON.parse(fs.readFileSync("/home/saso/Documents/vomidax/TESTTEST.json"));
   res.send(imgJson);
 });
+
+
 
 module.exports = app;
