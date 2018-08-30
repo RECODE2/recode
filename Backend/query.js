@@ -237,7 +237,6 @@ function leggiDatiUtente(nomeutente, callback){
     var queryA = "UPDATE utenti SET password='"+password+"', nome='"+nome+"', cognome='"+cognome+"', mail='"+mail+"' WHERE nickname='"+nickname+"'";
     connection.query(queryA, function (err, result) {
         if (err) console.log("Errore!"+err);
-        console.log(result);
         return callback(result);
     });
 }

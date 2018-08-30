@@ -1,6 +1,8 @@
 import Dialog_class from './../../libs/popup.js';
 var request = require('ajax-request');
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+var sha1 = require('sha1');
+
 
 
 class Utente_class {
@@ -27,7 +29,7 @@ class Utente_class {
 					type: 'POST',
 					data: {
 						nickname : params.nickname,
-						password : params.password,
+						password : sha1(params.password),
 						nome : params.nome,
 						cognome : params.cognome,
 						mail : params.mail,
@@ -52,7 +54,6 @@ class Utente_class {
 	
 	
 	login() {
-		var _this = this;
 		var settings = {
 			title: 'Login Utente',
 			params: [
@@ -65,7 +66,7 @@ class Utente_class {
 					type: 'POST',
 					data: {
 						nickname : params.nickname,
-						password : params.password,
+						password : sha1(params.password),
 					}
 				}).done (function(successo) {
 					if(successo){
@@ -94,11 +95,11 @@ class Utente_class {
 			params: [
 				{title: "", value: 'Sei sicuro di voler uscire?'},
 			],
-			on_finish: function (params){
+			on_finish: function (){
 				request({
 					url: 'http://localhost:8081/logout',
 					method: 'POST',
-				}, function(err, res, body) {
+				}, function() {
 					
 					localStorage.setItem('idlogin', 'true');
 					localStorage.setItem('idregistrazione', 'true');
@@ -133,25 +134,24 @@ class Utente_class {
 							url: 'http://localhost:8081/modificadatiutente',
 							type: 'POST',
 							data: {
-								password : params.password,
+								password : sha1(params.password),
 								nome : params.nome,
 								cognome : params.cognome,
 								mail : params.mail,
 							}
-						}).done (function(messaggio) {
-							//alert(messaggio);
-							var _this = this;
-							alertify.error(messaggio);
-							//window.location="http://localhost:8081/";
+						}).done (function(successo) {
+							if(successo){
+								alertify.success("Dati modificati con successo!");
+							}
+							else{
+								alertify.error("Errore nella modifica dei dati");
+							}
 						});
 					}
 				};
 				this.POP.show(settings);
-				
 			}
-		})
-		
-		
+		})	
 	}
 	
 }

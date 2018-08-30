@@ -348,14 +348,11 @@ app.post('/leggidatiutente',function(req,res){
 // MODIFICA DATI UTENTE VESTITA
 app.post('/modificadatiutente',function(req,res){
   ConnessioneDB.modificaDatiUtente(req,function(result){
-    var messaggio = "";
-    if (!result){
-      messaggio = "Errore nella modifica";
+    var successo = false;
+    if (result){
+      successo = true;
     }
-    else{
-      var messaggio = "Dati modificati!"
-    }
-    res.send(messaggio);
+    res.send(successo);
   });
 });
 
