@@ -9,7 +9,7 @@ config.WIDTH = null;
 config.HEIGHT = null;
 config.visible_width = null;
 config.visible_height = null;
-config.COLOR = '#008000';
+config.COLOR = '#5cabfb';
 config.ALPHA = 255;
 config.ZOOM = 1;
 config.pixabay_key = '3ca2cd8af3fde33af218bea02-9021417';
@@ -20,8 +20,8 @@ config.mouse = {};
 
 //requires styles in reset.css
 config.themes = [
-	'dark',
 	'light',
+	'dark',
 	'green',
 ];
 

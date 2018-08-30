@@ -11,9 +11,9 @@ import Image_trim_class from './../modules/image/trim.js';
 import zoomView from './../libs/zoomView.js';
 import Helper_class from './../libs/helpers.js';
 import alertify from './../../../node_modules/alertifyjs/build/alertify.min.js';
+import { json } from 'graphlib';
 
 var instance = null;
-
 /**
  * Layers class - manages layers. Each layer is object with various types. Keys:
  * - id (int)
@@ -56,6 +56,9 @@ class Base_layers_class {
 
 		this.canvas = document.getElementById('canvas_minipaint');
 		this.ctx = document.getElementById('canvas_minipaint').getContext("2d");
+		
+
+
 		this.ctx_preview = document.getElementById('canvas_preview').getContext("2d");
 		this.last_zoom = 1;
 		this.zoomView = zoomView;
@@ -259,8 +262,7 @@ class Base_layers_class {
 						object.width, object.height);
 				}
 				else {
-					ctx.drawImage(object.link, -object.width / 2, -object.height / 2,
-						object.width, object.height);
+					ctx.drawImage(object.link, -object.width / 2, -object.height / 2, object.width, object.height);
 				}
 
 				ctx.restore();
@@ -915,6 +917,13 @@ class Base_layers_class {
 		};
 	}
 
+
+
+
+
+
 }
+
+
 
 export default Base_layers_class;

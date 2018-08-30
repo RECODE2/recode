@@ -341,7 +341,7 @@ class Add_Revision_Class{
                     + 'https://github.com/viliusle/miniPaint',
                 date: today,
                 version: "4.0.0",
-                layer_active: config.layers.length,
+                layer_active: config.layer.id
             };
     
             //layers

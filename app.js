@@ -19,6 +19,8 @@ var flash    = require('connect-flash');
 var morgan = require('morgan');
 var jsonD = require('./concat.js')
 var nomeUtente = "";
+var fs = require('fs');
+
 
 /* DATABASE */
 mysql.createConnection(dbconfig.connection);
@@ -322,6 +324,11 @@ app.post('/modificadatiutente',function(req,res){
     }
     res.send(messaggio);
   });
-})
+});
+
+app.post('/readjson',function(req,res){
+  var imgJson = JSON.parse(fs.readFileSync("/home/saso/Documents/vomidax/TESTTEST.json"));
+  res.send(imgJson);
+});
 
 module.exports = app;

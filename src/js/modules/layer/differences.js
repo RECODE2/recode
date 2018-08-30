@@ -38,7 +38,8 @@ class Layer_differences_class {
 		var canvas = document.createElement('canvas');
 		canvas.width = config.WIDTH;
 		canvas.height = config.HEIGHT;
-		var ctx = canvas.getContext("2d");
+
+		var ctx = canvas.getContext("2d"); 
 
 		//get source data
 		this.Base_layers.render_object(ctx, config.layer);

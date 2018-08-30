@@ -3,7 +3,21 @@
 	background-repeat: no-repeat;
 }
 :root {
-	/* original - default */
+/* light */
+	--background: #bbc3ce75;
+	--text-color: #0c0c0d;
+	--background-color-section: #f1f1f1;
+	--background-color-area: #ccc;
+	--background-color-header: #dcdcdc;
+	--background-color-button: #5cabfb63;
+	--background-color-menu:#cccccc;
+	--text-color-menu: #333333;
+	--background-color-active: #5cabfb;
+	--background-color-hover: #5cabfb7d;
+	--border-color: #c1c1c1;
+}
+body.theme-dark{
+	/* dark */
 	--background: #424F5A;
 	--text-color: #000000;
 	--background-color-section: #68727b;
@@ -15,20 +29,6 @@
 	--background-color-active: #419147;
 	--background-color-hover: #b4b9bd;
 	--border-color: #3c3c3c;
-}
-body.theme-light{
-	/* light */
-	--background: #f9f9fa;
-	--text-color: #0c0c0d;
-	--background-color-section: #f1f1f1;
-	--background-color-area: #ccc;
-	--background-color-header: #dcdcdc;
-	--background-color-button: #f9f9fa;
-	--background-color-menu: #f1f1f1;
-	--text-color-menu: #333333;
-	--background-color-active: #0a84ff;
-	--background-color-hover: #e1e1e2;
-	--border-color: #c1c1c1;
 }
 body.theme-green{
 	/* green */

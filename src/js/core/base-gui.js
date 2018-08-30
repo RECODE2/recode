@@ -180,7 +180,7 @@ class Base_gui_class {
 	prepare_canvas() {
 		var canvas = document.getElementById('canvas_minipaint');
 		var ctx = canvas.getContext("2d");
-
+ 
 		var wrapper = document.getElementById('main_wrapper');
 		var page_w = wrapper.clientWidth;
 		var page_h = wrapper.clientHeight;

@@ -121,7 +121,7 @@ class VCS_class {
                           this.POP.hide();
                           var settings = {
                             title: 'Revision Graph',
-                            on_load: function () {
+                            on_load: function () { 
                                 var divRevg = document.createElement('div');
                                 document.getElementById('dialog_content').style.height="400px";
                                 divRevg.setAttribute('id','cy');
