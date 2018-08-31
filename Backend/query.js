@@ -35,9 +35,12 @@ function insertRepository(req, callback) {
     var mese = d.getMonth()+1;
     var giorno = d.getDate();
     var ora = d.getHours();
+    console.log("ora: "+ora);
     var minuto = d.getMinutes();
+    console.log("minuti: "+minuto);
     var secondo = d.getSeconds();
-    const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'";
+    console.log("secondi: "+secondo);
+    const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
     var admin = req.session.nickname;
     connection.query("INSERT INTO repository (nome,admin,dataCreazione,descrizione) VALUES ('" + nomeRepository + "','" + admin + "'," + dataCreazioneRepo + ",'"+ descrizione +"')", function (err, result) {
         if (err) {
@@ -52,6 +55,17 @@ function insertRepository(req, callback) {
 }
 
 function insertAddRevision(path, req, repository) {
+    var d = new Date();
+    var anno = d.getFullYear();
+    var mese = d.getMonth()+1;
+    var giorno = d.getDate();
+    var ora = d.getHours();
+    console.log("ora: "+ora);
+    var minuto = d.getMinutes();
+    console.log("minuti: "+minuto);
+    var secondo = d.getSeconds();
+    console.log("secondi: "+secondo);
+    const dataModifica = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
 
     var path1 = path + "/Immagini/" + req.body.file_jpeg_name;
     var path2 = path + "/JSON/" + req.body.file_json_name;
@@ -71,7 +85,7 @@ function insertAddRevision(path, req, repository) {
     connection.query(queryV, function(err, result, fields){
         if (result.length == 2){
             var idModifiche = Math.random().toString(36).substring(7);
-            querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `branch`) VALUES ('"+idModifiche+"', '-1', '-1', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', '"+req.session.branch+"');";
+            querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '-1', '-1', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
             connection.query(querySQL, function(err,result,fields){
                 if (err) throw err;
             });
@@ -152,7 +166,18 @@ function registrazione(req, callback) {
 }
 
 function partecipazioneRepo(req, idRepository) {
-    queryP = "INSERT INTO `vit`.`partecipazione` (`utente`, `repository`, `diritto`) VALUES ('" + req.session.nickname + "', '" + idRepository + "', '0')";
+    var d = new Date();
+    var anno = d.getFullYear();
+    var mese = d.getMonth()+1;
+    var giorno = d.getDate();
+    var ora = d.getHours();
+    console.log("ora: "+ora);
+    var minuto = d.getMinutes();
+    console.log("minuti: "+minuto);
+    var secondo = d.getSeconds();
+    console.log("secondi: "+secondo);
+    const dataPartecipazione = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
+    queryP = "INSERT INTO `vit`.`partecipazione` (`utente`, `repository`, `diritto`, `data`) VALUES ('" + req.session.nickname + "', '" + idRepository + "', '0', "+dataPartecipazione+")";
     connection.query(queryP);
 }
 
