@@ -131,9 +131,9 @@ app.post('/creaRepository', function (req, res) {
 
   });
 
-  ConnessioneDB.datiRepo(req, res, function (result) {
-
+  ConnessioneDB.inserisciDatiRepo(req, res, function (result) {
     idRepository = result.idRepository;
+    console.log(result.idRepository);
     var pathR = "./Server/" + result.idRepository;
     ConnessioneDB.partecipazioneRepo(req, idRepository);
     var repoDir = pathR + "/.git";
@@ -205,7 +205,7 @@ app.post('/elencoRepo', function (req, res) {
 
 app.post('/settaRepo', function (req, res) {
   req.session.nameRepository = req.body.nomeRepo;
-  ConnessioneDB.datiRepo(req, res, function (result) {
+  ConnessioneDB.settaDatiRepo(req, res, function (result) {
     req.session.repository = "./Server/" + result.idRepository;
     req.session.idRepository = result.idRepository;
     res.write(res.toString(req.session.repository));
@@ -237,30 +237,16 @@ app.post('/addRevision', function (req, res) {
   var data = img.replace(/^data:image\/\w+;base64,/, "");
   var buf = new Buffer(data, 'base64');
 
+
   //JPG
   fsPath.writeFile(req.session.repository + '/Immagini/' + req.body.file_jpeg_name, buf, function (err) {
     if (err) {
     } else {
-     // console.log('Scritto JPEG');
+      // console.log('Scritto JPEG');
     }
 
-    var path = req.session.repository;
-
-    /* 
-        
-        var d = new Date();
-        var anno = d.getFullYear();
-        var mese = d.getMonth()+1;
-        var giorno = d.getDate();
-        const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'";  */
-
-    ConnessioneDB.datiRepo(req, res, function (result, err) {
-      if (err) {
-       // console.log("errore inserimento add revision in db");
-      }
-      else {
-        ConnessioneDB.insertAddRevision(path, req, result.idRepository);
-      }
+    ConnessioneDB.settaDatiRepo(req, res, function (result) {
+      ConnessioneDB.insertAddRevision(req.session.repository, req, result.idRepository);
     });
   });
 });
@@ -293,7 +279,7 @@ app.post('/commit', function (req, res) {
     if (err) {
       throw err;
     } else {
-     // console.log('Json fatto');
+      // console.log('Json fatto');
     }
     ConnessioneDB.insertCommitFile(req, res);
     ConnessioneDB.saveCommit(req, res);
@@ -308,7 +294,7 @@ app.post('/commit', function (req, res) {
 app.post('/revg', function (req, res) {
 
   var repoAttuale = req.session.idRepository;
- // console.log("Repo attuale: " + repoAttuale);
+  // console.log("Repo attuale: " + repoAttuale);
   ConnessioneDB.elencoDatiRevG(repoAttuale, function (result) {
     res.send(result);
   });
