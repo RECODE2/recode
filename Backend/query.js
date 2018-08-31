@@ -27,9 +27,19 @@ function usaDB() {
     });
 }
 
-function insertRepository(req, nomeRepository, dataCreazioneRepo, callback) {
+function insertRepository(req, callback) {
+    var nomeRepository = req.body.nomeRepo;
+    var descrizione = req.body.readme;
+    var d = new Date();
+    var anno = d.getFullYear();
+    var mese = d.getMonth()+1;
+    var giorno = d.getDate();
+    var ora = d.getHours();
+    var minuto = d.getMinutes();
+    var secondo = d.getSeconds();
+    const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'";
     var admin = req.session.nickname;
-    connection.query("INSERT INTO repository (nome,admin,dataCreazione) VALUES ('" + nomeRepository + "','" + admin + "'," + dataCreazioneRepo + ")", function (err, result) {
+    connection.query("INSERT INTO repository (nome,admin,dataCreazione,descrizione) VALUES ('" + nomeRepository + "','" + admin + "'," + dataCreazioneRepo + ",'"+ descrizione +"')", function (err, result) {
         if (err) {
             console.log("C'è un errore nella query: " + err);
             console.log("C'è un errore nella query: " + admin);

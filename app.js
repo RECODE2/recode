@@ -122,25 +122,12 @@ app.post('/registrazione', function(req, res){
 });
 
 app.post('/creaRepository', function (req, res) {
-  var nomeRepository = req.body.nomeRepo;
-  console.log(req.session.nickname + " REPO");
-  console.log(req.session.mail);
-  var d = new Date();
-  var anno = d.getFullYear();
-  var mese = d.getMonth()+1;
-  var giorno = d.getDate();
-  var ora = d.getHours();
-  var minuto = d.getMinutes();
-  var secondo = d.getSeconds();
-  const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'";
-  ConnessioneDB.insertRepository(req, nomeRepository,dataCreazioneRepo, function(result){
-  if (!result){
-    messaggio = "Errore nell'inserimento repository";
+  ConnessioneDB.insertRepository(req, function(result){
+    var successo = false;
+  if (result){
+    successo = true;
   }
-  else{
-    var messaggio = "Repository inserita con successo"
-  }
-  res.send(messaggio);
+  res.send(successo);
 
   });
 
@@ -212,7 +199,6 @@ filesaver.folder('JSON', pathR+"/JSON", function (err, data) {
 
 app.post('/elencoRepo', function(req, res){
   ConnessioneDB.elencoRepo(req, function(result){
-    
     res.send(result);
   })
 });
@@ -354,6 +340,65 @@ app.post('/modificadatiutente',function(req,res){
     }
     res.send(successo);
   });
+});
+
+app.post('/infoRepo', function(req, res){
+  ConnessioneDB.infoRepo(req, function(result){
+    res.send(result);
+  })
+});
+
+app.post('/modificaRepo', function(req, res){
+  ConnessioneDB.modificaRepo(req, function(result){
+    var successo = false;
+    if (result){
+      successo = true;
+      req.session.nameRepository = req.body.nome;
+    }
+    res.send(successo);
+  })
+});
+
+app.post('/elencoUtentiInvito', function(req, res){
+  ConnessioneDB.elencoUtentiInvito(req, function(result){
+    res.send(result);
+  })
+});
+
+app.post('/invitaUtente', function(req, res){
+  ConnessioneDB.invitaUtente(req,function(result){
+    var successo = false;
+    if (result){
+      successo = true;
+    }
+    res.send(successo);
+  })
+});
+
+app.post('/verificaAdmin', function(req, res){
+  ConnessioneDB.verificaAdmin(req, function(result){
+    var admin=false;
+    if(result[0].diritto==0){
+      admin=true;
+    }
+    res.send(admin);
+  })
+});
+
+app.post('/elencoUtentiElimina', function(req, res){
+  ConnessioneDB.elencoUtentiElimina(req, function(result){
+    res.send(result);
+  })
+});
+
+app.post('/eliminaUtente', function(req, res){
+  ConnessioneDB.eliminaUtente(req,function(result){
+    var successo = false;
+    if (result){
+      successo = true;
+    }
+    res.send(successo);
+  })
 });
 
 app.post('/readjson',function(req,res){

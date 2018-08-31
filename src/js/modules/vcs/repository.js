@@ -31,18 +31,7 @@ class VCS_class {
                 { name: "name", title: "Nome repository:", value: "" },
                 { name: "readme", title: "Readme:", value: "", type: "textarea" },
             ],
-
             on_finish: function (params) {
-                /*request({
-                    url: 'http://localhost:8081/creaRepository',
-                    method: 'POST',
-                    data: {
-                        nomeRepo: params.name,
-                        readme: params.readme,
-                    }
-                  }, function(err, res, body) {
-                    
-                  });*/
                 $.ajax({
                     url: 'http://localhost:8081/creaRepository',
                     type: 'POST',
@@ -50,14 +39,16 @@ class VCS_class {
                         nomeRepo: params.name,
                         readme: params.readme,
                     }
-                }).done(function (messaggio) {
-                    //alert(messaggio);
-                    var _this = this;
-                    alertify.error(messaggio);
+                }).done(function (successo) {
+                    if(successo){
+                        alertify.success("Repository creata con successo");
+                    }
+                    else{
+                        alertify.error("ERRORE NELLA CREAZIONE DELLA REPOSITORY");
+                    }
                 });
             },
         };
-
         this.POP.show(settings);
         document.getElementById("pop_data_name").select();
     }
