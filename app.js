@@ -134,7 +134,7 @@ app.post('/creaRepository', function (req, res) {
   ConnessioneDB.datiRepo(req,res, function(result){
 
   idRepository = result.idRepository;
-  var pathR = "C:/Users/Davide/Desktop/Server/" + result.idRepository;
+  var pathR = "./Server/" + result.idRepository;
   ConnessioneDB.partecipazioneRepo(req, idRepository);
   var repoDir = pathR+"/.git";
   fse.ensureDir(path.resolve(__dirname, repoDir)).then(function() {
@@ -206,7 +206,7 @@ app.post('/elencoRepo', function(req, res){
 app.post('/settaRepo', function(req,res){
   req.session.nameRepository = req.body.nomeRepo;
   ConnessioneDB.datiRepo(req,res, function(result){
-    req.session.repository = "C:/Users/Davide/Desktop/Server/" + result.idRepository;
+    req.session.repository = "./Server/" + result.idRepository;
     req.session.idRepository = result.idRepository;
     res.write(res.toString(req.session.repository));
     
