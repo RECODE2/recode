@@ -78,10 +78,21 @@ function insertAddRevision(path, req, repository) {
         }
     });
     
+}
+function inserisciDatiRepo(req, res, callback) {
+    var nome = "";
+    nome = req.body.nomeRepo;
+    var querySQL = "SELECT * FROM repository r WHERE r.nome ='" + nome + "' order by r.dataCreazione desc";
+    connection.query(querySQL, function (err, result) {
 
+        if (err) {
+            console.log(err);
+        }
+        return callback(result[0]);
+    });
 }
 
-function datiRepo(req, res, callback) {
+function settaDatiRepo(req, res, callback) {
     var nome = "";
     if (!req.session.repository) {
         nome = req.body.nomeRepo;
@@ -367,7 +378,8 @@ exports.insertAddRevision = insertAddRevision;
 exports.registrazione = registrazione;
 exports.login = login;
 exports.partecipazioneRepo = partecipazioneRepo;
-exports.datiRepo = datiRepo;
+exports.settaDatiRepo = settaDatiRepo;
+exports.inserisciDatiRepo = inserisciDatiRepo;
 exports.elencoRepo = elencoRepo;
 exports.newBranch = newBranch;
 exports.branchMaster = branchMaster;

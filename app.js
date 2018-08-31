@@ -131,9 +131,9 @@ app.post('/creaRepository', function (req, res) {
 
   });
 
-  ConnessioneDB.datiRepo(req,res, function(result){
-
+  ConnessioneDB.inserisciDatiRepo(req,res, function(result){
   idRepository = result.idRepository;
+  console.log(result.idRepository);
   var pathR = "./Server/" + result.idRepository;
   ConnessioneDB.partecipazioneRepo(req, idRepository);
   var repoDir = pathR+"/.git";
@@ -205,7 +205,7 @@ app.post('/elencoRepo', function(req, res){
 
 app.post('/settaRepo', function(req,res){
   req.session.nameRepository = req.body.nomeRepo;
-  ConnessioneDB.datiRepo(req,res, function(result){
+  ConnessioneDB.settaDatiRepo(req,res, function(result){
     req.session.repository = "./Server/" + result.idRepository;
     req.session.idRepository = result.idRepository;
     res.write(res.toString(req.session.repository));
@@ -254,7 +254,7 @@ app.post('/addRevision', function(req, res){
     var giorno = d.getDate();
     const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'"; 
   
-    ConnessioneDB.datiRepo(req,res, function(result){
+    ConnessioneDB.settaDatiRepo(req,res, function(result){
     ConnessioneDB.insertAddRevision(path, req, result.idRepository);
     
 
