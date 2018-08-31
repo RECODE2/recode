@@ -41,76 +41,90 @@ class Add_Revision_Class{
     }
     
     addRevision() {
-		var _this = this;
-		this.POP.hide();
-
+        var _this = this;
+        this.controllaSelezioneRepo(function(repo){
+            if(repo){
+                _this.POP.hide();
         
-		var calc_size_value = false;
-		var calc_size = false;
-		if (config.WIDTH * config.HEIGHT < 1000000) {
-			calc_size_value = true;
-			calc_size = true;
-		}
-
-		var file_name = config.layers[0].name;
-		var parts = file_name.split('.');
-		if (parts.length > 1)
-			file_name = parts[parts.length - 2];
-        file_name = file_name.replace(/ /g, "-");
-        var i = 0;
-        var lunghezza = config.layers.length;
-        if (config.layers.length > 1) {
-			alertify.error('Ci sono più di un livello, devi fare il Merge Down');
-			return false;
-		}
-		var settings = {
-			title: 'Add Revision: ',
-			params: [
-				{name: "name", title: "File name:", value: file_name},
-				{name: "desc", title: "Descrizione", value: ""},
-                {name: "quality", title: "JPG qualità:", value: 90, range: [1, 100]},
-                {name: "calc_size", title: "Show file size:", value: calc_size_value},
-                {name: "layers",  values: ['All']},
-                //{name: "type", value: "JPG"},
-                //{name: "type1", value: "JSON"},
-			],
-			on_change: function (params, canvas_preview, w, h) {
-                _this.save_dialog_onchange(params);
                 
-			}, 
-			on_finish: function (params) {
-               var jpeg_file = _this.save_action(params);
-               var json_file = _this.save_action_json(params);
-                request({
-                    url: 'http://localhost:8081/addRevision',
-                    method: 'POST',
-                    data: {
-                      file_json_name: json_file[1],
-                      file_json_data: json_file[0],
-                      file_jpeg_name: jpeg_file[1],
-                      file_jpeg_data: jpeg_file[0],
-                      desc: params.desc,
-                      name: params.name
-                    }
-                  }, function(err, res, body) {
-                    
-                  });
-               
-			},
-		};
-		this.POP.show(settings);
+                var calc_size_value = false;
+                var calc_size = false;
+                if (config.WIDTH * config.HEIGHT < 1000000) {
+                    calc_size_value = true;
+                    calc_size = true;
+                }
+        
+                var file_name = config.layers[0].name;
+                var parts = file_name.split('.');
+                if (parts.length > 1)
+                    file_name = parts[parts.length - 2];
+                file_name = file_name.replace(/ /g, "-");
+                var i = 0;
+                var lunghezza = config.layers.length;
+                if (config.layers.length > 1) {
+                    alertify.error('Ci sono più di un livello, devi fare il Merge Down');
+                    return false;
+                }
+                var settings = {
+                    title: 'Add Revision: ',
+                    params: [
+                        {name: "name", title: "File name:", value: file_name},
+                        {name: "desc", title: "Descrizione", value: ""},
+                        {name: "quality", title: "JPG qualità:", value: 90, range: [1, 100]},
+                        {name: "calc_size", title: "Show file size:", value: calc_size_value},
+                        {name: "layers",  values: ['All']},
+                        //{name: "type", value: "JPG"},
+                        //{name: "type1", value: "JSON"},
+                    ],
+                    on_change: function (params, canvas_preview, w, h) {
+                        _this.save_dialog_onchange(params);
+                        
+                    }, 
+                    on_finish: function (params) {
+                       var jpeg_file = _this.save_action(params);
+                       var json_file = _this.save_action_json(params);
+                        request({
+                            url: 'http://localhost:8081/addRevision',
+                            method: 'POST',
+                            data: {
+                              file_json_name: json_file[1],
+                              file_json_data: json_file[0],
+                              file_jpeg_name: jpeg_file[1],
+                              file_jpeg_data: jpeg_file[0],
+                              desc: params.desc,
+                              name: params.name
+                            }
+                          }, function() {
+                          }), alertify.success("La revision "+params.name+" è stata inserita!");
+                    },
+                };
+                _this.POP.show(settings);
+                
+                if (calc_size == true) {
+                    _this.save_dialog_onchange(null);
+                }
+            }
+            else{
+                alertify.error("ERRORE: Non hai ancora selezionato la repository!"); 
+            }
+        });
 
-        //document.getElementById("pop_data_name").select();
+             
+    }
 
-		if (calc_size == true) {
-			//calc size once
-			this.save_dialog_onchange(null);
-		}
+
+    controllaSelezioneRepo(callback){
+        $.ajax({
+            url: 'http://localhost:8081/controllaSelezioneRepo',
+            type: 'POST',
+            success: function (repo){
+                return callback(repo);
+            }
+        });
     }
 
     update_file_size(file_size) {
 		if (typeof file_size == 'string') {
-			//document.getElementById('file_size').innerHTML = file_size;
 			return;
 		}
 
@@ -120,12 +134,10 @@ class Add_Revision_Class{
 			file_size = this.Helper.number_format(file_size / 1024, 2) + ' KB';
 		else
 			file_size = (file_size) + ' B';
-		//document.getElementById('file_size').innerHTML = file_size;
 	}
 
     update_file_size(file_size) {
 		if (typeof file_size == 'string') {
-			//document.getElementById('file_size').innerHTML = file_size;
 			return;
 		}
 
@@ -135,7 +147,6 @@ class Add_Revision_Class{
 			file_size = this.Helper.number_format(file_size / 1024, 2) + ' KB';
 		else
 			file_size = (file_size) + ' B';
-		//document.getElementById('file_size').innerHTML = file_size;
 	}
     
     
