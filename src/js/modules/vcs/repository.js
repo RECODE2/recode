@@ -3,6 +3,7 @@ var request = require('ajax-request');
 import Dialog_class from "../../libs/popup";
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import { callbackify } from 'util';
+import host from './../../host.js';
 
 var cytoscape = require('cytoscape');
 var cydagre = require('cytoscape-dagre');
@@ -73,7 +74,10 @@ class VCS_class {
                                 data: { nomeRepo: params.name,
                                 },
                                 success: function(){
-                                    alertify.success("Repository settata con successo");
+                                    alertify.success("Repository settata con successo, ATTENDERE...");
+                                    window.setTimeout(function(){
+                                        window.location.href = host.name;
+                                    }, 2500);
                                 }
                             });
                         }
