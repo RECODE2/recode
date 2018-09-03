@@ -258,7 +258,7 @@ app.post('/addRevision', function (req, res) {
       req.session.idRepository2 = result;
     
         ConnessioneDB.idRevision(req, function(results){
-          req.session.branch = ConnessioneDB.branchMasterRev(req, results.file);
+          req.session.branch = ConnessioneDB.branchMasterRev(req, results);
  
           });
     });

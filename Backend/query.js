@@ -407,8 +407,8 @@ function idRevision(req,callback){
         if(err){
             console.log("Sono in idRevision "+ err);
         }
-        return callback(results[0]);
-    }); 
+        return callback(results[0].file);
+    });  
 }
 
 /*DAVIDE NEW QUERY BRANCH*/
