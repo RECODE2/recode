@@ -2,7 +2,7 @@ import Dialog_class from './../../libs/popup.js';
 var request = require('ajax-request');
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 var sha1 = require('sha1');
-
+import host from './../../host.js';
 
 
 class Utente_class {
@@ -25,7 +25,7 @@ class Utente_class {
 			],
 			on_finish: function (params) {
 				$.ajax({
-					url: 'http://localhost:8081/registrazione',
+					url: host.name + 'registrazione',
 					type: 'POST',
 					data: {
 						nickname : params.nickname,
@@ -62,7 +62,7 @@ class Utente_class {
 			],
 			on_finish: function (params){
 				$.ajax({
-					url: 'http://localhost:8081/login',
+					url: host.name + 'login',
 					type: 'POST',
 					data: {
 						nickname : params.nickname,
@@ -77,7 +77,7 @@ class Utente_class {
 							localStorage.setItem('idlogout','true');
 							localStorage.setItem('idvcs', 'true');
 							localStorage.setItem('idmodificadati','true');
-							window.location.href = "http://localhost:8081/";
+							window.location.href = host.name;
 						}, 2500);
 					}
 					else{
@@ -97,7 +97,7 @@ class Utente_class {
 			],
 			on_finish: function (){
 				request({
-					url: 'http://localhost:8081/logout',
+					url: host.name + 'logout',
 					method: 'POST',
 				}, function() {
 					
@@ -106,7 +106,7 @@ class Utente_class {
 					localStorage.setItem('idvcs','false');
 					localStorage.setItem('idmodificadati','false');
 					
-					window.location="http://localhost:8081/";
+					window.location= host.name;
 				});
 			}
 		};
@@ -115,7 +115,7 @@ class Utente_class {
 	
 	modificadati() {
 		$.ajax({
-			url: 'http://localhost:8081/leggidatiutente',
+			url: host.name + 'leggidatiutente',
 			type: 'POST',
 			success: function(result){
 				this.POP = new Dialog_class();
@@ -131,7 +131,7 @@ class Utente_class {
 					
 					on_finish: function (params) {
 						$.ajax({
-							url: 'http://localhost:8081/modificadatiutente',
+							url: host.name + 'modificadatiutente',
 							type: 'POST',
 							data: {
 								password : sha1(params.password),
