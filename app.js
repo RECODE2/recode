@@ -253,14 +253,14 @@ app.post('/addRevision', function (req, res) {
     const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'"; 
     
     ConnessioneDB.settaDatiRepo(req,res, function(result){
-   
+      
       ConnessioneDB.insertAddRevision(path, req, result);
       req.session.idRepository2 = result;
-    
-        ConnessioneDB.idRevision(req, function(results){
+      /*ConnessioneDB.idRevision(req, function(results){
+          console.log(results + "Result File");
           req.session.branch = ConnessioneDB.branchMasterRev(req, results);
- 
-          });
+        
+          });*/
     });
   });
 });

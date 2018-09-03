@@ -84,6 +84,7 @@ function insertAddRevision(path, req, repository) {
 
     });
     queryV = "Select * from file f where f.repository ='"+repository+"'";
+    
     connection.query(queryV, function(err, result, fields){
         if (result.length == 2){
             var idModifiche = Math.random().toString(36).substring(7);
@@ -91,6 +92,13 @@ function insertAddRevision(path, req, repository) {
             querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '-1', '-1', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
             connection.query(querySQL, function(err,result,fields){
                 if (err) throw err;
+                else{
+                    idRevision(req, function(results){
+                    console.log(results + "Result File");
+                    req.session.branch = branchMasterRev(req, results);
+                  
+                    });
+                }
             });
         }
     });
@@ -401,8 +409,9 @@ function eliminaUtente(req, callback) {
     })
 }
 
-function idRevision(req,callback){
-    var queryRev="SELECT file from commit where utente ='"+req.session.nickname+"' order by dataModifica desc";
+function idRevision(req, callback){
+    console.log(req.session.nickname);
+    var queryRev="SELECT * from commit c where utente ='"+req.session.nickname+"' order by DataModifica desc";
     connection.query(queryRev, function(err,results, fields){
         if(err){
             console.log("Sono in idRevision "+ err);
