@@ -61,7 +61,9 @@ app.get('*', (req, res) => {
     nomeUtente = req.session.nickname;
   }
   res.render('index', {
-    username: nomeUtente
+    username: nomeUtente,
+    repository: req.session.nameRepository,
+    branch: req.session.branch
   });
 });
 

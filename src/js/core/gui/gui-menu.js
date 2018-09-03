@@ -19,7 +19,7 @@ class GUI_menu_class {
 			method: 'toggle', //'hover' (default) or 'toggle'
 			contentsource: "markup",
 		});
-		var tastologin = localStorage.getItem('idlogin');
+/* 		var tastologin = localStorage.getItem('idlogin');
 		var tastologout = localStorage.getItem('idlogout');
 		var tastoregistrazione = localStorage.getItem('idregistrazione');
 		var tastovcs = localStorage.getItem('idvcs');
@@ -51,7 +51,7 @@ class GUI_menu_class {
 
 		if(modificadati == 'false'){
 			document.getElementById('idmodificadati').style.display = "none";
-		}
+		} */
 	}
 
 }

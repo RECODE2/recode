@@ -72,11 +72,11 @@ class Utente_class {
 					if(successo){
 						alertify.success("Login in corso, ATTENDERE...");
 						window.setTimeout(function(){
-							localStorage.setItem('idlogin', 'false');
+/* 							localStorage.setItem('idlogin', 'false');
 							localStorage.setItem('idregistrazione', 'false');
 							localStorage.setItem('idlogout','true');
 							localStorage.setItem('idvcs', 'true');
-							localStorage.setItem('idmodificadati','true');
+							localStorage.setItem('idmodificadati','true'); */
 							window.location.href = host.name;
 						}, 2500);
 					}
@@ -101,10 +101,10 @@ class Utente_class {
 					method: 'POST',
 				}, function() {
 					
-					localStorage.setItem('idlogin', 'true');
+/* 					localStorage.setItem('idlogin', 'true');
 					localStorage.setItem('idregistrazione', 'true');
 					localStorage.setItem('idvcs','false');
-					localStorage.setItem('idmodificadati','false');
+					localStorage.setItem('idmodificadati','false'); */
 					
 					window.location= host.name;
 				});
