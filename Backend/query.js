@@ -228,7 +228,7 @@ function branchMaster(req,result){
 }
 
 function setIdBranchMaster(req,res,callback){
-    console.log(req.session.idRepository + " QUA")
+    console.log(req.session.idRepository + " QUAA"); 
     queryB = "select idbranch from branch where repository ='" +req.session.idRepository+"' AND nome = 'master' AND utente = '"+req.session.nickname+"' AND revision IS NULL;"
     connection.query(queryB, function(err, result){
         if (err) throw err;
