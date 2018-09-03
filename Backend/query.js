@@ -72,26 +72,28 @@ function insertAddRevision(path, req, repository) {
     
     var nome = req.body.file_jpeg_name;
     var nome1 = req.body.file_json_name;
-    var querySQL = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,tipo) VALUES ('" + path1 + "', '" + nome + "', '" + repository + "', '" + req.session.nickname + "', 'Rev');";
-    var querySQL1 = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,tipo) VALUES ('" + path2 + "', '" + nome1 + "', '" + repository + "', '" + req.session.nickname + "', 'Rev');";
+    console.log(repository + "SOLUZIONE FINALE");
+    var querySQL = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('" + path1 + "', '" + nome + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'jpeg');";
+    var querySQL1 = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('"+ path2 + "', '" + nome1 + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'json');";
     //var querySQL1 = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,tipo) VALUES ('"+path+"', '"+nome+"', '"+repository+"', '"+utente+"', 'Rev');";
     connection.query(querySQL, function (err, results, fields) {
         if (err) throw err;
     });
     connection.query(querySQL1, function (err, results, fields) {
         if (err) throw err;
+
     });
     queryV = "Select * from file f where f.repository ='"+repository+"'";
     connection.query(queryV, function(err, result, fields){
         if (result.length == 2){
             var idModifiche = Math.random().toString(36).substring(7);
+            console.log("INSERTADDREVISION COMMIT")
             querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '-1', '-1', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
             connection.query(querySQL, function(err,result,fields){
                 if (err) throw err;
             });
         }
     });
-    
 }
 function inserisciDatiRepo(req, res, callback) {
     var nome = "";
@@ -113,13 +115,16 @@ function settaDatiRepo(req, res, callback) {
     } else {
         nome = req.session.nameRepository;
     }
-    var querySQL = "SELECT * FROM repository r WHERE r.nome ='" + nome + "' order by r.dataCreazione desc";
+    console.log(nome + "SettaDatiRepo" + req.session.nickname + "DioPorco")
+    var querySQL = "SELECT * FROM repository r WHERE r.nome ='" + nome + "' AND r.admin = '"+req.session.nickname+"'order by r.dataCreazione desc";
     connection.query(querySQL, function (err, result) {
 
         if (err) {
             console.log(err);
         }
-        return callback(result[0]);
+        console.log(result);
+        console.log(result[0].idRepository + "SettaDatiRepo")
+        return callback(result[0].idRepository);
     });
 }
 
@@ -209,24 +214,25 @@ function newBranch(req,res){
         }
     });
 }
-function branchMaster(req,res,result){
+function branchMaster(req,result){
     var idBranch = Math.random().toString(36).substring(7);
-    //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZIONO
-    queryB = "INSERT INTO `vit`.`branch` (`idbranch`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"', 'master', '"+req.session.nickname+"', '"+result.idRepository+"');"
-    connection.query(queryB, function(err, result){
-        if(err){
-            console.log("Errore nella query"+ err)
-        }
-    });
+    //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
+        queryB1 = "INSERT INTO `vit`.`branch` (`idbranch`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"', 'master', '"+req.session.nickname+"', '"+result+"');"
+        connection.query(queryB1, function(err, result){
+            if(err){
+                console.log("Errore nella query"+ err)
+            }
+        });
+    
     return idBranch;
 }
 
 function setIdBranchMaster(req,res,callback){
     console.log(req.session.idRepository + " QUA")
-    queryB = "select idbranch from branch where repository ='" +req.session.idRepository+"' AND nome = 'master' AND revision IS NULL;"
+    queryB = "select idbranch from branch where repository ='" +req.session.idRepository+"' AND nome = 'master' AND utente = '"+req.session.nickname+"' AND revision IS NULL;"
     connection.query(queryB, function(err, result){
         if (err) throw err;
-        console.log(req.session.repository);
+        console.log(req.session.repository +"  " +result[0].idbranch);
         return callback(result[0].idbranch);
     });
 }
@@ -394,6 +400,34 @@ function eliminaUtente(req, callback) {
         return callback(result);
     })
 }
+
+function idRevision(req,callback){
+    var queryRev="SELECT file from commit where utente ='"+req.session.nickname+"' order by dataModifica desc";
+    connection.query(queryRev, function(err,results, fields){
+        if(err){
+            console.log("Sono in idRevision "+ err);
+        }
+        console.log(results[0].file+ "PORCA MADONNACCIONA");
+        return callback(results[0].file);
+    }); 
+}
+
+/*DAVIDE NEW QUERY BRANCH*/
+function branchMasterRev(req, idRev, result){
+    var idBranch = Math.random().toString(36).substring(7);
+    //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
+        console.log(idRev + "SEI TU?")
+        queryB1 = "INSERT INTO `vit`.`branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+idRev+"', 'master', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
+        connection.query(queryB1, function(err, result){
+            if(err) throw err;
+        });
+    
+    return idBranch;
+
+}
+
+
+/*FINE*/
     
 exports.creaConnessione = creaConnessione;
 exports.chiudiConnessione = chiudiConnessione;
@@ -421,3 +455,5 @@ exports.invitaUtente = invitaUtente;
 exports.verificaAdmin = verificaAdmin;
 exports.elencoUtentiElimina = elencoUtentiElimina;
 exports.eliminaUtente = eliminaUtente;
+exports.branchMasterRev = branchMasterRev;
+exports.idRevision = idRevision

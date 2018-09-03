@@ -133,7 +133,7 @@ app.post('/creaRepository', function (req, res) {
 
   ConnessioneDB.inserisciDatiRepo(req,res, function(result){
   idRepository = result.idRepository;
-  console.log(result.idRepository);
+  console.log(result.idRepository + "DIO MERDA LITE" );
   var pathR = "./Server/" + result.idRepository;
   ConnessioneDB.partecipazioneRepo(req, idRepository);
   var repoDir = pathR+"/.git";
@@ -185,7 +185,8 @@ filesaver.folder('Immagini', pathR+"/Immagini", function (err, data) {
   if (err) {
     console.log("Errore " + err);
   }
-req.session.branch = ConnessioneDB.branchMaster(req, res, result);
+console.log(idRepository + "Recchj DE GOMM")
+req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
 console.log(req.session.branch);
 });
 
@@ -206,11 +207,12 @@ app.post('/elencoRepo', function(req, res){
 app.post('/settaRepo', function(req,res){
   req.session.nameRepository = req.body.nomeRepo;
   ConnessioneDB.settaDatiRepo(req,res, function(result){
-    req.session.repository = "./Server/" + result.idRepository;
-    req.session.idRepository = result.idRepository;
+    req.session.repository = "./Server/" + result;
+    req.session.idRepository = result;
     res.write(res.toString(req.session.repository));
     
     ConnessioneDB.setIdBranchMaster(req,res, function(result){
+      console.log("Result: AAAAAAAAAAAA"+result);
       req.session.branch = result;
       res.write(res.toString(req.session.branch));
       res.end()
@@ -253,11 +255,16 @@ app.post('/addRevision', function(req, res){
     var mese = d.getMonth()+1;
     var giorno = d.getDate();
     const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'"; 
-  
+    console.log("Sono qui 1");
     ConnessioneDB.settaDatiRepo(req,res, function(result){
-    ConnessioneDB.insertAddRevision(path, req, result.idRepository);
+      console.log("Sono qui 2");
+      ConnessioneDB.insertAddRevision(path, req, result);
+      req.session.idRepository2 = result;
     
-
+        ConnessioneDB.idRevision(req, function(results){
+          req.session.branch = ConnessioneDB.branchMasterRev(req, results);
+          console.log("IL NUOVO BRANCH DI ADDREV "+ req.session.branch);  
+          });
     });
   });
 
