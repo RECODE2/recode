@@ -54,7 +54,7 @@ function insertRepository(req, callback) {
     });
 }
 
-function insertAddRevision(path, req, repository) {
+function insertAddRevision(path, req, repository,callback) {
     var d = new Date();
     var anno = d.getFullYear();
     var mese = d.getMonth()+1;
@@ -90,10 +90,21 @@ function insertAddRevision(path, req, repository) {
             console.log("INSERTADDREVISION COMMIT")
             querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '-1', '-1', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
             connection.query(querySQL, function(err,result,fields){
-                if (err) throw err;
+                if (err){
+                    console.log("ERROREEEEE "+ err);
+                }
+                else{
+                    console.log("Query insert commit effettuata..");
+                    idRevision(req,function(idbranch){
+                        console.log("Ho appena fatto id Revision..");
+                        req.session.branch = idbranch;
+                        console.log("req session branch (id branch): " + req.session.branch);
+                      })
+                }
             });
         }
     });
+
 }
 function inserisciDatiRepo(req, res, callback) {
     var nome = "";
@@ -403,11 +414,13 @@ function eliminaUtente(req, callback) {
 
 function idRevision(req,callback){
     var queryRev="SELECT file from commit where utente ='"+req.session.nickname+"' order by dataModifica desc";
-    connection.query(queryRev, function(err,results, fields){
+    connection.query(queryRev, function(err,res){
         if(err){
             console.log("Sono in idRevision "+ err);
         }
-        return callback(results[0].file);
+        console.log("RESULTS " + JSON.stringify(res));
+        console.log("RESULTS[0].FILE " + res[0].file);
+        return callback(res[0].file);
     });  
 }
 

@@ -83,21 +83,29 @@ class Add_Revision_Class{
                     on_finish: function (params) {
                        var jpeg_file = _this.save_action(params);
                        var json_file = _this.save_action_json(params);
-                        request({
-                            url: 'http://localhost:8081/addRevision',
-                            method: 'POST',
-                            data: {
-                              file_json_name: json_file[1],
-                              file_json_data: json_file[0],
-                              file_jpeg_name: jpeg_file[1],
-                              file_jpeg_data: jpeg_file[0],
-                              desc: params.desc,
-                              name: params.name
+
+                       $.ajax({
+                        url: 'http://localhost:8081/addRevision',
+                        method: 'POST',
+                        data: {
+                          file_json_name: json_file[1],
+                          file_json_data: json_file[0],
+                          file_jpeg_name: jpeg_file[1],
+                          file_jpeg_data: jpeg_file[0],
+                          desc: params.desc,
+                          name: params.name
+                        }
+                        }).done(function(successo){
+                            if(successo){
+                                alertify.success("La revision "+params.name+" è stata inserita!");
                             }
-                          }, function() {
-                          }), alertify.success("La revision "+params.name+" è stata inserita!");
+                            else{
+                                alertify.success("Errore nell'inserimento della revision!");
+                            }
+                        });
                     },
                 };
+
                 _this.POP.show(settings);
                 
                 if (calc_size == true) {
