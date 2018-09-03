@@ -407,8 +407,7 @@ function idRevision(req,callback){
         if(err){
             console.log("Sono in idRevision "+ err);
         }
-        console.log(results[0].file+ "PORCA MADONNACCIONA");
-        return callback(results[0].file);
+        return callback(results[0]);
     }); 
 }
 
