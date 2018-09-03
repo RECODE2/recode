@@ -135,7 +135,7 @@ class VCS_class {
     }
 
     revisionGraph() {
-        this.controllaSelezioneRepo(function(repo){
+        this.controllaSelezioneRepo(function(repo){ 
             if(repo){
                 $.ajax({
                     url: 'http://localhost:8081/revg',
@@ -242,8 +242,7 @@ class VCS_class {
             else{
                 alertify.error("ERRORE: Non hai ancora selezionato la repository!");
             }
-        })
-
+        });
     }
 
     invitaUtenteRepository() {
