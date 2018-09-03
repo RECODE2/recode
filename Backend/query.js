@@ -228,7 +228,7 @@ function branchMaster(req,result){
 }
 
 function setIdBranchMaster(req,res,callback){
-    console.log(req.session.idRepository + " QUA")
+    console.log(req.session.idRepository + " QUAA"); 
     queryB = "select idbranch from branch where repository ='" +req.session.idRepository+"' AND nome = 'master' AND utente = '"+req.session.nickname+"' AND revision IS NULL;"
     connection.query(queryB, function(err, result){
         if (err) throw err;
@@ -407,9 +407,8 @@ function idRevision(req,callback){
         if(err){
             console.log("Sono in idRevision "+ err);
         }
-        console.log(results[0].file+ "PORCA MADONNACCIONA");
         return callback(results[0].file);
-    }); 
+    });  
 }
 
 /*DAVIDE NEW QUERY BRANCH*/
