@@ -62,7 +62,7 @@ class Utente_class {
 			],
 			on_finish: function (params){
 				$.ajax({
-					url: 'http://localhost:8081/login',
+					url: 'https://recode18.herokuapp.com/login',
 					type: 'POST',
 					data: {
 						nickname : params.nickname,
