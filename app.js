@@ -131,62 +131,6 @@ app.post('/creaRepository', function (req, res) {
 
   });
 
-<<<<<<< HEAD
-  ConnessioneDB.inserisciDatiRepo(req,res, function(result){
-  idRepository = result.idRepository;
-  var pathR = "./Server/" + result.idRepository;
-  ConnessioneDB.partecipazioneRepo(req, idRepository);
-  var repoDir = pathR+"/.git";
-  fse.ensureDir(path.resolve(__dirname, repoDir)).then(function() {
-  //Inseriamo la repository sul DB
-
-  //Creiamo la cartella .git all'interno della repository
-  return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
-}).then(function(repo) {
-  repository = repo;
-  var fileContent = req.body.readme;
-  
-  //aggiungiamo il file README.MD all'interno della working directory
-  return fse.writeFile(path.join(repository.workdir(), fileName), fileContent);
-}).then(function(){
-  return repository.refreshIndex();
-})
-.then(function(idx) {
-  index = idx;
-})
-.then(function() {
-  return index.addByPath(fileName);
-})
-.then(function() {
-  return index.write();
-})
-.then(function() {
-  return index.writeTree();
-})
-.then(function(oid) {
-  var dataOdierna = new Date().getTime()/1000;
-
-  //in author e in committer si scrive: nome, email, data, GMT
-  //abbiamo scritto 120 in quanto è GMT +2 (i minuti in più rispetto al meridiano di Greenwich)
-  var author = nodegit.Signature.create(req.session.nickname, req.session.mail,dataOdierna,120);
-
-  var committer = nodegit.Signature.create(req.session.nickname, req.session.mail,dataOdierna,120);
-  
-  return repository.createCommit("HEAD", author, committer, "Readme creato", oid, []);
-}).then(function(commitId){
-});
-
-
-//Quando si crea la repository, saranno create le cartelle (vuote inizialmente) IMMAGINI e JSON
-var filesaver = new Filesaver({ safenames: true });
-
-filesaver.folder('Immagini', pathR+"/Immagini", function (err, data) {
-  if (err) {
-    console.log("Errore " + err);
-  }
-req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
-});
-=======
   ConnessioneDB.inserisciDatiRepo(req, res, function (result) {
     idRepository = result.idRepository;
     var pathR = "./Server/" + result.idRepository;
@@ -242,7 +186,6 @@ req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
       }
       req.session.branch = ConnessioneDB.branchMaster(req, res, result);
     });
->>>>>>> 5b4f1c2ffdc10b2739ffd03232e2f5d7f7264a26
 
     filesaver.folder('JSON', pathR + "/JSON", function (err, data) {
       if (err) {
@@ -260,21 +203,12 @@ app.post('/elencoRepo', function (req, res) {
 
 app.post('/settaRepo', function (req, res) {
   req.session.nameRepository = req.body.nomeRepo;
-<<<<<<< HEAD
-  ConnessioneDB.settaDatiRepo(req,res, function(result){
-    req.session.repository = "./Server/" + result;
-    req.session.idRepository = result;
-    res.write(res.toString(req.session.repository));
-    
-    ConnessioneDB.setIdBranchMaster(req,res, function(result){
-=======
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
     req.session.repository = "./Server/" + result.idRepository;
     req.session.idRepository = result.idRepository;
     res.write(res.toString(req.session.repository));
 
     ConnessioneDB.setIdBranchMaster(req, res, function (result) {
->>>>>>> 5b4f1c2ffdc10b2739ffd03232e2f5d7f7264a26
       req.session.branch = result;
       res.write(res.toString(req.session.branch));
       res.end()
@@ -308,32 +242,9 @@ app.post('/addRevision', function (req, res) {
     } else {
       // console.log('Scritto JPEG');
     }
-<<<<<<< HEAD
-    
-    var path = req.session.repository;
-
-
-    
-    var d = new Date();
-    var anno = d.getFullYear();
-    var mese = d.getMonth()+1;
-    var giorno = d.getDate();
-    const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'"; 
-    
-    ConnessioneDB.settaDatiRepo(req,res, function(result){
-   
-      ConnessioneDB.insertAddRevision(path, req, result);
-      req.session.idRepository2 = result;
-    
-        ConnessioneDB.idRevision(req, function(results){
-          req.session.branch = ConnessioneDB.branchMasterRev(req, results);
- 
-          });
-=======
 
     ConnessioneDB.settaDatiRepo(req, res, function (result) {
       ConnessioneDB.insertAddRevision(req.session.repository, req, result.idRepository);
->>>>>>> 5b4f1c2ffdc10b2739ffd03232e2f5d7f7264a26
     });
   });
 });
