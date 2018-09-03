@@ -61,7 +61,9 @@ app.get('*', (req, res) => {
     nomeUtente = req.session.nickname;
   }
   res.render('index', {
-    username: nomeUtente
+    username: nomeUtente,
+    repository: req.session.nameRepository,
+    branch: req.session.branch
   });
 });
 
@@ -234,30 +236,27 @@ app.post('/addRevision', function (req, res) {
     if (err) {
       console.log("Errore write file: " + err);
     }
-    else {
+    
+    var path = req.session.repository;
 
-      //JPG
-      fsPath.writeFile(req.session.repository + '/Immagini/' + req.body.file_jpeg_name, buf, function (err) {
-        if (err) {
-          console.log("Errore write file: " + err);
-        }
-        else {
-          ConnessioneDB.settaDatiRepo(req, res, function (result) {
 
-            ConnessioneDB.insertAddRevision(path, req, result, function(){
-                          req.session.idRepository2 = result;
-
-            ConnessioneDB.idRevision(req, function (res) {
-              req.session.branch = ConnessioneDB.branchMasterRev(req, res);
-            });
-            });
-
-          });
-        }
-      });
-      successo = true;
-    }
-    res.send(successo);
+    
+    var d = new Date();
+    var anno = d.getFullYear();
+    var mese = d.getMonth()+1;
+    var giorno = d.getDate();
+    const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'"; 
+    
+    ConnessioneDB.settaDatiRepo(req,res, function(result){
+      
+      ConnessioneDB.insertAddRevision(path, req, result);
+      req.session.idRepository2 = result;
+      /*ConnessioneDB.idRevision(req, function(results){
+          console.log(results + "Result File");
+          req.session.branch = ConnessioneDB.branchMasterRev(req, results);
+        
+          });*/
+    });
   });
 
 

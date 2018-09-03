@@ -84,22 +84,20 @@ function insertAddRevision(path, req, repository,callback) {
 
     });
     queryV = "Select * from file f where f.repository ='"+repository+"'";
+    
     connection.query(queryV, function(err, result, fields){
         if (result.length == 2){
             var idModifiche = Math.random().toString(36).substring(7);
             console.log("INSERTADDREVISION COMMIT")
             querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '-1', '-1', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
             connection.query(querySQL, function(err,result,fields){
-                if (err){
-                    console.log("ERROREEEEE "+ err);
-                }
+                if (err) throw err;
                 else{
-                    console.log("Query insert commit effettuata..");
-                    idRevision(req,function(idbranch){
-                        console.log("Ho appena fatto id Revision..");
-                        req.session.branch = idbranch;
-                        console.log("req session branch (id branch): " + req.session.branch);
-                      })
+                    idRevision(req, function(results){
+                    console.log(results + "Result File");
+                    req.session.branch = branchMasterRev(req, results);
+                  
+                    });
                 }
             });
         }
@@ -412,9 +410,10 @@ function eliminaUtente(req, callback) {
     })
 }
 
-function idRevision(req,callback){
-    var queryRev="SELECT file from commit where utente ='"+req.session.nickname+"' order by dataModifica desc";
-    connection.query(queryRev, function(err,res){
+function idRevision(req, callback){
+    console.log(req.session.nickname);
+    var queryRev="SELECT * from commit c where utente ='"+req.session.nickname+"' order by DataModifica desc";
+    connection.query(queryRev, function(err,results, fields){
         if(err){
             console.log("Sono in idRevision "+ err);
         }

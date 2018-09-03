@@ -110,10 +110,13 @@
 			<li>
 				<a class="trn" href="#"><%= username %></a>
 				<ul>
-					<li id="idlogin"><a class="trn" data-target="utente/utente.login" href="#">Login</a></li>
-					<li id="idregistrazione"><a class="trn" data-target="utente/utente.registrazione" href="#">Registrazione</a></li>
-					<li id="idmodificadati"><a class="trn b" data-target="utente/utente.modificadati" href="#">Modifica dati</a></li>
-					<li id="idlogout"><a class="trn b" data-target="utente/utente.logout" href="#">Logout</a></li>
+					<% if(username!="Guest"){ %>
+						<li id="idmodificadati"><a class="trn b" data-target="utente/utente.modificadati" href="#">Modifica dati</a></li>
+						<li id="idlogout"><a class="trn b" data-target="utente/utente.logout" href="#">Logout</a></li>
+						<% } else{ %>  
+							<li id="idlogin"><a class="trn" data-target="utente/utente.login" href="#">Login</a></li>
+							<li id="idregistrazione"><a class="trn" data-target="utente/utente.registrazione" href="#">Registrazione</a></li>
+							<% } %>
 				</ul>
 			</li>
 			<li>
@@ -273,32 +276,33 @@
 					<li><a class="trn dots" data-target="tools/settings.settings" href="#">Settings</a></li>	
 				</ul>
 			</li>
-			<li>
-				<a class="trn" href="#" id="idvcs">VCS</a>
-				<ul>
-				<li class="more">
-				<a class="trn" href="#">Repository</a>
-				<ul>
-				<li><a class="trn dots" data-target="vcs/repository.creaRepository" href="#">Crea</a></li>
-				<li><a class="trn dots" data-target="vcs/repository.elencoSceltaRepository" href="#">Elenco/Scegli</a></li>
-				<li><a class="trn dots" data-target="vcs/repository.modificaRepository" href="#">Modifica</a></li>
-				<li><a class="trn dots" data-target="vcs/repository.revisionGraph" href="#">Revision Graph</a></li>
-				<li><a class="trn dots" data-target="vcs/repository.invitaUtenteRepository" href="#">Invita Utente</a></li>
-				<li><a class="trn dots" data-target="vcs/repository.eliminaUtenteRepository" href="#">Elimina Utente</a></li>
-				</ul>
-				</li>
-				<li><div class="mid-line"></div></li>
-				<li class="more">
-				<a class="trn" href="#">Operazioni VCS</a>
-				<ul>
-				<li><a class="trn dots" data-target="vcs/newBranch.newBranch" href="#">New Branch</a></li>
-				<li><a class="trn dots" data-target="vcs/operazioniVCS.merge" href="#">Merge</a></li>
-				<li><a class="trn dots" data-target="vcs/addRevision.addRevision" href="#">Add Revision</a></li>
-				<li><a class="trn dots" data-target="vcs/commit.commit" href="#">Commit</a></li>
-				</ul>
-				</li>
-				</ul>
-			</li>
+			<%if (username!="Guest") { %>
+				<li>
+						<a class="trn" href="#" id="idvcs">VCS</a>
+						<ul>
+						<li class="more">
+						<a class="trn" href="#">Repository</a>
+						<ul>
+						<li><a class="trn dots" data-target="vcs/repository.creaRepository" href="#">Crea</a></li>
+						<li><a class="trn dots" data-target="vcs/repository.elencoSceltaRepository" href="#">Elenco/Scegli</a></li>
+						<li><a class="trn dots" data-target="vcs/repository.modificaRepository" href="#">Modifica</a></li>
+						<li><a class="trn dots" data-target="vcs/repository.revisionGraph" href="#">Revision Graph</a></li>
+						<li><a class="trn dots" data-target="vcs/repository.invitaUtenteRepository" href="#">Invita Utente</a></li>
+						<li><a class="trn dots" data-target="vcs/repository.eliminaUtenteRepository" href="#">Elimina Utente</a></li>
+						</ul>
+						</li>
+						<li><div class="mid-line"></div></li>
+						<li class="more">
+						<a class="trn" href="#">Operazioni VCS</a>
+						<ul>
+						<li><a class="trn dots" data-target="vcs/operazioniVCS.merge" href="#">Merge</a></li>
+						<li><a class="trn dots" data-target="vcs/addRevision.addRevision" href="#">Add Revision</a></li>
+						<li><a class="trn dots" data-target="vcs/commit.commit" href="#">Commit</a></li>
+						</ul>
+						</li>
+						</ul>
+					</li>
+				<% } %>
 			<li>
 				<a class="trn" href="#">Help</a>
 				<ul>
@@ -326,6 +330,20 @@
 					<li><a class="trn dots" data-target="help/about.about" href="#">About</a></li>
 				</ul>
 			</li>
+			<%if (username!="Guest") { %>
+				<% if(repository){ %>
+					<li style="border-left: 1px solid #5cabfb">
+						<a class="trn" style="pointer-events: none">Repository: <%= repository %></a>
+					</li>
+					<li>
+							<a class="trn" style="pointer-events: none">Branch: <%= branch %></a>
+						</li>
+					<% } else{ %>
+						<li style="border-left: 1px solid #5cabfb">
+							<a class="trn" style="pointer-events: none">REPOSITORY NON SETTATA</a>
+						</li>
+						<% } %>
+						<% } %>
 		</ul>
 	</div>
 	<div class="hidden" id="tmp"></div>
