@@ -54,7 +54,7 @@ function insertRepository(req, callback) {
     });
 }
 
-function insertAddRevision(path, req, repository,callback) {
+function insertAddRevision(path, req,res, repository,callback) {
     var d = new Date();
     var anno = d.getFullYear();
     var mese = d.getMonth()+1;
@@ -89,18 +89,19 @@ function insertAddRevision(path, req, repository,callback) {
         if (result.length == 2){
             var idModifiche = Math.random().toString(36).substring(7);
             console.log("INSERTADDREVISION COMMIT")
-            querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '-1', '-1', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
+            querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', 'init', 'init', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
             connection.query(querySQL, function(err,result,fields){
                 if (err) throw err;
-                else{
-                    idRevision(req, function(results){
-                    console.log(results + "Result File");
-                    req.session.branch = branchMasterRev(req, results);
-                  
-                    });
-                }
             });
         }
+        //AGGIUNGERE ELSE SE CI SONO PIU' FILE PERCHE' ha PADRE
+        idRevision(req,res, function(results){
+            console.log(results + "Result File");
+            req.session.branch = branchMasterRev(req, results);
+            console.log(req.session.branch + "Add Revision in query");
+            res.write(toString(req.session.branch));
+            res.end();
+            });
     });
 
 }
@@ -124,7 +125,7 @@ function settaDatiRepo(req, res, callback) {
     } else {
         nome = req.session.nameRepository;
     }
-    console.log(nome + "SettaDatiRepo" + req.session.nickname + "DioPorco")
+   
     var querySQL = "SELECT * FROM repository r WHERE r.nome ='" + nome + "' AND r.admin = '"+req.session.nickname+"'order by r.dataCreazione desc";
     connection.query(querySQL, function (err, result) {
 
@@ -410,16 +411,14 @@ function eliminaUtente(req, callback) {
     })
 }
 
-function idRevision(req, callback){
+function idRevision(req,res, callback){
     console.log(req.session.nickname);
     var queryRev="SELECT * from commit c where utente ='"+req.session.nickname+"' order by DataModifica desc";
-    connection.query(queryRev, function(err,res, fields){
+    connection.query(queryRev, function(err,results, fields){
         if(err){
             console.log("Sono in idRevision "+ err);
         }
-        console.log("RESULTS " + JSON.stringify(res));
-        console.log("RESULTS[0].FILE " + res[0].file);
-        return callback(res[0].file);
+        return callback(results[0].file);
     });  
 }
 

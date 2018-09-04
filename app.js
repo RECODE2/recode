@@ -239,19 +239,14 @@ app.post('/addRevision', function (req, res) {
           console.log("Errore scrittura JPG " + err);
         } else {
           ConnessioneDB.settaDatiRepo(req, res, function (result) {
-            ConnessioneDB.insertAddRevision(path, req, res, result);
+            ConnessioneDB.insertAddRevision(path, req,res, result);
           });
         }
       });
       successo = true;
     }
   });
-
-
-  res.send(successo);
-
-
-
+  res.write(successo);
 });
 
 /*
