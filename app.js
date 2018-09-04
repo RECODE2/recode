@@ -238,10 +238,8 @@ app.post('/addRevision', function (req, res) {
         if (err) {
           console.log("Errore scrittura JPG " + err);
         } else {
-
           ConnessioneDB.settaDatiRepo(req, res, function (result) {
-            ConnessioneDB.insertAddRevision(path, req, result);
-            req.session.idRepository2 = result;
+            ConnessioneDB.insertAddRevision(path, req, res, result);
           });
         }
       });
