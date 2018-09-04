@@ -413,7 +413,7 @@ function eliminaUtente(req, callback) {
 function idRevision(req,res, callback){
     console.log(req.session.nickname);
     var queryRev="SELECT * from commit c where utente ='"+req.session.nickname+"' order by DataModifica desc";
-    connection.query(queryRev, function(err,results, fields){
+    connection.query(queryRev, function(err,res, fields){
         if(err){
             console.log("Sono in idRevision "+ err);
         }

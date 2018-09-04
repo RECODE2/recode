@@ -133,59 +133,60 @@ app.post('/creaRepository', function (req, res) {
 
   });
 
-  ConnessioneDB.inserisciDatiRepo(req,res, function(result){
-  idRepository = result.idRepository;
-  var pathR = "./Server/" + result.idRepository;
-  ConnessioneDB.partecipazioneRepo(req, idRepository);
-  var repoDir = pathR+"/.git";
-  fse.ensureDir(path.resolve(__dirname, repoDir)).then(function() {
-  //Inseriamo la repository sul DB
+  ConnessioneDB.inserisciDatiRepo(req, res, function (result) {
+    idRepository = result.idRepository;
+    var pathR = "./Server/" + result.idRepository;
+    ConnessioneDB.partecipazioneRepo(req, idRepository);
+    var repoDir = pathR + "/.git";
+    fse.ensureDir(path.resolve(__dirname, repoDir)).then(function () {
+      //Inseriamo la repository sul DB
 
-  //Creiamo la cartella .git all'interno della repository
-  return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
-}).then(function(repo) {
-  repository = repo;
-  var fileContent = req.body.readme;
-  
-  //aggiungiamo il file README.MD all'interno della working directory
-  return fse.writeFile(path.join(repository.workdir(), fileName), fileContent);
-}).then(function(){
-  return repository.refreshIndex();
-})
-.then(function(idx) {
-  index = idx;
-})
-.then(function() {
-  return index.addByPath(fileName);
-})
-.then(function() {
-  return index.write();
-})
-.then(function() {
-  return index.writeTree();
-})
-.then(function(oid) {
-  var dataOdierna = new Date().getTime()/1000;
+      //Creiamo la cartella .git all'interno della repository
+      return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
+    }).then(function (repo) {
+      repository = repo;
+      var fileContent = req.body.readme;
 
-  //in author e in committer si scrive: nome, email, data, GMT
-  //abbiamo scritto 120 in quanto è GMT +2 (i minuti in più rispetto al meridiano di Greenwich)
-  var author = nodegit.Signature.create(req.session.nickname, req.session.mail,dataOdierna,120);
+      //aggiungiamo il file README.MD all'interno della working directory
+      return fse.writeFile(path.join(repository.workdir(), fileName), fileContent);
+    }).then(function () {
+      return repository.refreshIndex();
+    })
+      .then(function (idx) {
+        index = idx;
+      })
+      .then(function () {
+        return index.addByPath(fileName);
+      })
+      .then(function () {
+        return index.write();
+      })
+      .then(function () {
+        return index.writeTree();
+      })
+      .then(function (oid) {
+        var dataOdierna = new Date().getTime() / 1000;
 
-  var committer = nodegit.Signature.create(req.session.nickname, req.session.mail,dataOdierna,120);
-  req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
-  return repository.createCommit("HEAD", author, committer, "Readme creato", oid, []);
-}).then(function(commitId){
-});
+        //in author e in committer si scrive: nome, email, data, GMT
+        //abbiamo scritto 120 in quanto è GMT +2 (i minuti in più rispetto al meridiano di Greenwich)
+        var author = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
+
+        var committer = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
+
+        return repository.createCommit("HEAD", author, committer, "Readme creato", oid, []);
+      }).then(function (commitId) {
+      });
 
 
-//Quando si crea la repository, saranno create le cartelle (vuote inizialmente) IMMAGINI e JSON
-var filesaver = new Filesaver({ safenames: true });
+    //Quando si crea la repository, saranno create le cartelle (vuote inizialmente) IMMAGINI e JSON
+    var filesaver = new Filesaver({ safenames: true });
 
-filesaver.folder('Immagini', pathR+"/Immagini", function (err, data) {
-  if (err) {
-    console.log("Errore " + err);
-  }
-});
+    filesaver.folder('Immagini', pathR + "/Immagini", function (err, data) {
+      if (err) {
+        console.log("Errore " + err);
+      }
+    });
+    req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
 
     filesaver.folder('JSON', pathR + "/JSON", function (err, data) {
       if (err) {
@@ -203,12 +204,12 @@ app.post('/elencoRepo', function (req, res) {
 
 app.post('/settaRepo', function (req, res) {
   req.session.nameRepository = req.body.nomeRepo;
-  ConnessioneDB.settaDatiRepo(req,res, function(result){
+  ConnessioneDB.settaDatiRepo(req, res, function (result) {
     req.session.repository = "./Server/" + result;
     req.session.idRepository = result;
     res.write(res.toString(req.session.repository));
-    
-    ConnessioneDB.setIdBranchMaster(req,res, function(result){
+
+    ConnessioneDB.setIdBranchMaster(req, res, function (result) {
       req.session.branch = result;
       res.write(res.toString(req.session.branch));
       res.end()
@@ -220,51 +221,38 @@ app.post('/settaRepo', function (req, res) {
 app.post('/addRevision', function (req, res) {
   var nomedelfile = req.body.file_json_name;
   var dataFile = req.body.file_json_data;
-
-  //JSON
-  fsPath.writeFile(req.session.repository + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
-    if (err) {
-      throw err;
-    } else {
-      //console.log('Json fatto');
-    }
-  });
-
-
   var img = req.body.file_jpeg_data;
   var data = img.replace(/^data:image\/\w+;base64,/, "");
   var buf = new Buffer(data, 'base64');
+  var path = req.session.repository;
+  var successo = false;
 
 
-  //JPG
-  fsPath.writeFile(req.session.repository + '/Immagini/' + req.body.file_jpeg_name, buf, function (err) {
+  //JSON
+  fsPath.writeFile(path + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
     if (err) {
+      console.log("Errore scrittura JSON " + err);
     } else {
-      // console.log('Scritto JPEG');
+      //JPG
+      fsPath.writeFile(path + '/Immagini/' + req.body.file_jpeg_name, buf, function (err) {
+        if (err) {
+          console.log("Errore scrittura JPG " + err);
+        } else {
+
+          ConnessioneDB.settaDatiRepo(req, res, function (result) {
+            ConnessioneDB.insertAddRevision(path, req,res, result);
+          });
+        }
+      });
+      successo = true;
     }
-    
-    var path = req.session.repository;
-
-
-    
-    var d = new Date();
-    var anno = d.getFullYear();
-    var mese = d.getMonth()+1;
-    var giorno = d.getDate();
-    const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+"'"; 
-    
-    ConnessioneDB.settaDatiRepo(req,res, function(result){
-      
-      ConnessioneDB.insertAddRevision(path, req,res, result);
-      console.log(req.session.branch + "E' di revision");
-      req.session.idRepository2 = result;
-      /*ConnessioneDB.idRevision(req, function(results){
-          console.log(results + "Result File");
-          req.session.branch = ConnessioneDB.branchMasterRev(req, results);
-        
-          });*/
-    });
   });
+
+
+  res.send(successo);
+
+
+
 });
 
 /*
