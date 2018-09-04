@@ -222,7 +222,6 @@ app.post('/addRevision', function (req, res) {
   var nomedelfile = req.body.file_json_name;
   var dataFile = req.body.file_json_data;
   dataFile = JSON.parse(dataFile);
-
   var img = req.body.file_jpeg_data;
   var data = img.replace(/^data:image\/\w+;base64,/, "");
   var buf = new Buffer(data, 'base64');
@@ -391,10 +390,16 @@ app.post('/eliminaUtente', function (req, res) {
 });
 
 app.post('/readjson', function (req, res) {
-  var imgJson = JSON.parse(fs.readFileSync("/home/saso/Documents/vomidax/TESTTEST.json"));
+  var imgJson = JSON.parse(fs.readFileSync(req.body.path));
   res.send(imgJson);
 });
 
+app.post('/caricaImmagine', function (req, res) {
+
+  console.log("ID CORRENTE" + req.body.idCorrente);
+  console.log("TIPO: " + req.body.tipo);
+
+});
 
 
 module.exports = app;
