@@ -221,6 +221,8 @@ app.post('/settaRepo', function (req, res) {
 app.post('/addRevision', function (req, res) {
   var nomedelfile = req.body.file_json_name;
   var dataFile = req.body.file_json_data;
+  dataFile = JSON.parse(dataFile);
+
   var img = req.body.file_jpeg_data;
   var data = img.replace(/^data:image\/\w+;base64,/, "");
   var buf = new Buffer(data, 'base64');
@@ -246,7 +248,7 @@ app.post('/addRevision', function (req, res) {
       successo = true;
     }
   });
-  res.write(successo);
+  res.write(toString(successo));
 });
 
 /*
