@@ -147,6 +147,7 @@ class VCS_class {
                     success: function (result) {
                       this.POP = new Dialog_class();
                       this.POP.hide();
+                      var node;
                       var settings = {
                         title: 'Revision Graph',
                         on_load: function () {
@@ -187,22 +188,33 @@ class VCS_class {
                       'target-arrow-color': '#9dbaea'
                     }).update();
             
-            
+                    //NODI
                         for (var i = 0; i < result.length; i++) {
             
                             if(result[i].tipo=="Com"){
                                 cy.add({
-                                    data: { id: result[i].nome }
+                                    data: {
+                                        id: result[i].ID,
+                                        nome: result[i].nomeFile,
+                                        tipo: result[i].tipo,
+                                        path: result[i].path
+                                    }
                                     }).style({'background-color':'#ff6600'});
                             }
                             else{
                                 cy.add({
-                                    data: { id: result[i].nome }
+                                    data: {
+                                        id: result[i].ID,
+                                        nome: result[i].nomeFile,
+                                        tipo: result[i].tipo,
+                                        path: result[i].path
+                                    }
                                     }).style({'background-color':'#03acac'});   
                             }
             
                               }
             
+                              //ARCHI
                         for (var i = 0; i < result.length; i++) {
                                 
                                 if(result[i].padre1 != 'init'){
@@ -210,7 +222,7 @@ class VCS_class {
                                     data: {
                                         id: 'edge' + i,
                                         source: result[i].padre1,
-                                        target: result[i].nome
+                                        target: result[i].ID
                                     }
                                 });
             
@@ -219,7 +231,7 @@ class VCS_class {
                                     data: {
                                       id: 'edgex' + i,
                                       source: result[i].padre2,
-                                      target: result[i].nome
+                                      target: result[i].ID
                                   }
                                   });
                                 }
@@ -234,9 +246,23 @@ class VCS_class {
                         cy.nodes().on("click", function(evt){
                         console.log("Result: " + result);
                         //QUI AGGIUNGERÒ COSA SUCCEDE QUANDO UN UTENTE CLICCA UN NODO
-                        var node = evt.target;
+                        node = evt.target;
                         alert("Questo nodo ha id: "+ node.id());
+                       //alert("Questo nodo ha nome: " + node.data('nome'));
                         });
+                        },
+                        on_finish: function(){
+                            //alert("Questo nodo ha nome: " + node.data('nome'));
+                            $.ajax({
+                                url: 'http://localhost:8081/readjson',
+                                type: 'POST',
+                                data: {
+                                    idCorrente: node.id(),
+                                    nomeCorrente: node.data('nome'),
+                                    tipo: node.data('tipo'),
+                                    path: node.data('path')
+                                }
+                            })
                         },
                     };
                       this.POP.show(settings);
