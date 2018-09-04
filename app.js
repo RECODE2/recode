@@ -172,7 +172,7 @@ app.post('/creaRepository', function (req, res) {
   var author = nodegit.Signature.create(req.session.nickname, req.session.mail,dataOdierna,120);
 
   var committer = nodegit.Signature.create(req.session.nickname, req.session.mail,dataOdierna,120);
-  
+  req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
   return repository.createCommit("HEAD", author, committer, "Readme creato", oid, []);
 }).then(function(commitId){
 });
@@ -185,7 +185,6 @@ filesaver.folder('Immagini', pathR+"/Immagini", function (err, data) {
   if (err) {
     console.log("Errore " + err);
   }
-req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
 });
 
     filesaver.folder('JSON', pathR + "/JSON", function (err, data) {
@@ -256,7 +255,8 @@ app.post('/addRevision', function (req, res) {
     
     ConnessioneDB.settaDatiRepo(req,res, function(result){
       
-      ConnessioneDB.insertAddRevision(path, req, result);
+      ConnessioneDB.insertAddRevision(path, req,res, result);
+      console.log(req.session.branch + "E' di revision");
       req.session.idRepository2 = result;
       /*ConnessioneDB.idRevision(req, function(results){
           console.log(results + "Result File");
