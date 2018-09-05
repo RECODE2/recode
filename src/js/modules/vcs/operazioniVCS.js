@@ -1,9 +1,8 @@
 import Dialog_class from "../../libs/popup";
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
-import filesaver from './../../../../node_modules/file-saver/FileSaver.min.js';
 import Base_layers_class from './../../../js/core/base-layers';
-import Base_gui_class from './../../../js/core/base-gui';
 import Helper_class from './../../libs/helpers.js';
+import File_open_class from "./../file/open.js";
 
 var cytoscape = require('cytoscape');
 var cydagre = require('cytoscape-dagre');
@@ -54,114 +53,79 @@ class OperazioniVCS {
 							this.POP.hide();
 							var node;
 							var Base_layers = new Base_layers_class();
+							var immagineJson;
 							var settings = {
 								title: 'Merge',
 								on_load: function () {
 
 									/**
-* Function created by NEGLIA-VESTITA
-* This function is used in operazioniVCS.js (Merge)
-* @param {*} jsonObject 
-* @param {*} ctx 
-*/
+									* Function created by NEGLIA-VESTITA
+									* This function is used in operazioniVCS.js (Merge)
+									* @param {*} jsonObject 
+									* @param {*} ctx 
+									*/
 									function createCanvasForMerge(jsonObject, contesto) {
-										for (var i = 0; i < jsonObject.layers.length; i++) {
+										for (var i in jsonObject.layers) {
+											var value = jsonObject.layers[i];
 
-											if (jsonObject.layers[i].type != null) {
+											var initial_x = null;
+											var initial_y = null;
+											if (value.x != null && value.y != null && value.width != null && value.height != null) {
 
-												var value = jsonObject.layers[i];
-												var _this = this;
+												initial_x = value.x;
+												initial_y = value.y;
+												value.x = 0;
+												value.y = 0;
+											}
 
-												if (value.type == 'image') {
+											if (initial_x != null && initial_x != null) {
+												value.x = initial_x;
+												value.y = initial_y;
+											}
 
-													console.log("value: HO RICONOSCIUTO CHE IL TIPO E' UN'IMMAGINE!!!");
-
-													//add image data
-													value.link = null;
-													for (var j in jsonObject.data) {
-														if (jsonObject.data[j].id == value.id) {
-															value.data = jsonObject.data[j].data;
-														}
+											if (value.type == 'image') {
+												//add image data
+												value.link = null;
+												for (var j in jsonObject.data) {
+													if (jsonObject.data[j].id == value.id) {
+														value.data = jsonObject.data[j].data;
 													}
+												}
+												if (value.link == null) {
+													if (typeof value.data == 'object') {
+														//load actual image
+														if (value.width == 0)
+															value.width = value.data.width;
+														if (value.height == 0)
+															value.height = value.data.height;
+														value.link = value.data.cloneNode(true);
 
-													if (value.link == null) {
-														if (typeof value.data == 'object') {
-															//load actual image
-															if (value.width == 0)
-																value.width = value.data.width;
-															if (value.height == 0)
-																value.height = value.data.height;
-															value.link = value.data.cloneNode(true);
-															/* value.link.onload = function () {
-																config.need_render = true;
-															}; */
-															value.data = null;
-														}
-														else if (typeof value.data == 'string') {
-															//try loading as imageData
-															value.link = new Image();
-															value.link.onload = function () {
-																//update dimensions
-																if (value.width == 0)
-																	value.width = value.link.width;
-																if (value.height == 0)
-																	value.height = value.link.height;
-																if (value.width_original == null)
-																	value.width_original = value.width;
-																if (value.height_original == null)
-																	value.height_original = value.height;
-																//free data
+														value.data = null;
+													}
+													else if (typeof value.data == 'string') {
+														value.link = new Image();
+														value.link.onload = function () {
 
-																value.data = null;
-																Base_layers.autoresize(value.width, value.height, value.id, false);
+															//render canvas
+															for (var i in jsonObject.layers) {
+																var value = jsonObject.layers[i];
+																contesto.globalAlpha = value.opacity / 100;
+																contesto.globalCompositeOperation = value.composition;
 																Base_layers.render_object(contesto, value);
-
-																/* value.link.onload = function () {
-																	config.need_render = true;
-																}; */
-																//resolve(true);
-															};
-															value.link.src = value.data;
-														}
-														else {
-															alertify.error('Error: can not load image.');
-														}
+															}
+														};
+														value.link.src = value.data;
+													}
+													else {
+														alertify.error('Error: can not load image.');
 													}
 												}
-
-
-												console.log("LAYER ATTUALE: " + value.id);
-
-												var initial_x = null;
-												var initial_y = null;
-												if (value.x != null && value.y != null && value.width != null && value.height != null) {
-
-													initial_x = value.x;
-													initial_y = value.y;
-													value.x = 0;
-													value.y = 0;
-												}
-
-												Base_layers.convert_layers_to_canvas(contesto, value.id);
-
-												if (initial_x != null && initial_x != null) {
-													value.x = initial_x;
-													value.y = initial_y;
-												}
-												Base_layers.render_object(contesto, value);
 											}
-											else {
-												Base_layers.convert_layers_to_canvas(contesto, value);
-											}
+											Base_layers.render_object(contesto, value);
 										}
 									}
 
-
-									//this.Base_layers = new Base_layers_class();
-
-
 									/* INIZIO REVG */
-
 									var popupx = document.getElementById('popup');
 									popupx.style.left = "20%";
 									popupx.style.right = "20%";
@@ -178,7 +142,6 @@ class OperazioniVCS {
 									divRevg.style.top = "0";
 									divRevg.style.zIndex = "999";
 									divRevg.style.border = "1px solid gray";
-
 
 									document.querySelector('#popup #dialog_content').appendChild(divRevg);
 
@@ -325,53 +288,55 @@ class OperazioniVCS {
 												path: node.data('path')
 											}
 											, success: function (imgJson) {
-												console.log("Result: " + result);
+												immagineJson = imgJson;
+												//console.log("Result: " + JSON.stringify(result));
 												//QUI AGGIUNGERÒ COSA SUCCEDE QUANDO UN UTENTE CLICCA UN NODO
 												node = evt.target;
 												alert("Questo nodo ha id: " + node.id());
 												//alert("Questo nodo ha nome: " + node.data('nome'));
 												createCanvasForMerge(imgJson, ourctx);
-									canvas.setAttribute('id', 'minicanvas1');
-									canvas.setAttribute('class', 'transparent');
-									canvas.style.height = "100%";
-									canvas.style.width = "100%";
+												//createCanvasForMerge(imgJson, ourctx);
+												canvas.setAttribute('id', 'minicanvas1');
+												canvas.setAttribute('class', 'transparent');
+												canvas.style.height = "100%";
+												canvas.style.width = "100%";
 
-									var ctx2 = canvas2.getContext("2d");
-									canvas2.width = imgJson.info.width;
-									canvas2.height = imgJson.info.height;
+												var ctx2 = canvas2.getContext("2d");
+												canvas2.width = imgJson.info.width;
+												canvas2.height = imgJson.info.height;
 
-									createCanvasForMerge(imgJson, ctx2);
+												//createCanvasForMerge(imgJson, ctx2);
 
-									canvas2.setAttribute('id', 'minicanvas2');
-									canvas2.setAttribute('class', 'transparent');
-									canvas2.style.height = "100%";
-									canvas2.style.width = "100%";
+												canvas2.setAttribute('id', 'minicanvas2');
+												canvas2.setAttribute('class', 'transparent');
+												canvas2.style.height = "100%";
+												canvas2.style.width = "100%";
 
-									var ctx3 = canvas3.getContext("2d");
-									canvas3.width = imgJson.info.width;
-									canvas3.height = imgJson.info.height;
+												var ctx3 = canvas3.getContext("2d");
+												canvas3.width = imgJson.info.width;
+												canvas3.height = imgJson.info.height;
 
-									createCanvasForMerge(imgJson, ctx3);
+												//createCanvasForMerge(imgJson, ctx3);
 
-									canvas3.setAttribute('id', 'minicanvas3');
-									canvas3.setAttribute('class', 'transparent');
-									canvas3.style.height = "100%";
-									canvas3.style.width = "100%";
+												canvas3.setAttribute('id', 'minicanvas3');
+												canvas3.setAttribute('class', 'transparent');
+												canvas3.style.height = "100%";
+												canvas3.style.width = "100%";
 
-									document.querySelector('#divminicanvas1').appendChild(canvas);
-									//document.querySelector('#divminicanvas3').appendChild(canvas3);
+												document.querySelector('#divminicanvas1').appendChild(canvas);
+												//document.querySelector('#divminicanvas3').appendChild(canvas3);
 											}
 										})
 
-									
+
 									});
 									/*FINE REVG*/
 
-								
+
 								},
 								on_finish: function () {
 									alert("Questo nodo ha nome: " + node.data('nome'));
-
+									//open.load_json(immagineJson);
 								},
 							};
 							this.POP.show(settings);
@@ -404,10 +369,5 @@ class OperazioniVCS {
 		};
 		this.POP.show(settings);
 	}
-
-	pippo() {
-		alert("yayo");
-	}
-
 }
 export default OperazioniVCS;
