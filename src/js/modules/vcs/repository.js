@@ -200,8 +200,7 @@ class VCS_class {
                                         id: result[i].ID,
                                         nome: result[i].nomeFile,
                                         tipo: result[i].tipo,
-                                        path: result[i].path,
-                                        branch: result[i].branch
+                                        path: result[i].path
                                     }
                                     }).style({'background-color':'#0066ff'});
                             }
@@ -211,8 +210,7 @@ class VCS_class {
                                         id: result[i].ID,
                                         nome: result[i].nomeFile,
                                         tipo: result[i].tipo,
-                                        path: result[i].path,
-                                        branch: result[i].branch
+                                        path: result[i].path
                                     }
                                     }).style({'background-color':'#ffcc00'});   
                             }
@@ -222,8 +220,7 @@ class VCS_class {
                                         id: result[i].ID,
                                         nome: result[i].nomeFile,
                                         tipo: result[i].tipo,
-                                        path: result[i].path,
-                                        branch: result[i].branch
+                                        path: result[i].path
                                     }
                                     }).style({'background-color':'#ff3300'});   
                             }
@@ -276,9 +273,12 @@ class VCS_class {
                                     idCorrente: node.id(),
                                     nomeCorrente: node.data('nome'),
                                     tipo: node.data('tipo'),
-                                    path: node.data('path'),
-                                    branch: node.data('branch')
-                                }
+                                    path: node.data('path')
+                                },
+                                success: function(imgJson){
+                                    immagineJson = imgJson;
+                                    open.load_json(immagineJson);
+                                },
                             })
                         }
                     };
