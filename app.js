@@ -382,6 +382,9 @@ app.post('/readjson', function (req, res) {
   req.session.idCorrente = req.body.idCorrente;
   req.session.tipo = req.body.tipo;
   req.session.path = req.body.path;
+  if (req.session.tipo == "Rev"){
+    req.session.branch = ConnessioneDB.branchMasterC(req,req.session.idCorrente);
+  }
   console.log(req.session.path +  "Percorso generale")
   req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
 
