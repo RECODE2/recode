@@ -4,6 +4,7 @@ import Dialog_class from "../../libs/popup";
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import { callbackify } from 'util';
 import host from './../../host.js';
+import File_open_class from "./../file/open.js";
 
 var cytoscape = require('cytoscape');
 var cydagre = require('cytoscape-dagre');
@@ -147,6 +148,8 @@ class VCS_class {
                     success: function (result) {
                       this.POP = new Dialog_class();
                       this.POP.hide();
+                      var open = new File_open_class();
+                      var immagineJson;
                       var node;
                       var settings = {
                         title: 'Revision Graph',
@@ -200,9 +203,9 @@ class VCS_class {
                                         path: result[i].path,
                                         branch: result[i].branch
                                     }
-                                    }).style({'background-color':'#ff6600'});
+                                    }).style({'background-color':'#0066ff'});
                             }
-                            else{
+                            else if(result[i].tipo=="Rev"){
                                 cy.add({
                                     data: {
                                         id: result[i].ID,
@@ -211,7 +214,18 @@ class VCS_class {
                                         path: result[i].path,
                                         branch: result[i].branch
                                     }
-                                    }).style({'background-color':'#03acac'});   
+                                    }).style({'background-color':'#ffcc00'});   
+                            }
+                            else if(result[i].tipo=="Mer"){
+                                cy.add({
+                                    data: {
+                                        id: result[i].ID,
+                                        nome: result[i].nomeFile,
+                                        tipo: result[i].tipo,
+                                        path: result[i].path,
+                                        branch: result[i].branch
+                                    }
+                                    }).style({'background-color':'#ff3300'});   
                             }
             
                               }
@@ -253,7 +267,7 @@ class VCS_class {
                        //alert("Questo nodo ha nome: " + node.data('nome'));
                         });
                         },
-                        on_finish: function(){
+                        on_finish: function(){ 
                             //alert("Questo nodo ha nome: " + node.data('nome'));
                             $.ajax({
                                 url: 'http://localhost:8081/readjson',
@@ -266,7 +280,7 @@ class VCS_class {
                                     branch: node.data('branch')
                                 }
                             })
-                        },
+                        }
                     };
                       this.POP.show(settings);
                   }
