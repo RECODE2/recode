@@ -1,0 +1,154 @@
+{
+	"info": {
+		"width": 1280,
+		"height": 720,
+		"about": "Image data with multi-layers. Can be opened using miniPaint - https://github.com/viliusle/miniPaint",
+		"date": "2018-09-05",
+		"version": "4.0.0",
+		"layer_active": 1
+	},
+	"layers": [
+		{
+			"id": 1,
+			"parent_id": 0,
+			"name": "Brush #1",
+			"type": "brush",
+			"link": null,
+			"x": 0,
+			"y": 0,
+			"width": null,
+			"width_original": null,
+			"height": null,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"opacity": 100,
+			"order": 1,
+			"composition": "source-over",
+			"rotate": null,
+			"data": [
+				[
+					223,
+					113,
+					4
+				],
+				[
+					311,
+					196,
+					5
+				],
+				[
+					418,
+					297,
+					6
+				],
+				[
+					482,
+					366,
+					6
+				],
+				[
+					521,
+					412,
+					7
+				],
+				[
+					535,
+					441,
+					8
+				],
+				[
+					478,
+					445,
+					9
+				],
+				[
+					401,
+					436,
+					10
+				],
+				[
+					277,
+					432,
+					10
+				],
+				[
+					250,
+					430,
+					11
+				],
+				[
+					243,
+					427,
+					12
+				],
+				[
+					245,
+					421,
+					11
+				],
+				[
+					257,
+					402,
+					10
+				],
+				[
+					280,
+					383,
+					11
+				],
+				[
+					306,
+					365,
+					12
+				],
+				[
+					341,
+					347,
+					13
+				],
+				[
+					375,
+					333,
+					14
+				],
+				[
+					402,
+					321,
+					14
+				],
+				[
+					417,
+					315,
+					15
+				],
+				[
+					418,
+					308,
+					16
+				],
+				[
+					412,
+					296,
+					15
+				],
+				[
+					412,
+					296
+				]
+			],
+			"params": {
+				"size": 4,
+				"smart_brush": true
+			},
+			"status": null,
+			"color": "#5cabfb",
+			"filters": [],
+			"render_function": [
+				"brush",
+				"render"
+			]
+		}
+	],
+	"data": []
+}

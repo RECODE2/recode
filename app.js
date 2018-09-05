@@ -19,6 +19,7 @@ var flash = require('connect-flash');
 var morgan = require('morgan');
 var nomeUtente = "";
 var fs = require('fs');
+var carica = require('./carica.js');
 
 
 // *** DATABASE ***
@@ -376,19 +377,31 @@ app.post('/eliminaUtente', function (req, res) {
     res.send(successo);
   })
 });
-/* ricchione di merda */
+
 app.post('/readjson', function (req, res) {
   req.session.branch = req.body.branch;
   req.session.idCorrente = req.body.idCorrente;
   req.session.tipo = req.body.tipo;
   req.session.path = req.body.path;
+  req.session.padre = req.body.idCorrente;
+
+  var imgJson = JSON.parse(fs.readFileSync(req.session.path));
   if (req.session.tipo == "Rev"){
     req.session.branch = ConnessioneDB.branchMasterC(req,req.session.idCorrente);
-  }
-  console.log(req.session.path +  "Percorso generale")
+  } else if (req.session.tipo == "Com"){
+
+    var fileEliminate = JSON.parse(fs.readFileSync(req.session.repository+"/Eliminate/"+idCorrente+".json"));
+    do{
+        ConnessioneDB.datiPadre(req,res, function(result){
+          jsonPadre = JSON.parse(fs.readFileSync(result[0].path));
+          imgJson = carica.caricaImmagine(imgJson,jsonPadre);
+          imgJson = carica.purgaJSON(imgJson, fileEliminate);
+          req.session.tmpTipo = result[0].tipo;
+        });
+      }while(req.session.tmpTipo != "Rev");
+    }
   req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
 
-  var imgJson = JSON.parse(fs.readFileSync(req.body.path));
   res.write(toString(req.session.branch));
   res.write(toString(req.session.idCorrente));
   res.write(toString(req.session.tipo));
@@ -397,7 +410,7 @@ app.post('/readjson', function (req, res) {
   console.log(req.session.idCorrente + "E' lui?")
   res.end();
 });
-/* me la succhi bastardo */
+
 app.post('/caricaImmagine', function (req, res) {
 });
 
