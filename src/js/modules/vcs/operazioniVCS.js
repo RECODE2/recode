@@ -227,8 +227,7 @@ class OperazioniVCS {
 													id: result[i].ID,
 													nome: result[i].nomeFile,
 													tipo: result[i].tipo,
-													path: result[i].path,
-													branch: result[i].branch
+													path: result[i].path
 												}
 											}).style({ 'background-color': '#ff6600' });
 										}
@@ -238,9 +237,7 @@ class OperazioniVCS {
 													id: result[i].ID,
 													nome: result[i].nomeFile,
 													tipo: result[i].tipo,
-													path: result[i].path,
-													branch: result[i].branch
-											
+													path: result[i].path
 												}
 											}).style({ 'background-color': '#03acac' });
 										}
@@ -283,13 +280,12 @@ class OperazioniVCS {
 
 										$.ajax({
 											url: 'http://localhost:8081/readjson',
-											method: 'POST',
+											type: 'POST',
 											data: {
 												idCorrente: node.id(),
 												nomeCorrente: node.data('nome'),
 												tipo: node.data('tipo'),
-												path: node.data('path'),
-												branch: node.data('branch')
+												path: node.data('path')
 											}
 											, success: function (imgJson) {
 												immagineJson = imgJson;

@@ -318,13 +318,13 @@ app.post('/modificadatiutente', function (req, res) {
     res.send(successo);
   });
 });
-/* ricchione tua mamma è puttana */
+
 app.post('/infoRepo', function (req, res) {
   ConnessioneDB.infoRepo(req, function (result) {
     res.send(result);
   })
 });
-/* soggetto del cazzo!!! */
+
 app.post('/modificaRepo', function (req, res) {
   ConnessioneDB.modificaRepo(req, function (result) {
     var successo = false;
@@ -402,13 +402,16 @@ app.post('/readjson', function (req, res) {
     }
   req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
 
-  res.write(toString(req.session.branch));
+  //res.write(toString(req.session.branch));
+  var imgJson = JSON.parse(fs.readFileSync(req.body.path));
+/*   res.write(toString(req.session.branch));
   res.write(toString(req.session.idCorrente));
   res.write(toString(req.session.tipo));
   res.write(toString(req.session.path));
   res.write(toString(imgJson));
   console.log(req.session.idCorrente + "E' lui?")
-  res.end();
+  res.end(); */
+  res.send(imgJson);
 });
 
 app.post('/caricaImmagine', function (req, res) {
