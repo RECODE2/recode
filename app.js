@@ -17,7 +17,6 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var flash = require('connect-flash');
 var morgan = require('morgan');
-//var jsonD = require('./concat.js')
 var nomeUtente = "";
 var fs = require('fs');
 
@@ -233,20 +232,19 @@ app.post('/addRevision', function (req, res) {
   fsPath.writeFile(path + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
     if (err) {
       console.log("Errore scrittura JSON " + err);
-    } else {
-      //JPG
-      fsPath.writeFile(path + '/Immagini/' + req.body.file_jpeg_name, buf, function (err) {
-        if (err) {
-          console.log("Errore scrittura JPG " + err);
-        } else {
-          ConnessioneDB.settaDatiRepo(req, res, function (result) {
-            ConnessioneDB.insertAddRevision(path, req,res, result);
-          });
-        }
-      });
-      successo = true;
     }
   });
+  //JPG
+  fsPath.writeFile(path + '/Immagini/' + req.body.file_jpeg_name, buf, function (err) {
+    if (err) {
+      console.log("Errore scrittura JPG " + err);
+    }
+  });
+
+  ConnessioneDB.settaDatiRepo(req, res, function (result) {
+    ConnessioneDB.insertAddRevision(path, req,res, result);
+  });
+  successo = true;
   res.write(toString(successo));
 });
 
@@ -262,27 +260,17 @@ app.post('/branch', function (req, res) {
   ConnessioneDB.newBranch(req, res);
 
 });
-app.get('/branch', function (req, res) {
-  //console.log("Ti sei spostato sul branch" + "Da fare domani alle 3 xD");
-  //Query di select del branch
-});
+
 // FINE MODIFICHE DAVIDE MANTELLINI
 
 //INIZIO MODIFICHE COMMIT DM
 app.post('/commit', function (req, res) {
-  fileName = req.body.file_json_name;
+  fileName1 = req.body.file_json_name;
   fileData = req.body.file_json_data;
-  var j1 = JSON.parse(fileData);
+  var fileEliminate = JSON.parse(fs.readFileSync(req.session.eliminate));
   //INSERIRE QUI LA FUNZIONE diffJSON non appena avrò il caricamento file col REVG
-  fsPath.writeFile(req.session.repository + '/JSON/' + fileName, JSON.stringify(j1, null, '\t'), function (err) {
-    if (err) {
-      throw err;
-    } else {
-      // console.log('Json fatto');
-    }
     ConnessioneDB.insertCommitFile(req, res);
-    ConnessioneDB.saveCommit(req, res);
-  });
+    ConnessioneDB.saveCommit(req, res,fileData, fileName1);
 
 
 })
@@ -390,15 +378,24 @@ app.post('/eliminaUtente', function (req, res) {
 });
 /* ricchione di merda */
 app.post('/readjson', function (req, res) {
+  req.session.branch = req.body.branch;
+  req.session.idCorrente = req.body.idCorrente;
+  req.session.tipo = req.body.tipo;
+  req.session.path = req.body.path;
+  console.log(req.session.path +  "Percorso generale")
+  req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
+
   var imgJson = JSON.parse(fs.readFileSync(req.body.path));
-  res.send(imgJson);
+  res.write(toString(req.session.branch));
+  res.write(toString(req.session.idCorrente));
+  res.write(toString(req.session.tipo));
+  res.write(toString(req.session.path));
+  res.write(toString(imgJson));
+  console.log(req.session.idCorrente + "E' lui?")
+  res.end();
 });
 /* me la succhi bastardo */
 app.post('/caricaImmagine', function (req, res) {
-
-  console.log("ID CORRENTE" + req.body.idCorrente);
-  console.log("TIPO: " + req.body.tipo);
-
 });
 
 
