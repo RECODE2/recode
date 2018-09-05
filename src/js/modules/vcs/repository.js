@@ -197,7 +197,8 @@ class VCS_class {
                                         id: result[i].ID,
                                         nome: result[i].nomeFile,
                                         tipo: result[i].tipo,
-                                        path: result[i].path
+                                        path: result[i].path,
+                                        branch: result[i].branch
                                     }
                                     }).style({'background-color':'#ff6600'});
                             }
@@ -207,7 +208,8 @@ class VCS_class {
                                         id: result[i].ID,
                                         nome: result[i].nomeFile,
                                         tipo: result[i].tipo,
-                                        path: result[i].path
+                                        path: result[i].path,
+                                        branch: result[i].branch
                                     }
                                     }).style({'background-color':'#03acac'});   
                             }
@@ -260,7 +262,8 @@ class VCS_class {
                                     idCorrente: node.id(),
                                     nomeCorrente: node.data('nome'),
                                     tipo: node.data('tipo'),
-                                    path: node.data('path')
+                                    path: node.data('path'),
+                                    branch: node.data('branch')
                                 }
                             })
                         },

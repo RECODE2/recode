@@ -3,6 +3,9 @@
 const mysql = require('mysql');
 const dbconfig = require('./database');
 const connection = mysql.createConnection(dbconfig.connection);
+const fsPath = require('fs-path');
+var fs = require('fs');
+var diffJ = require('./../diff.js')
 
 
 function creaConnessione() {
@@ -86,20 +89,31 @@ function insertAddRevision(path, req,res, repository,callback) {
     queryV = "Select * from file f where f.repository ='"+repository+"'";
     
     connection.query(queryV, function(err, result, fields){
+        var idModifiche = Math.random().toString(36).substring(7);
         if (result.length == 2){
-            var idModifiche = Math.random().toString(36).substring(7);
-            console.log("INSERTADDREVISION COMMIT")
-            querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', 'init', 'init', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
+            querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', 'init', 'init', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');"
             connection.query(querySQL, function(err,result,fields){
                 if (err) throw err;
             });
+        } else {querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
+        connection.query(querySQL, function(err,result,fields){
+            if (err) throw err;
+        });
+
         }
         //AGGIUNGERE ELSE SE CI SONO PIU' FILE PERCHE' ha PADRE
         idRevision(req,res, function(results){
-            console.log(results + "Result File");
             req.session.branch = branchMasterRev(req, results);
-            console.log(req.session.branch + "Add Revision in query");
             res.write(toString(req.session.branch));
+            var fileEliminate = {eliminate:[]};
+            req.session.eliminate = path+"/Eliminate/"+results+".json";
+            fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function(err){
+                if(err) {
+                    throw err;
+                } else {
+                    console.log('Eliminate Fatto');
+                }
+            });
             res.end();
             });
     });
@@ -247,14 +261,26 @@ function setIdBranchMaster(req,res,callback){
     });
 }
 
-function saveCommit(req,res){
+function saveCommit(req,res, fileData, fileName){
     var idModifiche = Math.random().toString(36).substring(7);
     queryV = "Select * from file f where f.repository ='"+req.session.idRepository+"' AND nome='"+req.body.file_json_name+"'";
     connection.query(queryV, function(err, result, fields){
-        querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `branch`) VALUES ('"+idModifiche+"', '-1', '-1', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', '"+req.session.branch+"');";
+        querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', '"+req.session.branch+"');";
         connection.query(querySQL, function(err,result){
             if (err){
                 console.log("CIAO" + err);
+            } else{
+                   var fileEliminate = JSON.parse(fs.readFileSync(req.session.eliminate));
+                    var j2 = JSON.parse(fileData);
+                    var imgJson = diffJ.caricaJSONPadre(req);
+                    var jCommit = diffJ.diffJSON(imgJson,j2, fileEliminate, req, res);
+                    fsPath.writeFile(req.session.repository + '/JSON/' + fileName, JSON.stringify(jCommit, null, '\t'), function (err) {
+                    if (err) {
+                        throw err;
+                    } else {
+                        // console.log('Json fatto');
+                    }
+                });
             }
         })
     });
@@ -265,7 +291,7 @@ function saveCommit(req,res){
 function insertCommitFile(req,res){
     var nome = req.body.file_json_name;
     var path1 = req.session.repository + "/JSON/" + nome;
-    var querySQL = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,tipo) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Com');";
+    var querySQL = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Com', 'json');";
     connection.query(querySQL, function(err, result){
         if (err) throw err;
     });
@@ -413,11 +439,12 @@ function eliminaUtente(req, callback) {
 
 function idRevision(req,res, callback){
     console.log(req.session.nickname);
-    var queryRev="SELECT * from commit c where utente ='"+req.session.nickname+"' order by DataModifica desc";
+    var queryRev="SELECT * from commit c where utente ='"+req.session.nickname+"' order by file desc";
     connection.query(queryRev, function(err,results, fields){
         if(err){
             console.log("Sono in idRevision "+ err);
         }
+        console.log(results[0].file);
         return callback(results[0].file);
     });  
 }
