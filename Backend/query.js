@@ -262,10 +262,22 @@ function setIdBranchMaster(req,res,callback){
 }
 
 function saveCommit(req,res, fileData, fileName){
+    
     var idModifiche = Math.random().toString(36).substring(7);
     queryV = "Select * from file f where f.repository ='"+req.session.idRepository+"' AND nome='"+req.body.file_json_name+"'";
     connection.query(queryV, function(err, result, fields){
-        querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', '"+req.session.branch+"');";
+        var d = new Date();
+        var anno = d.getFullYear();
+        var mese = d.getMonth()+1;
+        var giorno = d.getDate();
+        var ora = d.getHours();
+        console.log("ora: "+ora);
+        var minuto = d.getMinutes();
+        console.log("minuti: "+minuto);
+        var secondo = d.getSeconds();
+        console.log("secondi: "+secondo);
+        const dataModifica = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
+        querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica+", '"+req.session.branch+"');";
         connection.query(querySQL, function(err,result){
             if (err){
                 console.log("CIAO" + err);
@@ -463,6 +475,20 @@ function branchMasterRev(req, idRev, result){
 
 }
 
+function branchMasterC(req, idRev, result){
+    var idBranch = Math.random().toString(36).substring(7);
+    var name = Math.random().toString(36).substring(7);
+    //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
+        console.log(idRev + "SEI TU?")
+        queryB1 = "INSERT INTO `vit`.`branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+idRev+"', '"+name+"', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
+        connection.query(queryB1, function(err, result){
+            if(err) throw err;
+        });
+    
+    return idBranch;
+
+}
+
 
 /*FINE*/
     
@@ -494,3 +520,4 @@ exports.elencoUtentiElimina = elencoUtentiElimina;
 exports.eliminaUtente = eliminaUtente;
 exports.branchMasterRev = branchMasterRev;
 exports.idRevision = idRevision
+exports.branchMasterC = branchMasterC;

@@ -339,7 +339,6 @@ class OperazioniVCS {
 									canvas.setAttribute('class', 'transparent');
 									canvas.style.height = "100%";
 									canvas.style.width = "100%";
-
 									var ctx2 = canvas2.getContext("2d");
 									canvas2.width = imgJson.info.width;
 									canvas2.height = imgJson.info.height;

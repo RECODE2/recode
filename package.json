@@ -42,6 +42,7 @@
   "dependencies": {
     "ajax-request": "^1.2.3",
     "alertifyjs": "^1.11.0",
+    "array-filter": "^1.0.0",
     "babel-polyfill": "^6.26.0",
     "blueimp-canvas-to-blob": "^3.14.0",
     "connect-flash": "^0.1.1",
