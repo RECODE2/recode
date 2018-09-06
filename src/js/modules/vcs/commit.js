@@ -2,7 +2,6 @@ import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 import Dialog_class from './../../libs/popup.js';
-import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 var request = require('ajax-request');
 
 

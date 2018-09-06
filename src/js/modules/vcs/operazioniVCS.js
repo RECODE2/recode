@@ -2,19 +2,19 @@ import Dialog_class from "../../libs/popup";
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Base_layers_class from './../../../js/core/base-layers';
 import Helper_class from './../../libs/helpers.js';
-import File_open_class from "./../file/open.js";
+
 
 var cytoscape = require('cytoscape');
 var cydagre = require('cytoscape-dagre');
 var dagre = require('dagre');
+cytoscape.use(cydagre, dagre);
 
-cytoscape.use(cydagre, dagre); // register extension
+
 /**
  * In questa classe ci sono le seguenti funzionalità:
- * - new branch
- * - merge (e conflict resolving)
- * - add revision 
- */
+ * - merge + conflict resolving
+ *
+ **/
 
 class OperazioniVCS {
 
@@ -36,7 +36,6 @@ class OperazioniVCS {
 	}
 
 	merge() {
-
 		//PRENDIAMO IL JSON
 		$.ajax({
 			url: 'http://localhost:8081/controllaselezionerepo',
@@ -57,21 +56,18 @@ class OperazioniVCS {
 							var settings = {
 								title: 'Merge',
 								on_load: function () {
-
 									/**
 									* Function created by NEGLIA-VESTITA
 									* This function is used in operazioniVCS.js (Merge)
 									* @param {*} jsonObject 
-									* @param {*} ctx 
+									* @param {*} contesto 
 									*/
 									function createCanvasForMerge(jsonObject, contesto) {
 										for (var i in jsonObject.layers) {
 											var value = jsonObject.layers[i];
-
 											var initial_x = null;
 											var initial_y = null;
 											if (value.x != null && value.y != null && value.width != null && value.height != null) {
-
 												initial_x = value.x;
 												initial_y = value.y;
 												value.x = 0;
@@ -105,7 +101,6 @@ class OperazioniVCS {
 													else if (typeof value.data == 'string') {
 														value.link = new Image();
 														value.link.onload = function () {
-
 															//render canvas
 															for (var i in jsonObject.layers) {
 																var value = jsonObject.layers[i];
@@ -134,7 +129,6 @@ class OperazioniVCS {
 									var divRevg = document.createElement('div');
 									document.getElementById('dialog_content').style.height = "400px";
 									divRevg.setAttribute('id', 'cy');
-									//divRevg.innerHTML="ciao questa e' una div con id: "+divRevg.getAttribute('id');
 									divRevg.style.height = "50%";
 									divRevg.style.marginTop = "5px";
 									divRevg.style.position = "relative";
@@ -159,14 +153,12 @@ class OperazioniVCS {
 									divMinicanvas1.style.border = "1px solid gray";
 									divMinicanvas1.style.cssFloat = "left";
 
-
 									var divMinicanvas2 = document.createElement('div');
 									divMinicanvas2.setAttribute('id', 'divminicanvas2');
 									divMinicanvas2.style.height = "100%";
 									divMinicanvas2.style.width = "40%";
 									divMinicanvas2.style.border = "1px solid gray";
 									divMinicanvas2.style.cssFloat = "left";
-
 
 									var divMinicanvas3 = document.createElement('div');
 									divMinicanvas3.setAttribute('id', 'divminicanvas3');
@@ -175,17 +167,10 @@ class OperazioniVCS {
 									divMinicanvas3.style.border = "1px solid gray";
 									divMinicanvas3.style.cssFloat = "left";
 
-
-
-
-
-									//	var fname = "IMGTEMP.png";
-
 									//create temp canvas
 									var canvas = document.createElement('canvas');
 									canvas.setAttribute('id', 'minicanvas1');
 									var ourctx = canvas.getContext("2d");
-									//	var ctx = canvas.getContext("2d");
 									canvas.width = "800";
 									canvas.height = "600";
 
@@ -194,14 +179,11 @@ class OperazioniVCS {
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divMinicanvas2);
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divMinicanvas3);
 
-
 									var cy = cytoscape({
 										container: document.getElementById('cy'),
 										boxSelectionEnabled: false,
 										autounselectify: true
 									});
-
-
 
 									cy.style().selector('node').style({
 										'content': 'data(id)',
@@ -229,9 +211,9 @@ class OperazioniVCS {
 													tipo: result[i].tipo,
 													path: result[i].path
 												}
-											}).style({ 'background-color': '#ff6600' });
+											}).style({ 'background-color': '#0066ff' });
 										}
-										else {
+										else if (result[i].tipo == "Rev") {
 											cy.add({
 												data: {
 													id: result[i].ID,
@@ -239,9 +221,18 @@ class OperazioniVCS {
 													tipo: result[i].tipo,
 													path: result[i].path
 												}
-											}).style({ 'background-color': '#03acac' });
+											}).style({ 'background-color': '#ffcc00' });
 										}
-
+										else if (result[i].tipo == "Mer") {
+											cy.add({
+												data: {
+													id: result[i].ID,
+													nome: result[i].nomeFile,
+													tipo: result[i].tipo,
+													path: result[i].path
+												}
+											}).style({ 'background-color': '#ff3300' });
+										}
 									}
 
 									//ARCHI
@@ -271,7 +262,6 @@ class OperazioniVCS {
 									cy.elements().layout({ name: 'dagre', rankDir: 'LR' }).run();
 									cy.autolock(true);
 
-
 									var canvas2 = document.createElement('canvas');
 									var canvas3 = document.createElement('canvas');
 
@@ -289,13 +279,9 @@ class OperazioniVCS {
 											}
 											, success: function (imgJson) {
 												immagineJson = imgJson;
-												//console.log("Result: " + JSON.stringify(result));
-												//QUI AGGIUNGERÒ COSA SUCCEDE QUANDO UN UTENTE CLICCA UN NODO
 												node = evt.target;
-												alert("Questo nodo ha id: " + node.id());
-												//alert("Questo nodo ha nome: " + node.data('nome'));
+												ourctx.clearRect(0, 0, canvas.width, canvas.height);
 												createCanvasForMerge(imgJson, ourctx);
-												//createCanvasForMerge(imgJson, ourctx);
 												canvas.setAttribute('id', 'minicanvas1');
 												canvas.setAttribute('class', 'transparent');
 												canvas.style.height = "100%";
@@ -306,7 +292,6 @@ class OperazioniVCS {
 												canvas2.height = imgJson.info.height;
 
 												//createCanvasForMerge(imgJson, ctx2);
-
 												canvas2.setAttribute('id', 'minicanvas2');
 												canvas2.setAttribute('class', 'transparent');
 												canvas2.style.height = "100%";
@@ -317,27 +302,23 @@ class OperazioniVCS {
 												canvas3.height = imgJson.info.height;
 
 												//createCanvasForMerge(imgJson, ctx3);
-
 												canvas3.setAttribute('id', 'minicanvas3');
 												canvas3.setAttribute('class', 'transparent');
 												canvas3.style.height = "100%";
 												canvas3.style.width = "100%";
 
 												document.querySelector('#divminicanvas1').appendChild(canvas);
-												//document.querySelector('#divminicanvas3').appendChild(canvas3);
+												//Quì inserirò gli altri appendChild per gli altri due canvas..
 											}
 										})
-
-
 									});
-									/*FINE REVG*/
-
-
 								},
 								on_finish: function () {
 									alert("Questo nodo ha nome: " + node.data('nome'));
-									//open.load_json(immagineJson);
+									/* Quì inserirò il codice che consentirà di effettuare
+										il merge tra i due json selezionati dall'utente */
 								},
+							/*FINE REVG*/
 							};
 							this.POP.show(settings);
 						}
@@ -348,26 +329,6 @@ class OperazioniVCS {
 				}
 			}
 		});
-
-
-
-
-
-
-	}
-
-
-
-	addRevision() {
-		var settings = {
-			title: 'Add revision - Not available yet 2',
-			params: [
-				{ title: "AAAA:", value: "XXX XXX" },
-				{ title: "BBBB:", value: "Test test" },
-				{ title: "CCCC:", value: "Prova prova" },
-			],
-		};
-		this.POP.show(settings);
 	}
 }
 export default OperazioniVCS;

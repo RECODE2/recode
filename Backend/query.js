@@ -63,6 +63,7 @@ function insertAddRevision(path, req,res, repository,callback) {
     var mese = d.getMonth()+1;
     var giorno = d.getDate();
     var ora = d.getHours();
+   // d.setUTCHours(11);
     console.log("ora: "+ora);
     var minuto = d.getMinutes();
     console.log("minuti: "+minuto);

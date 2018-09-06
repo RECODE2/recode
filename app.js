@@ -382,6 +382,12 @@ app.post('/readjson', function (req, res) {
   req.session.idCorrente = req.body.idCorrente;
   req.session.tipo = req.body.tipo;
   req.session.path = req.body.path;
+
+  console.log("req.session.branch: " + req.session.branch);
+  console.log("req.session.idCorrente: " + req.session.idCorrente);
+  console.log("req.session.tipo: " + req.session.tipo);
+  console.log("req.session.path: " + req.session.path);
+
   if (req.session.tipo == "Rev"){
     req.session.branch = ConnessioneDB.branchMasterC(req,req.session.idCorrente);
   }
@@ -389,13 +395,6 @@ app.post('/readjson', function (req, res) {
   req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
 
   var imgJson = JSON.parse(fs.readFileSync(req.body.path));
-/*   res.write(toString(req.session.branch));
-  res.write(toString(req.session.idCorrente));
-  res.write(toString(req.session.tipo));
-  res.write(toString(req.session.path));
-  res.write(toString(imgJson));
-  console.log(req.session.idCorrente + "E' lui?")
-  res.end(); */
   res.send(imgJson);
 });
 
