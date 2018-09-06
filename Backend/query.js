@@ -264,7 +264,7 @@ function setIdBranchMaster(req,res,callback){
 function saveCommit(req,res, fileData, fileName){
     
     var idModifiche = Math.random().toString(36).substring(7);
-    queryV = "Select * from file f where f.repository ='"+req.session.idRepository+"' AND nome='"+req.body.file_json_name+"'";
+    queryV = "Select * from file f where f.repository ='"+req.session.idRepository+"'  order by idFile desc";
     connection.query(queryV, function(err, result, fields){
         var d = new Date();
         var anno = d.getFullYear();
@@ -475,12 +475,11 @@ function branchMasterRev(req, idRev, result){
 
 }
 
-function branchMasterC(req, idRev, result){
+function branchMasterC(req){
     var idBranch = Math.random().toString(36).substring(7);
     var name = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
-        console.log(idRev + "SEI TU?")
-        queryB1 = "INSERT INTO `vit`.`branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+idRev+"', '"+name+"', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
+        queryB1 = "INSERT INTO `vit`.`branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+req.session.idCorrente+"', '"+name+"', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
         connection.query(queryB1, function(err, result){
             if(err) throw err;
         });
@@ -489,18 +488,40 @@ function branchMasterC(req, idRev, result){
 
 }
 
-function datiPadre(req, res,callback){
-    var queryP = "SELECT padre1 FROM commit f where file ='"+req.session.idPadre+"'";
+function datiPadre(req, callback){
+    console.log(req.session.padre + "Dentro a dati padre no query");
+    var queryP = "SELECT padre1 FROM commit where file ='"+req.session.padre+"'";
     connection.query(queryP,function(err,result){
         if(err) throw err;
-        var queryPath = "Select path,tipo from file where idFile='"+result[0].padre1+"'";
-        req.session.padre1 = result[0].padre1;
+        req.session.padre = result[0].padre1;
+        console.log(req.session.padre + "Dentro a dati padre nella query");
+    });
+    var queryPath = "Select path, tipo from file where idFile='"+req.session.padre+"'";
         connection.query(queryPath, function(err,result){
-            if(err) throw err;
-            return callback(result[0]);
-        });
-    })
+        if(err) throw err;
+        req.session.path = result[0].path;
+        req.session.tipo = result[0].tipo;
+        console.log(req.session.path + " Path Dentro a path Tipo nella query");
+        console.log(req.session.tipo + " Tipo Dentro a path Tipo nella query");
+        return callback(req);
+        })
 }
+/*
+function pathTipo(req,res){
+    console.log(req.session.padre + "Dentro a path Tipo no query");
+    console.log(req.session.path + " Path Dentro a path Tipo no query");
+    console.log(req.session.tipo + " Tipo Dentro a path Tipo no query");
+    var queryPath = "Select path, tipo from file where idFile='"+req.session.padre+"'";
+        connection.query(queryPath, function(err,result){
+        if(err) throw err;
+        req.session.path = result[0].path;
+        req.session.tipo = result[0].tipo;
+        console.log(req.session.path + " Path Dentro a path Tipo nella query");
+        console.log(req.session.tipo + " Tipo Dentro a path Tipo nella query");
+    })
+    return req;
+}*/
+
 
 
 /*FINE*/
@@ -535,3 +556,4 @@ exports.branchMasterRev = branchMasterRev;
 exports.idRevision = idRevision
 exports.branchMasterC = branchMasterC;
 exports.datiPadre = datiPadre;
+//exports.pathTipo = pathTipo;

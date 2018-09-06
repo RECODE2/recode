@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
 const dbconfig = require('./Backend/database');
+const connection = mysql.createConnection(dbconfig.connection);
 const bodyParser = require('body-parser');
 const ConnessioneDB = require('./Backend/query');
 const Filesaver = require('filesaver');
@@ -20,6 +21,7 @@ var morgan = require('morgan');
 var nomeUtente = "";
 var fs = require('fs');
 var carica = require('./carica.js');
+var sleep = require('sleep');
 
 
 // *** DATABASE ***
@@ -268,7 +270,6 @@ app.post('/branch', function (req, res) {
 app.post('/commit', function (req, res) {
   fileName1 = req.body.file_json_name;
   fileData = req.body.file_json_data;
-  var fileEliminate = JSON.parse(fs.readFileSync(req.session.eliminate));
   //INSERIRE QUI LA FUNZIONE diffJSON non appena avrò il caricamento file col REVG
     ConnessioneDB.insertCommitFile(req, res);
     ConnessioneDB.saveCommit(req, res,fileData, fileName1);
@@ -380,42 +381,50 @@ app.post('/eliminaUtente', function (req, res) {
 
 app.post('/readjson', function (req, res) {
   req.session.branch = req.body.branch;
+  console.log("req.session.branch: "+ req.session.branch);
   req.session.idCorrente = req.body.idCorrente;
   req.session.tipo = req.body.tipo;
   req.session.path = req.body.path;
   req.session.padre = req.body.idCorrente;
-
-  var imgJson = JSON.parse(fs.readFileSync(req.session.path));
-  if (req.session.tipo == "Rev"){
-    req.session.branch = ConnessioneDB.branchMasterC(req,req.session.idCorrente);
-  } else if (req.session.tipo == "Com"){
-
-    var fileEliminate = JSON.parse(fs.readFileSync(req.session.repository+"/Eliminate/"+idCorrente+".json"));
-    do{
-        ConnessioneDB.datiPadre(req,res, function(result){
-          jsonPadre = JSON.parse(fs.readFileSync(result[0].path));
-          imgJson = carica.caricaImmagine(imgJson,jsonPadre);
-          imgJson = carica.purgaJSON(imgJson, fileEliminate);
-          req.session.tmpTipo = result[0].tipo;
-        });
-      }while(req.session.tmpTipo != "Rev");
-    }
   req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
-
-  //res.write(toString(req.session.branch));
-  var imgJson = JSON.parse(fs.readFileSync(req.body.path));
-/*   res.write(toString(req.session.branch));
-  res.write(toString(req.session.idCorrente));
-  res.write(toString(req.session.tipo));
-  res.write(toString(req.session.path));
-  res.write(toString(imgJson));
-  console.log(req.session.idCorrente + "E' lui?")
-  res.end(); */
-  res.send(imgJson);
+  if (req.session.tipo == "Rev"){
+    req.session.branch = ConnessioneDB.branchMasterC(req);
+    console.log(req.session.branch);
+  }
+  res.send(req.session.branch);
 });
 
 app.post('/caricaImmagine', function (req, res) {
+  var imgJson = JSON.parse(fs.readFileSync(req.session.path));
+  req.session.json = imgJson;
+  if (req.session.tipo == "Rev"){
+    res.send(req.session.json);
+  } else if (req.session.tipo == "Com"){
+    console.log("FIGA");
+    req.session.fileEliminate = JSON.parse(fs.readFileSync(req.session.repository+"/Eliminate/"+req.session.idCorrente+".json"));
+      loop(req,res);
+  }
 });
+
+//FUNZIONI
+
+
+
+function loop(req,res){
+ ConnessioneDB.datiPadre(req, function(req){
+    if(req.session.tipo == "Com"){
+      console.log(req.session.path + "Stampa del percorso");
+      var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
+      req.session.json = carica.caricaImmagine(req.session.json,jsonPadre,req.session.fileEliminate);
+      loop(req,res);
+    }else {
+      var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
+      req.session.json = carica.caricaImmagine(req.session.json,jsonPadre,req.session.fileEliminate);
+      res.send(req.session.json);
+      return;
+    }
+  })
+}
 
 
 module.exports = app;

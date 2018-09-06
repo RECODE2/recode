@@ -5,6 +5,8 @@ import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.j
 import { callbackify } from 'util';
 import host from './../../host.js';
 import File_open_class from "./../file/open.js";
+import Base_layers_class from "./../../core/base-layers"
+import Base_selection_class from "./../../core/base-selection"
 
 var cytoscape = require('cytoscape');
 var cydagre = require('cytoscape-dagre');
@@ -200,7 +202,8 @@ class VCS_class {
                                         id: result[i].ID,
                                         nome: result[i].nomeFile,
                                         tipo: result[i].tipo,
-                                        path: result[i].path
+                                        path: result[i].path,
+                                        branch: result[i].branch
                                     }
                                     }).style({'background-color':'#0066ff'});
                             }
@@ -210,7 +213,8 @@ class VCS_class {
                                         id: result[i].ID,
                                         nome: result[i].nomeFile,
                                         tipo: result[i].tipo,
-                                        path: result[i].path
+                                        path: result[i].path,
+                                        branch: result[i].branch
                                     }
                                     }).style({'background-color':'#ffcc00'});   
                             }
@@ -273,13 +277,27 @@ class VCS_class {
                                     idCorrente: node.id(),
                                     nomeCorrente: node.data('nome'),
                                     tipo: node.data('tipo'),
-                                    path: node.data('path')
+                                    path: node.data('path'),
+                                    branch: node.data('branch')
                                 },
-                                success: function(imgJson){
-                                    immagineJson = imgJson;
-                                    open.load_json(immagineJson);
+                                success: function(branch){
+                                    document.getElementById('branch').innerHTML = branch;
+                                    var base_layer = new Base_layers_class();
+                                    base_layer.reset_layers();
+                                    
                                 },
-                            })
+                            });
+                                $.ajax({
+                                    url: 'http://localhost:8081/caricaImmagine',
+                                    type: 'POST',
+                                    success: function(imgJson){
+                                            var base_selection = new Base_selection_class();
+                                            immagineJson = imgJson;
+                                            open.load_json(immagineJson);
+                                            base_selection.reset_selection();
+                            
+                                    },
+                                });
                         }
                     };
                       this.POP.show(settings);
