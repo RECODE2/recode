@@ -385,6 +385,12 @@ app.post('/readjson', function (req, res) {
   req.session.idCorrente = req.body.idCorrente;
   req.session.tipo = req.body.tipo;
   req.session.path = req.body.path;
+
+  console.log("req.session.branch: " + req.session.branch);
+  console.log("req.session.idCorrente: " + req.session.idCorrente);
+  console.log("req.session.tipo: " + req.session.tipo);
+  console.log("req.session.path: " + req.session.path);
+
   req.session.padre = req.body.idCorrente;
   req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
   if (req.session.tipo == "Rev"){
