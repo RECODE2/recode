@@ -490,6 +490,19 @@ function branchMasterC(req, idRev, result){
 
 }
 
+function datiPadre(req, res,callback){
+    var queryP = "SELECT padre1 FROM commit f where file ='"+req.session.idPadre+"'";
+    connection.query(queryP,function(err,result){
+        if(err) throw err;
+        var queryPath = "Select path,tipo from file where idFile='"+result[0].padre1+"'";
+        req.session.padre1 = result[0].padre1;
+        connection.query(queryPath, function(err,result){
+            if(err) throw err;
+            return callback(result[0]);
+        });
+    })
+}
+
 
 /*FINE*/
     
@@ -522,3 +535,4 @@ exports.eliminaUtente = eliminaUtente;
 exports.branchMasterRev = branchMasterRev;
 exports.idRevision = idRevision
 exports.branchMasterC = branchMasterC;
+exports.datiPadre = datiPadre;
