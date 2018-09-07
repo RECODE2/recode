@@ -92,11 +92,11 @@ function insertAddRevision(path, req,res, repository,callback) {
     connection.query(queryV, function(err, result, fields){
         var idModifiche = Math.random().toString(36).substring(7);
         if (result.length == 2){
-            querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', 'init', 'init', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');"
+            querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', 'init', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');"
             connection.query(querySQL, function(err,result,fields){
                 if (err) throw err;
             });
-        } else {querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[1].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
+        } else {querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
         connection.query(querySQL, function(err,result,fields){
             if (err) throw err;
         });
@@ -507,11 +507,12 @@ function datiPadre(req, callback){
 function setGlobal(req,res){
     var queryC = "Select * from revg where Utente ='"+req.session.nickname+"' order by dataModifica desc;";
     connection.query(queryC, function(err,result){
+        req.session.branch = result[0].branch;
         req.session.idCorrente = result[0].ID;
         req.session.tipo = result[0].tipo;
-        req.session.branch = result[0].branch;
         req.session.path = result[0].path;
         req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
+
         res.write(toString(req.session.branch));
         res.write(toString(req.session.idCorrente));
         res.write(toString(req.session.tipo));
