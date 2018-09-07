@@ -423,7 +423,8 @@ class VCS_class {
                                             idCorrente: node.id(),
                                             nomeCorrente: node.data('nome'),
                                             tipo: node.data('tipo'),
-                                            path: node.data('path')
+                                            path: node.data('path'),
+                                            branch: node.data('branch')
                                         }, success: function () {
 
                                             idProp.innerHTML = "ID: " + node.id();
@@ -458,12 +459,7 @@ class VCS_class {
                                     $.ajax({
                                         url: 'http://localhost:8081/caricaImmagine',
                                         type: 'POST',
-                                        data: {
-                                            idCorrente: node.id(),
-                                            nomeCorrente: node.data('nome'),
-                                            tipo: node.data('tipo'),
-                                            path: node.data('path')
-                                        }, success: function (imgJson) {
+                                        success: function (imgJson) {
                                             immagineJson = imgJson;
                                             node = evt.target;
                                             ourctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -509,7 +505,6 @@ class VCS_class {
                                                 immagineJson = imgJson;
                                                 open.load_json(immagineJson);
                                                 base_selection.reset_selection();
-                                
                                         },
                                     });
                             }
