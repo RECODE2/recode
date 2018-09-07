@@ -111,7 +111,6 @@ function mergeDG(j1,j2){
     }
     layerSum = lastID[1]-1;
     var j3 = conc.merge(j1,j2);
-    j3.info.layer_active = layerSum;
     return j3;
 }
 

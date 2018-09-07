@@ -271,6 +271,7 @@ app.post('/commit', function (req, res) {
   //INSERIRE QUI LA FUNZIONE diffJSON non appena avrò il caricamento file col REVG
     ConnessioneDB.insertCommitFile(req, res);
     ConnessioneDB.saveCommit(req, res,fileData, fileName1);
+  
 
 
 })
@@ -379,15 +380,9 @@ app.post('/eliminaUtente', function (req, res) {
 
 app.post('/readjson', function (req, res) {
   req.session.branch = req.body.branch;
-  console.log("req.session.branch: "+ req.session.branch);
   req.session.idCorrente = req.body.idCorrente;
   req.session.tipo = req.body.tipo;
   req.session.path = req.body.path;
-
-  console.log("req.session.branch: " + req.session.branch);
-  console.log("req.session.idCorrente: " + req.session.idCorrente);
-  console.log("req.session.tipo: " + req.session.tipo);
-  console.log("req.session.path: " + req.session.path);
 
   req.session.padre = req.body.idCorrente;
   req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";

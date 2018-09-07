@@ -115,7 +115,7 @@ function insertAddRevision(path, req,res, repository,callback) {
                     console.log('Eliminate Fatto');
                 }
             });
-            res.end();
+            setGlobal(req,res);
             });
     });
 
@@ -293,6 +293,7 @@ function saveCommit(req,res, fileData, fileName){
                     } else {
                         // console.log('Json fatto');
                     }
+                    setGlobal(req,res);
                 });
             }
         })
@@ -490,38 +491,37 @@ function branchMasterC(req){
 }
 
 function datiPadre(req, callback){
-    console.log(req.session.padre + "Dentro a dati padre no query");
     var queryP = "SELECT padre1 FROM commit where file ='"+req.session.padre+"'";
     connection.query(queryP,function(err,result){
         if(err) throw err;
         req.session.padre = result[0].padre1;
-        console.log(req.session.padre + "Dentro a dati padre nella query");
     });
     var queryPath = "Select path, tipo from file where idFile='"+req.session.padre+"'";
         connection.query(queryPath, function(err,result){
         if(err) throw err;
         req.session.path = result[0].path;
         req.session.tipo = result[0].tipo;
-        console.log(req.session.path + " Path Dentro a path Tipo nella query");
-        console.log(req.session.tipo + " Tipo Dentro a path Tipo nella query");
         return callback(req);
         })
 }
-/*
-function pathTipo(req,res){
-    console.log(req.session.padre + "Dentro a path Tipo no query");
-    console.log(req.session.path + " Path Dentro a path Tipo no query");
-    console.log(req.session.tipo + " Tipo Dentro a path Tipo no query");
-    var queryPath = "Select path, tipo from file where idFile='"+req.session.padre+"'";
-        connection.query(queryPath, function(err,result){
-        if(err) throw err;
-        req.session.path = result[0].path;
+
+function setGlobal(req,res){
+    var queryC = "Select * from revG where Utente ='"+req.session.nickname+"' order by dataModifica desc;";
+    connection.query(queryC, function(err,result){
+        req.session.branch = result[0].branch;
+        req.session.idCorrente = result[0].ID;
         req.session.tipo = result[0].tipo;
-        console.log(req.session.path + " Path Dentro a path Tipo nella query");
-        console.log(req.session.tipo + " Tipo Dentro a path Tipo nella query");
-    })
-    return req;
-}*/
+        req.session.path = result[0].path;
+        req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
+
+        res.write(toString(req.session.branch));
+        res.write(toString(req.session.idCorrente));
+        res.write(toString(req.session.tipo));
+        res.write(toString(req.session.path));
+        res.write(toString(req.session.eliminate));
+        res.end()
+    });
+}
 
 
 
