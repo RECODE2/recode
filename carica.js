@@ -4,20 +4,34 @@ const fsPath = require('fs-path');
 var deepEqual = require('deep-equal');
 var filter = require('array-filter');
 
-function caricaImmagine(j1, j2){
-    
+function caricaImmagine(j1, j2, fileEliminate){
+    var g = 0;
     for(var i = 0; i < j2.layers.length; i++){
         if(!controllaJSON(j2.layers[i].id, j1)){
-            j1.layers[j1.layers.length] = j2.layers[i];
+            for(var z = j1.layers.length; z>0; z--){
+                j1.layers[z] = j1.layers[z-1];
+            }
+            j1.layers[0] = j2.layers[i];
+            if(j2.layers[i].type == "image"){
+               for(var g = j2.data.length; g > 0; g--){
+                    if(j2.layers[i].id == j2.data[g].id){
+                        for(var z = j1.data.length; z>0; z--){
+                            j1.data[z] = j1.data[z-1];
+                        }
+                        j1.data[0] = j2.data[i];
+                    }
+               }
+            }
         }
     }
-    return j1;
+    var j2 = purgaJSON(j1,fileEliminate);
+    return j2;
 }
 
 function purgaJSON(j1, fileEliminate){
     var j2 = j1;
-    for(var i = 0; i<j1.layers.length; i++){
-        if(controllaFileEliminate(j1.layers[i].id, fileEliminate)){
+    for(var i = 0; i<j2.layers.length; i++){
+        if(controllaFileEliminate(j2.layers[i].id, fileEliminate)){
             for(var j = 0; j < j2.layers.length - 1; j++){
                 delete j2.layers[i];
                 
@@ -25,6 +39,17 @@ function purgaJSON(j1, fileEliminate){
         }
     }
     j2.layers = filter(j2.layers, function(undefined){
+        return true;
+    })
+    for(var i = 0; i<j2.data.length; i++){
+        if(controllaFileEliminate(j2.data[i].id, fileEliminate)){
+            for(var j = 0; j < j2.data.length - 1; j++){
+                delete j2.data[i];
+                
+            }
+        }
+    }
+    j2.data = filter(j2.data, function(undefined){
         return true;
     })
     j1 = j2;
@@ -49,5 +74,6 @@ function controllaFileEliminate(id2,fileEliminate){
     return false;
 }
 
+
+
 exports.caricaImmagine = caricaImmagine;
-exports.purgaJSON = purgaJSON;

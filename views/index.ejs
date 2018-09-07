@@ -333,10 +333,10 @@
 			<%if (username!="Guest") { %>
 				<% if(repository){ %>
 					<li style="border-left: 1px solid #5cabfb">
-						<a class="trn" style="pointer-events: none">Repository: <%= repository %></a>
+						<a class="trn" id = "repository" style="pointer-events: none">Repository: <%= repository %></a>
 					</li>
 					<li>
-							<a class="trn" style="pointer-events: none">Branch: <%= branch %></a>
+							<a class="trn" id = "branch" style="pointer-events: none">Branch: <%= branch %></a>
 						</li>
 					<% } else{ %>
 						<li style="border-left: 1px solid #5cabfb">

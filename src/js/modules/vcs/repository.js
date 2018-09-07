@@ -2,7 +2,9 @@ import Dialog_class from "../../libs/popup";
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import host from './../../host.js';
 import File_open_class from "./../file/open.js";
-import Base_layers_class from './../../../js/core/base-layers';
+import Base_layers_class from "./../../core/base-layers"
+import Base_selection_class from "./../../core/base-selection"
+
 
 var moment = require('moment');
 var cytoscape = require('cytoscape');
@@ -422,15 +424,7 @@ class VCS_class {
                                             nomeCorrente: node.data('nome'),
                                             tipo: node.data('tipo'),
                                             path: node.data('path')
-                                        }, success: function (imgJson) {
-                                            immagineJson = imgJson;
-                                            node = evt.target;
-                                            ourctx.clearRect(0, 0, canvas.width, canvas.height);
-                                            createCanvasForMerge(imgJson, ourctx);
-                                            canvas.setAttribute('id', 'minicanvas1');
-                                            canvas.setAttribute('class', 'transparent');
-                                            canvas.style.height = "100%";
-                                            canvas.style.width = "100%";
+                                        }, success: function () {
 
                                             idProp.innerHTML = "ID: " + node.id();
                                             nomeFileProp.innerHTML = "Nome file: " + node.data('nome');
@@ -445,7 +439,6 @@ class VCS_class {
                                             padre1Prop.innerHTML = "Padre: " + node.data('padre1');
                                             padre2Prop.innerHTML = "Padre 2: " + node.data('padre2');
 
-                                            document.querySelector('#divminicanvas1').appendChild(canvas);
                                             document.querySelector('#divdettaglinodo').appendChild(titoloInformazioni);
                                             document.querySelector('#divdettaglinodo').appendChild(elencoProp);
                                             document.querySelector('#elencoprop').appendChild(idProp);
@@ -460,11 +453,37 @@ class VCS_class {
                                                 document.querySelector('#elencoprop').appendChild(padre2Prop);
                                             }
                                         }
+
+                                    });
+                                    $.ajax({
+                                        url: 'http://localhost:8081/caricaImmagine',
+                                        type: 'POST',
+                                        data: {
+                                            idCorrente: node.id(),
+                                            nomeCorrente: node.data('nome'),
+                                            tipo: node.data('tipo'),
+                                            path: node.data('path')
+                                        }, success: function (imgJson) {
+                                            immagineJson = imgJson;
+                                            node = evt.target;
+                                            ourctx.clearRect(0, 0, canvas.width, canvas.height);
+                                            createCanvasForMerge(imgJson, ourctx);
+                                            canvas.setAttribute('id', 'minicanvas1');
+                                            canvas.setAttribute('class', 'transparent');
+                                            canvas.style.height = "100%";
+                                            canvas.style.width = "100%";
+
+                                            
+
+                                            document.querySelector('#divminicanvas1').appendChild(canvas);
+                                            
+                                        }
+                                        
                                     })
                                 });
                             },
-                            on_finish: function () {
-                                //Al click dell'ok carico il json selezionato nel canvas principale
+                            on_finish: function(){ 
+                                //alert("Questo nodo ha nome: " + node.data('nome'));
                                 $.ajax({
                                     url: 'http://localhost:8081/readjson',
                                     type: 'POST',
@@ -472,13 +491,27 @@ class VCS_class {
                                         idCorrente: node.id(),
                                         nomeCorrente: node.data('nome'),
                                         tipo: node.data('tipo'),
-                                        path: node.data('path')
+                                        path: node.data('path'),
+                                        branch: node.data('branch')
                                     },
-                                    success: function (imgJson) {
-                                        immagineJson = imgJson;
-                                        open.load_json(immagineJson);
+                                    success: function(branch){
+                                        document.getElementById('branch').innerHTML = branch;
+                                        var base_layer = new Base_layers_class();
+                                        base_layer.reset_layers();
+                                        
                                     },
-                                })
+                                });
+                                    $.ajax({
+                                        url: 'http://localhost:8081/caricaImmagine',
+                                        type: 'POST',
+                                        success: function(imgJson){
+                                                var base_selection = new Base_selection_class();
+                                                immagineJson = imgJson;
+                                                open.load_json(immagineJson);
+                                                base_selection.reset_selection();
+                                
+                                        },
+                                    });
                             }
                             /* FINE REVG */
                         };
