@@ -506,7 +506,7 @@ function datiPadre(req, callback){
 }
 
 function setGlobal(req,res){
-    var queryC = "Select * from revG where Utente ='"+req.session.nickname+"' order by dataModifica desc;";
+    var queryC = "Select * from revg where Utente ='"+req.session.nickname+"' order by dataModifica desc;";
     connection.query(queryC, function(err,result){
         req.session.branch = result[0].branch;
         req.session.idCorrente = result[0].ID;
