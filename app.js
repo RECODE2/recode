@@ -222,6 +222,12 @@ app.post('/addRevision', function (req, res) {
   var nomedelfile = req.body.file_json_name;
   var dataFile = req.body.file_json_data;
   dataFile = JSON.parse(dataFile);
+  dataFile.info.layer_active = 1;
+  dataFile.layers[0].id = 1;
+  dataFile.layers[0].order = 1;
+  if(dataFile.layers[0].type == "image"){
+    dataFile.data[0].id = 1;
+  }
   var img = req.body.file_jpeg_data;
   var data = img.replace(/^data:image\/\w+;base64,/, "");
   var buf = new Buffer(data, 'base64');

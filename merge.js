@@ -12,10 +12,10 @@ function aggiustaOrder(j){
         }
         var i = 1;
         var min = minArray(arrayO);
+        arrayT[arrayO.indexOf(min)] = 9999;
         arrayO[arrayO.indexOf(min)] = 1;
         min = 1;
-        arrayT[arrayT.indexOf(min)] = 9999;
-        for(i = 0; i < arrayT.length; i++){
+        for(i = 1; i < arrayT.length; i++){
             var minT = minArray(arrayT);
             if (minT <= (min + 1)){
                 arrayT[arrayT.indexOf(minT)] = 9999;
@@ -92,16 +92,22 @@ function setMergeSx(j){
 
 
 function incrementMerge(j){
+    //console.log("Appena entrato " + JSON.stringify(j, null, '\t'));
     for(var i = 0; i < j.layers.length; i++){
         j.layers[i].order = j.layers[i].order + 2;
         }
-        console.log("J IN INCREMENT MERGE prima del return: " + JSON.stringify(j, null, '\t'));
+        //console.log("J IN INCREMENT MERGE prima del return: " + JSON.stringify(j, null, '\t'));
     return j;
     
 }
 
 function decrementMerge(j){
-   var min = minArray(j.layers);
+    //console.log("Appena entrato " + JSON.stringify(j, null, '\t'));
+    var ArrayO = [];
+    for(var i = 0; i < j.layers.length; i++){
+        ArrayO[i] = j.layers[i].order;
+    }
+    var min = minArray(ArrayO);
     if(min !== 1 || min !== 2 ){
 
         for(var i = 0; i < j.layers.length; i++){
@@ -111,7 +117,7 @@ function decrementMerge(j){
         console.log("Ehi, non puoi più andare indietro")
     }
 
-    console.log("J IN DECREMENT MERGE prima del return: " + JSON.stringify(j, null, '\t'));
+    //console.log("J IN DECREMENT MERGE prima del return: " + JSON.stringify(j, null, '\t'));
 
         return j;
 
@@ -134,8 +140,8 @@ function maxArray(array){
 }
 
 function mergeDG(j1,j2){
-    var jA = Object.assign(j1);
-    var jB = Object.assign(j2);
+    var jA = Object.assign({},j1);
+    var jB = Object.assign({},j2);
     var lastID = controllaID(jA);
     lastID++;
     var idProv;
@@ -143,7 +149,7 @@ function mergeDG(j1,j2){
         idProv = jB.layers[i].id;
         jB.layers[i].id = lastID;
         if(jB.layers[i].type == "image"){
-            for(j = 0; j<jB.data.length; j++){
+            for(var j = 0; j<jB.data.length; j++){
                 if(jB.data[j].id == idProv){
                     jB.data[j].id = lastID;
                 }

@@ -5,7 +5,7 @@ var deepEqual = require('deep-equal');
 var filter = require('array-filter');
 
 function caricaImmagine(j1, j2, fileEliminate){
-    var g = 0;
+
     for(var i = 0; i < j2.layers.length; i++){
         if(!controllaJSON(j2.layers[i].id, j1)){
             for(var z = j1.layers.length; z>0; z--){
@@ -14,7 +14,7 @@ function caricaImmagine(j1, j2, fileEliminate){
             j1.layers[0] = j2.layers[i];
             if(j2.layers[i].type == "image"){
                for(var g = j2.data.length; g > 0; g--){
-                    if(j2.layers[i].id == j2.data[g].id){
+                    if(j2.layers[i].id == j2.data[g-1].id){
                         for(var z = j1.data.length; z>0; z--){
                             j1.data[z] = j1.data[z-1];
                         }
