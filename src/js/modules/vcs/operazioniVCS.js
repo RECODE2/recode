@@ -13,7 +13,6 @@ cytoscape.use(cydagre, dagre);
 /**
  * In questa classe ci sono le seguenti funzionalità:
  * - merge + conflict resolving
- *
  **/
 
 class OperazioniVCS {
@@ -187,9 +186,9 @@ class OperazioniVCS {
 
 									cy.style().selector('node').style({
 										'content': 'data(id)',
-										'text-opacity': 0.5,
+										'text-opacity': 1,
 										'text-valign': 'center',
-										'text-halign': 'right'
+										'text-halign': 'center'
 									}).update();
 
 									cy.style().selector('edge').style({
@@ -314,7 +313,6 @@ class OperazioniVCS {
 									});
 								},
 								on_finish: function () {
-									alert("Questo nodo ha nome: " + node.data('nome'));
 									/* Quì inserirò il codice che consentirà di effettuare
 										il merge tra i due json selezionati dall'utente */
 								},

@@ -323,9 +323,9 @@ class VCS_class {
 
                                 cy.style().selector('node').style({
                                     'content': 'data(id)',
-                                    'text-opacity': 0.5,
+                                    'text-opacity': 1,
                                     'text-valign': 'center',
-                                    'text-halign': 'right'
+                                    'text-halign': 'center'
                                 }).update();
 
                                 cy.style().selector('edge').style({
@@ -442,7 +442,7 @@ class VCS_class {
                                             utenteProp.innerHTML = "Utente: " + node.data('utente');
                                             tipoProp.innerHTML = "Tipo: " + node.data('tipo');
                                             branchProp.innerHTML = "Branch: " + node.data('branch');
-                                            padre1Prop.innerHTML = "Padre 1: " + node.data('padre1');
+                                            padre1Prop.innerHTML = "Padre: " + node.data('padre1');
                                             padre2Prop.innerHTML = "Padre 2: " + node.data('padre2');
 
                                             document.querySelector('#divminicanvas1').appendChild(canvas);
@@ -454,10 +454,8 @@ class VCS_class {
                                             document.querySelector('#elencoprop').appendChild(utenteProp);
                                             document.querySelector('#elencoprop').appendChild(tipoProp);
                                             document.querySelector('#elencoprop').appendChild(branchProp);
-
-                                            if (node.data('padre1') != "init") {
-                                                document.querySelector('#elencoprop').appendChild(padre1Prop);
-                                            }
+                                            document.querySelector('#elencoprop').appendChild(padre1Prop);
+                                            
                                             if (node.data('tipo') == "Mer") {
                                                 document.querySelector('#elencoprop').appendChild(padre2Prop);
                                             }
