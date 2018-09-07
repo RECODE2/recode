@@ -399,11 +399,13 @@ app.post('/caricaImmagine', function (req, res) {
   if (req.session.tipo == "Rev"){
     res.send(req.session.json);
   } else if (req.session.tipo == "Com"){
-    console.log("FIGA");
+    console.log("AAAA");
     req.session.fileEliminate = JSON.parse(fs.readFileSync(req.session.repository+"/Eliminate/"+req.session.idCorrente+".json"));
       loop(req,res);
   }
 });
+
+
 
 //FUNZIONI
 
@@ -424,6 +426,9 @@ function loop(req,res){
     }
   })
 }
+
+
+
 
 
 module.exports = app;

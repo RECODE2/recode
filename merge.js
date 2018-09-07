@@ -1,8 +1,5 @@
 
 var conc = require('merge-json');
-var deepEqual = require('deep-equal')
-var fs = require('fs');
-const fsPath = require('fs-path');
 
 function aggiustaOrder(j){
     var arrayO = [];
@@ -40,7 +37,10 @@ function aggiustaOrder(j){
 }
 
 function setMergeDx(j){
+
     j = aggiustaOrder(j);
+
+
 
     var arrayO = [];
     var arrayT = []; //ho tutti gli order dei layers
@@ -60,36 +60,10 @@ function setMergeDx(j){
     for(i = 0; i < j.layers.length; i++){
         j.layers[i].order = arrayO[i];
     }
-    fsPath.writeFile("C:/Users/Davide/Desktop/Inizio.json", JSON.stringify(j, null, "\t"), function(err){
-        if(err) {
-        throw err;
-        } else {
-        console.log('Json fatto');
-        }
-    });
     
     return j;
-/*
-    if(j.layers.length != 1){
-            for(var i = 0; i < j.layers.length; i++){
-                arrayO[i] = j.layers[i].order;
-            }
-        fsPath.writeFile("C:/Users/Davide/Desktop/Inizio.json", JSON.stringify(j, null, "\t"), function(err){
-            if(err) {
-            throw err;
-            } else {
-            console.log('Json fatto');
-            }
-        });
-        var k = 0;
-        for(var i = 0; i < j.layers.length; i++){
-        j.layers[i].order = j.layers[i].order + k;
-        k++;
-        }
-    }
-    return j;
-    */
-} 
+    
+}
 
 function setMergeSx(j){
     j = aggiustaOrder(j);
@@ -112,27 +86,22 @@ function setMergeSx(j){
     for(i = 0; i < j.layers.length; i++){
         j.layers[i].order = arrayO[i];
     }
-    fsPath.writeFile("C:/Users/Davide/Desktop/Inizio.json", JSON.stringify(j, null, "\t"), function(err){
-        if(err) {
-        throw err;
-        } else {
-        console.log('Json fatto');
-        }
-    });
-    
     return j;
     
 }
+
+
 function incrementMerge(j){
     for(var i = 0; i < j.layers.length; i++){
         j.layers[i].order = j.layers[i].order + 2;
         }
+        console.log("J IN INCREMENT MERGE prima del return: " + JSON.stringify(j, null, '\t'));
     return j;
     
 }
 
 function decrementMerge(j){
-    min = minArray(j.layers);
+   var min = minArray(j.layers);
     if(min !== 1 || min !== 2 ){
 
         for(var i = 0; i < j.layers.length; i++){
@@ -141,6 +110,9 @@ function decrementMerge(j){
     } else{
         console.log("Ehi, non puoi più andare indietro")
     }
+
+    console.log("J IN DECREMENT MERGE prima del return: " + JSON.stringify(j, null, '\t'));
+
         return j;
 
 }
@@ -162,12 +134,13 @@ function maxArray(array){
 }
 
 function mergeDG(j1,j2){
-    j1 = setMergeSx(j1);
-    j2 = setMergeDx(j2);
+/*     j1 = setMergeSx(j1);
+    j2 = setMergeDx(j2); */
+    
     var lastID = controllaID(j1);
     lastID++;
     var idProv;
-    for (i = 0; i < j2.layers.length; i++){
+    for (var i = 0; i < j2.layers.length; i++){
         idProv = j2.layers[i].id;
         j2.layers[i].id = lastID;
         if(j2.layers[i].type == "image"){
@@ -192,7 +165,7 @@ function controllaID(j1){
     for(var i = 0; i < j1.layers.length; i++){
         arrayO[i] = j1.layers[i].id;
     }
-    max = maxArray(arrayO);
+    var max = maxArray(arrayO);
     return max;
 }
 
