@@ -510,13 +510,10 @@ function setGlobal(req,res){
     connection.query(queryC, function(err,result){
         req.session.idCorrente = result[0].ID;
         req.session.tipo = result[0].tipo;
-        if (req.session.tipo == "Com"){
-            req.session.branch = result[0].branch;
-            res.write(toString(req.session.branch));
-        }
+        req.session.branch = result[0].branch;
         req.session.path = result[0].path;
         req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
-
+        res.write(toString(req.session.branch));
         res.write(toString(req.session.idCorrente));
         res.write(toString(req.session.tipo));
         res.write(toString(req.session.path));
