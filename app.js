@@ -5,7 +5,6 @@ const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
 const dbconfig = require('./Backend/database');
-const connection = mysql.createConnection(dbconfig.connection);
 const bodyParser = require('body-parser');
 const ConnessioneDB = require('./Backend/query');
 const Filesaver = require('filesaver');
@@ -21,7 +20,6 @@ var morgan = require('morgan');
 var nomeUtente = "";
 var fs = require('fs');
 var carica = require('./carica.js');
-var sleep = require('sleep');
 
 
 // *** DATABASE ***
@@ -273,6 +271,7 @@ app.post('/commit', function (req, res) {
   //INSERIRE QUI LA FUNZIONE diffJSON non appena avrò il caricamento file col REVG
     ConnessioneDB.insertCommitFile(req, res);
     ConnessioneDB.saveCommit(req, res,fileData, fileName1);
+  
 
 
 })
@@ -381,15 +380,9 @@ app.post('/eliminaUtente', function (req, res) {
 
 app.post('/readjson', function (req, res) {
   req.session.branch = req.body.branch;
-  console.log("req.session.branch: "+ req.session.branch);
   req.session.idCorrente = req.body.idCorrente;
   req.session.tipo = req.body.tipo;
   req.session.path = req.body.path;
-
-  console.log("req.session.branch: " + req.session.branch);
-  console.log("req.session.idCorrente: " + req.session.idCorrente);
-  console.log("req.session.tipo: " + req.session.tipo);
-  console.log("req.session.path: " + req.session.path);
 
   req.session.padre = req.body.idCorrente;
   req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
