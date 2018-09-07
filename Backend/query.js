@@ -85,9 +85,9 @@ function insertAddRevision(path, req,res, repository,callback) {
     });
     connection.query(querySQL1, function (err, results, fields) {
         if (err) throw err;
-
+        
     });
-    queryV = "Select * from file f where f.repository ='"+repository+"' order by idFile desc";
+    queryV = "Select * from file f where f.repository ='"+repository+"'";
     
     connection.query(queryV, function(err, result, fields){
         var idModifiche = Math.random().toString(36).substring(7);
@@ -105,7 +105,6 @@ function insertAddRevision(path, req,res, repository,callback) {
         //AGGIUNGERE ELSE SE CI SONO PIU' FILE PERCHE' ha PADRE
         idRevision(req,res, function(results){
             req.session.branch = branchMasterRev(req, results);
-            res.write(toString(req.session.branch));
             var fileEliminate = {eliminate:[]};
             req.session.eliminate = path+"/Eliminate/"+results+".json";
             fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function(err){
@@ -520,6 +519,10 @@ function setGlobal(req,res){
         res.write(toString(req.session.eliminate));
         res.end()
     });
+}
+
+function insertAddRevisionFIle(){
+    
 }
 
 

@@ -69,6 +69,7 @@ function setMergeDx(j){
     });
     
     return j;
+}
 /*
     if(j.layers.length != 1){
             for(var i = 0; i < j.layers.length; i++){
@@ -89,7 +90,7 @@ function setMergeDx(j){
     }
     return j;
     */
-} 
+ 
 
 function setMergeSx(j){
     j = aggiustaOrder(j);
@@ -162,8 +163,6 @@ function maxArray(array){
 }
 
 function mergeDG(j1,j2){
-    j1 = setMergeSx(j1);
-    j2 = setMergeDx(j2);
     var lastID = controllaID(j1);
     lastID++;
     var idProv;
