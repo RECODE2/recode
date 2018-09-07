@@ -87,7 +87,7 @@ function insertAddRevision(path, req,res, repository,callback) {
         if (err) throw err;
 
     });
-    queryV = "Select * from file f where f.repository ='"+repository+"'";
+    queryV = "Select * from file f where f.repository ='"+repository+"' order by idFile desc";
     
     connection.query(queryV, function(err, result, fields){
         var idModifiche = Math.random().toString(36).substring(7);
@@ -508,13 +508,15 @@ function datiPadre(req, callback){
 function setGlobal(req,res){
     var queryC = "Select * from revg where Utente ='"+req.session.nickname+"' order by dataModifica desc;";
     connection.query(queryC, function(err,result){
-        req.session.branch = result[0].branch;
         req.session.idCorrente = result[0].ID;
         req.session.tipo = result[0].tipo;
+        if (req.session.tipo == "Com"){
+            req.session.branch = result[0].branch;
+            res.write(toString(req.session.branch));
+        }
         req.session.path = result[0].path;
         req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
 
-        res.write(toString(req.session.branch));
         res.write(toString(req.session.idCorrente));
         res.write(toString(req.session.tipo));
         res.write(toString(req.session.path));
