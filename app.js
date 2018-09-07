@@ -5,7 +5,6 @@ const cors = require('cors');
 const app = express();
 const mysql = require('mysql');
 const dbconfig = require('./Backend/database');
-const connection = mysql.createConnection(dbconfig.connection);
 const bodyParser = require('body-parser');
 const ConnessioneDB = require('./Backend/query');
 const Filesaver = require('filesaver');
@@ -21,7 +20,6 @@ var morgan = require('morgan');
 var nomeUtente = "";
 var fs = require('fs');
 var carica = require('./carica.js');
-var sleep = require('sleep');
 
 
 // *** DATABASE ***

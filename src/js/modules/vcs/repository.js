@@ -400,7 +400,7 @@ class VCS_class {
                                                 target: result[i].ID
                                             }
                                         });
-                                        if (result[i].padre2 != '') {
+                                        if (result[i].padre2 != 'init') {
                                             cy.add({
                                                 data: {
                                                     id: 'edgex' + i,
