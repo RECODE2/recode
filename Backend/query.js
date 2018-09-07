@@ -87,7 +87,7 @@ function insertAddRevision(path, req,res, repository,callback) {
         if (err) throw err;
         
     });
-    queryV = "Select * from file f where f.repository ='"+repository+"'";
+    queryV = "Select * from file f where f.repository ='"+repository+"' order by idFile desc";
     
     connection.query(queryV, function(err, result, fields){
         var idModifiche = Math.random().toString(36).substring(7);
@@ -523,7 +523,7 @@ function setGlobal(req,res){
 }
 
 function insertAddRevisionFIle(){
-    
+
 }
 
 
