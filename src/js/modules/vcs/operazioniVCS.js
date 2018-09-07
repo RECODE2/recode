@@ -141,9 +141,59 @@ class OperazioniVCS {
 									/* INIZIO PREVIEW MINICANVAS */
 									var divJSON = document.createElement('div');
 									divJSON.setAttribute('id', 'divjson');
-									divJSON.style.height = "40%";
+									divJSON.style.height = "35%";
 									divJSON.style.position = "relative";
 									divJSON.style.marginTop = "5px";
+
+									var divSpan = document.createElement('div');
+									divSpan.setAttribute('id', 'divspan');
+									divSpan.style.height = '5%';
+									divSpan.style.position = "relative";
+									divSpan.style.marginTop = "5px";
+
+
+									var divSpan1 = document.createElement('div');
+									divSpan1.setAttribute('id', 'divspan1');
+									divSpan1.style.height = "100%";
+									divSpan1.style.width = "30%";
+									divSpan1.style.cssFloat = "left";
+
+									var divSpanX = document.createElement('div');
+									divSpanX.setAttribute('id', 'divspanx');
+									divSpanX.style.height = "100%";
+									divSpanX.style.width = "40%";
+									divSpanX.style.cssFloat = "left";
+
+									var divSpan2 = document.createElement('div');
+									divSpan2.setAttribute('id', 'divspan2');
+									divSpan2.style.height = "100%";
+									divSpan2.style.width = "30%";
+									divSpan2.style.cssFloat = "left";
+
+
+									var span1 = document.createElement('span');
+									span1.setAttribute('id', 'span1');
+									span1.style.marginLeft = "30%";
+									span1.style.fontSize = "30px";
+									span1.innerHTML = "&#8249;";
+
+									var span2 = document.createElement('span');
+									span2.setAttribute('id', 'span2');
+									span2.style.marginLeft = "30%";
+									span2.style.fontSize = "30px";
+									span2.innerHTML = "&#8250;";
+
+									var span1b = document.createElement('span');
+									span1b.setAttribute('id', 'span1b');
+									span1b.style.marginLeft = "30%";
+									span1b.style.fontSize = "30px";
+									span1b.innerHTML = "&#8249;";
+
+									var span2b = document.createElement('span');
+									span2b.setAttribute('id', 'span2b');
+									span2b.style.marginLeft = "30%";
+									span2b.style.fontSize = "30px";
+									span2b.innerHTML = "&#8250;";
 
 									var divMinicanvas1 = document.createElement('div');
 									divMinicanvas1.setAttribute('id', 'divminicanvas1');
@@ -170,27 +220,49 @@ class OperazioniVCS {
 									var canvas = document.createElement('canvas');
 									canvas.setAttribute('id', 'minicanvas1');
 									var ourctx = canvas.getContext("2d");
-									canvas.width = "800";
-									canvas.height = "600";
 
 
 									var canvas2 = document.createElement('canvas');
-
-
+									var ctx2 = canvas2.getContext("2d");
 
 
 									var canvas3 = document.createElement('canvas');
 									var ctx3 = canvas3.getContext("2d");
-									canvas3.width = "800";
-									canvas3.height = "600";
 
-									var selezionaDiv1= true;
-
+									var selezionaDiv1 = true;
 
 									document.querySelector('#popup #dialog_content').appendChild(divJSON);
+									document.querySelector('#popup #dialog_content').appendChild(divSpan);
+									document.querySelector('#popup #dialog_content #divspan').appendChild(divSpan1);
+									document.querySelector('#popup #dialog_content #divspan').appendChild(divSpanX);
+									document.querySelector('#popup #dialog_content #divspan').appendChild(divSpan2);
+
+									document.querySelector('#divspan1').appendChild(span1);
+									document.querySelector('#divspan1').appendChild(span2);
+
+
+									document.querySelector('#divspan2').appendChild(span1b);
+									document.querySelector('#divspan2').appendChild(span2b);
+
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divMinicanvas1);
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divMinicanvas2);
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divMinicanvas3);
+
+									$('#span1').click(function () {
+										alert("Hai cliccato span1");
+									})
+
+									$('#span2').click(function () {
+										alert("Hai cliccato span2");
+									})
+
+									$('#span1b').click(function () {
+										alert("Hai cliccato span1b");
+									})
+
+									$('#span2b').click(function () {
+										alert("Hai cliccato span2b");
+									})
 
 									var cy = cytoscape({
 										container: document.getElementById('cy'),
@@ -213,79 +285,79 @@ class OperazioniVCS {
 										'target-arrow-color': '#9dbaea'
 									}).update();
 
-                                //NODI
-                                for (var i = 0; i < result.length; i++) {
-                                    if (result[i].tipo == "Com") {
-                                        cy.add({
-                                            data: {
-                                                id: result[i].ID,
-                                                nome: result[i].nomeFile,
-                                                tipo: result[i].tipo,
-                                                path: result[i].path,
-                                                dataModifica: result[i].dataModifica,
-                                                padre1: result[i].padre1,
-                                                padre2: result[i].padre2,
-                                                branch: result[i].branch,
-                                                tipo: result[i].tipo,
-                                                utente: result[i].utente
-                                            }
-                                        }).style({ 'background-color': '#0066ff' });
-                                    }
-                                    else if (result[i].tipo == "Rev") {
-                                        cy.add({
-                                            data: {
-                                                id: result[i].ID,
-                                                nome: result[i].nomeFile,
-                                                tipo: result[i].tipo,
-                                                path: result[i].path,
-                                                dataModifica: result[i].dataModifica,
-                                                padre1: result[i].padre1,
-                                                padre2: result[i].padre2,
-                                                branch: result[i].branch,
-                                                tipo: result[i].tipo,
-                                                utente: result[i].utente
-                                            }
-                                        }).style({ 'background-color': '#ffcc00' });
-                                    }
-                                    else if (result[i].tipo == "Mer") {
-                                        cy.add({
-                                            data: {
-                                                id: result[i].ID,
-                                                nome: result[i].nomeFile,
-                                                tipo: result[i].tipo,
-                                                path: result[i].path,
-                                                dataModifica: result[i].dataModifica,
-                                                padre1: result[i].padre1,
-                                                padre2: result[i].padre2,
-                                                branch: result[i].branch,
-                                                tipo: result[i].tipo,
-                                                utente: result[i].utente
-                                            }
-                                        }).style({ 'background-color': '#ff3300' });
-                                    }
-                                }
+									//NODI
+									for (var i = 0; i < result.length; i++) {
+										if (result[i].tipo == "Com") {
+											cy.add({
+												data: {
+													id: result[i].ID,
+													nome: result[i].nomeFile,
+													tipo: result[i].tipo,
+													path: result[i].path,
+													dataModifica: result[i].dataModifica,
+													padre1: result[i].padre1,
+													padre2: result[i].padre2,
+													branch: result[i].branch,
+													tipo: result[i].tipo,
+													utente: result[i].utente
+												}
+											}).style({ 'background-color': '#0066ff' });
+										}
+										else if (result[i].tipo == "Rev") {
+											cy.add({
+												data: {
+													id: result[i].ID,
+													nome: result[i].nomeFile,
+													tipo: result[i].tipo,
+													path: result[i].path,
+													dataModifica: result[i].dataModifica,
+													padre1: result[i].padre1,
+													padre2: result[i].padre2,
+													branch: result[i].branch,
+													tipo: result[i].tipo,
+													utente: result[i].utente
+												}
+											}).style({ 'background-color': '#ffcc00' });
+										}
+										else if (result[i].tipo == "Mer") {
+											cy.add({
+												data: {
+													id: result[i].ID,
+													nome: result[i].nomeFile,
+													tipo: result[i].tipo,
+													path: result[i].path,
+													dataModifica: result[i].dataModifica,
+													padre1: result[i].padre1,
+													padre2: result[i].padre2,
+													branch: result[i].branch,
+													tipo: result[i].tipo,
+													utente: result[i].utente
+												}
+											}).style({ 'background-color': '#ff3300' });
+										}
+									}
 
-                                //ARCHI
-                                for (var i = 0; i < result.length; i++) {
-                                    if (result[i].padre1 != 'init') {
-                                        cy.add({
-                                            data: {
-                                                id: 'edge' + i,
-                                                source: result[i].padre1,
-                                                target: result[i].ID
-                                            }
-                                        });
-                                        if (result[i].padre2 != 'init') {
-                                            cy.add({
-                                                data: {
-                                                    id: 'edgex' + i,
-                                                    source: result[i].padre2,
-                                                    target: result[i].ID
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
+									//ARCHI
+									for (var i = 0; i < result.length; i++) {
+										if (result[i].padre1 != 'init') {
+											cy.add({
+												data: {
+													id: 'edge' + i,
+													source: result[i].padre1,
+													target: result[i].ID
+												}
+											});
+											if (result[i].padre2 != 'init') {
+												cy.add({
+													data: {
+														id: 'edgex' + i,
+														source: result[i].padre2,
+														target: result[i].ID
+													}
+												});
+											}
+										}
+									}
 
 									cy.elements().layout({ name: 'dagre', rankDir: 'LR' }).run();
 									cy.autolock(true);
@@ -312,86 +384,89 @@ class OperazioniVCS {
 											success: function (imgJson) {
 												immagineJson = imgJson;
 												node = evt.target;
-												console.log("SELEZIONADIV1 PRIMA DEL CONTROLLO... " + selezionaDiv1);
-											
-												if(selezionaDiv1==true){
+
+												if (selezionaDiv1 == true) {
+													canvas.width = imgJson.info.width;
+													canvas.height = imgJson.info.height;
 													ourctx.clearRect(0, 0, canvas.width, canvas.height);
 													createCanvasForMerge(imgJson, ourctx);
 													canvas.setAttribute('id', 'minicanvas1');
 													canvas.setAttribute('class', 'transparent');
 													canvas.style.height = "100%";
 													canvas.style.width = "100%";
-													selezionaDiv1=false;
+													selezionaDiv1 = false;
 													document.querySelector('#divminicanvas1').appendChild(canvas);
 												}
-												else{
+												else {
 													ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
+													canvas3.width = imgJson.info.width;
+													canvas3.height = imgJson.info.height;
 													createCanvasForMerge(imgJson, ctx3);
 													canvas3.setAttribute('id', 'minicanvas3');
 													canvas3.setAttribute('class', 'transparent');
 													canvas3.style.height = "100%";
 													canvas3.style.width = "100%";
-													selezionaDiv1=true;
+													selezionaDiv1 = true;
 													document.querySelector('#divminicanvas3').appendChild(canvas3);
 												}
 
-												// ctx2 è quello del MERGE
-												var ctx2 = canvas2.getContext("2d");
-												canvas2.width = imgJson.info.width;
+												// QUESTO SERVER PER LA DIV CENTRALE DEL MERGE..												
+/* 												canvas2.width = imgJson.info.width;
 												canvas2.height = imgJson.info.height;
-												//createCanvasForMerge(imgJson, ctx2);
+												ctx2.clearRect(0, 0, canvas3.width, canvas3.height);
+												createCanvasForMerge(imgJson, ctx2);
 												canvas2.setAttribute('id', 'minicanvas2');
 												canvas2.setAttribute('class', 'transparent');
 												canvas2.style.height = "100%";
-												canvas2.style.width = "100%";
+												canvas2.style.width = "100%"; */
 											}
 										})
 
-/* 										$.ajax({
-											url: 'http://localhost:8081/caricaImmagine',
-											type: 'POST',
-											data: {
-												idCorrente: node.id(),
-												nomeCorrente: node.data('nome'),
-												tipo: node.data('tipo'),
-												path: node.data('path')
-											},
-											success: function (imgJson) {
-												immagineJson = imgJson;
-												node = evt.target;
-												ourctx.clearRect(0, 0, canvas.width, canvas.height);
-												
-												if(selezionaDiv1==true){
-													createCanvasForMerge(imgJson, ourctx);
-													canvas.setAttribute('id', 'minicanvas1');
-													canvas.setAttribute('class', 'transparent');
-													canvas.style.height = "100%";
-													canvas.style.width = "100%";
-													selezionaDiv1=false;
-													document.querySelector('#divminicanvas1').appendChild(canvas);
-												}
-												else{
-													createCanvasForMerge(imgJson, ctx3);
-													canvas3.setAttribute('id', 'minicanvas3');
-													canvas3.setAttribute('class', 'transparent');
-													canvas3.style.height = "100%";
-													canvas3.style.width = "100%";
-													selezionaDiv1=true;
-													document.querySelector('#divminicanvas3').appendChild(canvas3);
-												}
-
-												// ctx2 è quello del MERGE
-												var ctx2 = canvas2.getContext("2d");
-												canvas2.width = imgJson.info.width;
-												canvas2.height = imgJson.info.height;
-												//createCanvasForMerge(imgJson, ctx2);
-												canvas2.setAttribute('id', 'minicanvas2');
-												canvas2.setAttribute('class', 'transparent');
-												canvas2.style.height = "100%";
-												canvas2.style.width = "100%";
-											}
-
-										}) */
+										/* 										$.ajax({
+																					url: 'http://localhost:8081/caricaImmagine',
+																					type: 'POST',
+																					data: {
+																						idCorrente: node.id(),
+																						nomeCorrente: node.data('nome'),
+																						tipo: node.data('tipo'),
+																						path: node.data('path')
+																					},
+																					success: function (imgJson) {
+																						immagineJson = imgJson;
+																						node = evt.target;
+																						ourctx.clearRect(0, 0, canvas.width, canvas.height);
+																						
+																						if(selezionaDiv1==true){
+																							createCanvasForMerge(imgJson, ourctx);
+																							canvas.setAttribute('id', 'minicanvas1');
+																							canvas.setAttribute('class', 'transparent');
+																							canvas.style.height = "100%";
+																							canvas.style.width = "100%";
+																							selezionaDiv1=false;
+																							document.querySelector('#divminicanvas1').appendChild(canvas);
+																						}
+																						else{
+																							createCanvasForMerge(imgJson, ctx3);
+																							canvas3.setAttribute('id', 'minicanvas3');
+																							canvas3.setAttribute('class', 'transparent');
+																							canvas3.style.height = "100%";
+																							canvas3.style.width = "100%";
+																							selezionaDiv1=true;
+																							document.querySelector('#divminicanvas3').appendChild(canvas3);
+																						}
+										
+																						// ctx2 è quello del MERGE
+																						var ctx2 = canvas2.getContext("2d");
+																						canvas2.width = imgJson.info.width;
+																						canvas2.height = imgJson.info.height;
+																						//createCanvasForMerge(imgJson, ctx2);
+																						canvas2.setAttribute('id', 'minicanvas2');
+																						canvas2.setAttribute('class', 'transparent');
+																						canvas2.style.height = "100%";
+																						canvas2.style.width = "100%";
+																					}
+										
+																				}) */
 									});
 								},
 								on_finish: function () {
