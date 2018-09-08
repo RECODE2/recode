@@ -315,7 +315,7 @@ app.post('/addRevision', function (req, res) {
       console.log("Commit add revision: ", commitId);
     });
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
-    ConnessioneDB.insertAddRevision(path, req, res, result);
+    ConnessioneDB.insertAddRevision(percorsoRepo, req, res, result);
   });
   successo = true;
   res.write(toString(successo));
