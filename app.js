@@ -22,6 +22,7 @@ var nomeUtente = "";
 var fs = require('fs');
 var carica = require('./carica.js');
 
+
 //chiamiamo la funzione ritornata da nodegit-lfs con nodegit come parametro
 addLfs(nodegit);
 
@@ -30,8 +31,6 @@ nodegit.LFS.register()
   .then(() => {
     console.log('The LFS filter has been registered!');
   });
-
-  
 
 // *** DATABASE ***
 // creiamo la connessione al database ed utilizziamo il db 'vit'
@@ -144,27 +143,29 @@ app.post('/creaRepository', function (req, res) {
 
   });
 
+  var repository;
+  var index;
+
   ConnessioneDB.inserisciDatiRepo(req, res, function (result) {
     idRepository = result.idRepository;
     var pathR = "./Server/" + result.idRepository;
     ConnessioneDB.partecipazioneRepo(req, idRepository);
     var repoDir = pathR + "/.git";
-    fse.ensureDir(path.resolve(__dirname, repoDir)).then(function () {
+    fse.ensureDir(path.resolve(__dirname, repoDir))
+    .then(function () {
       //Inseriamo la repository sul DB
-
       //Creiamo la cartella .git all'interno della repository
       return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
     }).then(function (repo) {
       repository = repo;
       var fileContent = req.body.readme;
-
-       /*
-      / Emuliamo il comportamento di GIT LFS TRACK "*.jpg"
-      / andando a creare il file .gitattributes al cui interno ci sarà la stringa:
-      / *.jpg filter=lfs diff=lfs merge=lfs -text
-      / (stringa che avremmo avuto andando ad effettuare il comando git lfs track "*.jpg")
-      */
-     fse.writeFile(path.join(repository.workdir(), ".gitattributes"), "*.jpg filter=lfs diff=lfs merge=lfs -text");
+      /*
+     / Emuliamo il comportamento di GIT LFS TRACK "*.jpg"
+     / andando a creare il file .gitattributes al cui interno ci sarà la stringa:
+     / *.jpg filter=lfs diff=lfs merge=lfs -text
+     / (stringa che avremmo avuto andando ad effettuare il comando git lfs track "*.jpg")
+     */
+      fse.writeFile(path.join(repository.workdir(), ".gitattributes"), "*.jpg filter=lfs diff=lfs merge=lfs -text");
 
       //aggiungiamo il file README.MD all'interno della working directory
       return fse.writeFile(path.join(repository.workdir(), fileName), fileContent);
@@ -184,6 +185,7 @@ app.post('/creaRepository', function (req, res) {
         return index.writeTree();
       })
       .then(function (oid) {
+
         var dataOdierna = new Date().getTime() / 1000;
 
         //in author e in committer si scrive: nome, email, data, GMT
@@ -194,6 +196,7 @@ app.post('/creaRepository', function (req, res) {
 
         return repository.createCommit("HEAD", author, committer, "Readme creato", oid, []);
       }).then(function (commitId) {
+        console.log("Commit readme: " + commitId);
       });
 
 
@@ -244,31 +247,75 @@ app.post('/addRevision', function (req, res) {
   dataFile.info.layer_active = 1;
   dataFile.layers[0].id = 1;
   dataFile.layers[0].order = 1;
-  if(dataFile.layers[0].type == "image"){
+  if (dataFile.layers[0].type == "image") {
     dataFile.data[0].id = 1;
   }
   var img = req.body.file_jpeg_data;
   var data = img.replace(/^data:image\/\w+;base64,/, "");
   var buf = new Buffer(data, 'base64');
-  var path = req.session.repository;
+  var percorsoRepo = req.session.repository;
+  var nomeFile = req.body.file_jpeg_name;
   var successo = false;
 
-
   //JSON
-  fsPath.writeFile(path + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
+  fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
     if (err) {
       console.log("Errore scrittura JSON " + err);
     }
   });
+  
+  
   //JPG
-  fsPath.writeFile(path + '/Immagini/' + req.body.file_jpeg_name, buf, function (err) {
-    if (err) {
-      console.log("Errore scrittura JPG " + err);
-    }
-  });
+  /**
+  * GIT ADD AND COMMIT (ADD REVISION)
+  */
+  var repo;
+  var oid;
+  var index;
 
+  nodegit.Repository.open(path.resolve(__dirname, percorsoRepo + "/.git"))
+    .then(function (repoResult) {
+      repo = repoResult;
+    }).then(function () {
+
+      //ADD FILE
+      return fse.writeFile(percorsoRepo +"/Immagini/" + nomeFile, buf, function (err) {
+        if (err) {
+          console.log("Errore scrittura JPG " + err);
+        }
+      });
+    })
+    .then(function () {
+      return repo.refreshIndex();
+    })
+    .then(function (indexResult) {
+      index = indexResult;
+    })
+    .then(function () {
+      return index.writeTree();
+    })
+    .then(function(oidResult) {
+      oid = oidResult;
+      return nodegit.Reference.nameToId(repo, "HEAD");
+    })
+    .then(function(head) {
+      return repo.getCommit(head);
+    })
+    .then(function (parent) {
+      var dataOdierna = new Date().getTime() / 1000;
+
+      var author = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
+
+      var committer = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
+
+      //COMMIT
+      return repo.createCommit("HEAD", author, committer, "Immagine creata... ", oid, [parent]);
+    })
+    .done(function (commitId) {
+      console.log("Commit add revision: ", commitId);
+    });
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
-    ConnessioneDB.insertAddRevision(path, req,res, result);
+    ConnessioneDB.insertAddRevision(path, req, res, result);
   });
   successo = true;
   res.write(toString(successo));
@@ -294,9 +341,9 @@ app.post('/commit', function (req, res) {
   fileName1 = req.body.file_json_name;
   fileData = req.body.file_json_data;
   //INSERIRE QUI LA FUNZIONE diffJSON non appena avrò il caricamento file col REVG
-    ConnessioneDB.insertCommitFile(req, res);
-    ConnessioneDB.saveCommit(req, res,fileData, fileName1);
-  
+  ConnessioneDB.insertCommitFile(req, res);
+  ConnessioneDB.saveCommit(req, res, fileData, fileName1);
+
 
 
 })
@@ -410,8 +457,8 @@ app.post('/readjson', function (req, res) {
   req.session.path = req.body.path;
 
   req.session.padre = req.body.idCorrente;
-  req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
-  if (req.session.tipo == "Rev"){
+  req.session.eliminate = req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json";
+  if (req.session.tipo == "Rev") {
     req.session.branch = ConnessioneDB.branchMasterC(req);
     console.log(req.session.branch);
   }
@@ -421,12 +468,12 @@ app.post('/readjson', function (req, res) {
 app.post('/caricaImmagine', function (req, res) {
   var imgJson = JSON.parse(fs.readFileSync(req.session.path));
   req.session.json = imgJson;
-  if (req.session.tipo == "Rev"){
+  if (req.session.tipo == "Rev") {
     res.send(req.session.json);
-  } else if (req.session.tipo == "Com"){
+  } else if (req.session.tipo == "Com") {
     console.log("AAAA");
-    req.session.fileEliminate = JSON.parse(fs.readFileSync(req.session.repository+"/Eliminate/"+req.session.idCorrente+".json"));
-      loop(req,res);
+    req.session.fileEliminate = JSON.parse(fs.readFileSync(req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json"));
+    loop(req, res);
   }
 });
 
@@ -436,16 +483,16 @@ app.post('/caricaImmagine', function (req, res) {
 
 
 
-function loop(req,res){
- ConnessioneDB.datiPadre(req, function(req){
-    if(req.session.tipo == "Com"){
+function loop(req, res) {
+  ConnessioneDB.datiPadre(req, function (req) {
+    if (req.session.tipo == "Com") {
       console.log(req.session.path + "Stampa del percorso");
       var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
-      req.session.json = carica.caricaImmagine(req.session.json,jsonPadre,req.session.fileEliminate);
-      loop(req,res);
-    }else {
+      req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
+      loop(req, res);
+    } else {
       var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
-      req.session.json = carica.caricaImmagine(req.session.json,jsonPadre,req.session.fileEliminate);
+      req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
       res.send(req.session.json);
       return;
     }

@@ -59,7 +59,7 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
         }
     }
     ConnessioneDB.idRevision(req, res, function(result){
-        fsPath.writeFile(req.session.repository + "/Eliminate/"+result+".json", JSON.stringify(fileEliminate, null, "\t"), function(err){
+       fsPath.writeFile(req.session.repository + "/Eliminate/"+result+".json", JSON.stringify(fileEliminate, null, "\t"), function(err){
             if(err) {
               throw err;
             } else {
