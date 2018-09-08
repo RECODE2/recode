@@ -388,7 +388,7 @@ class OperazioniVCS {
 													selezionaDiv1 = false;
 													selezionato1 = true;
 													document.querySelector('#divminicanvas1').appendChild(canvas);
-													imgJson1 = merge.setMergeSx(imgJson);
+													imgJson1 = JSON.parse(JSON.stringify(merge.setMergeSx(imgJson)));
 												}
 
 												else {
@@ -403,7 +403,7 @@ class OperazioniVCS {
 													selezionaDiv1 = true;
 													selezionato2 = true;
 													document.querySelector('#divminicanvas3').appendChild(canvas3);
-													imgJson2 = merge.setMergeDx(imgJson);
+													imgJson2 = JSON.parse(JSON.stringify(merge.setMergeDx(imgJson)));
 												}
 
 
@@ -418,8 +418,10 @@ class OperazioniVCS {
 													// QUESTO SERVER PER LA DIV CENTRALE DEL MERGE..
 												//	console.log("IMGJSON1: " + JSON.stringify(imgJson2, null, '\t'));
 												//	console.log("IMGJSON2: " + JSON.stringify(imgJson2, null, '\t'));
-
-													var imgJson3 = merge.mergeDG(imgJson1, imgJson2);
+													var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
+													var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
+													var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+													console.log("IMGJSON3 MERGE: " + JSON.stringify(imgJson3, null, '\t'));
 
 													canvas2.width = imgJson3.info.width;
 													canvas2.height = imgJson3.info.height;
@@ -440,10 +442,11 @@ class OperazioniVCS {
 														imgJson1 = merge.decrementMerge(imgJson1);
 
 														console.log("IMGJSON1 DECREMENT: " + JSON.stringify(imgJson1, null, '\t'));
-														//var imgJsonA = imgJson1;
-														//var imgJsonB = imgJson2;
-														imgJson3 = merge.mergeDG(imgJson1, imgJson2);
+														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
+														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
+														var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
 														console.log("IMGJSON1 DOPO IL MERGE: " + JSON.stringify(imgJson1, null, '\t'));
+														console.log("IMGJSON3 DOPO IL MERGE: " + JSON.stringify(imgJson3, null, '\t'));
 
 														canvas2.width = imgJson3.info.width;
 														canvas2.height = imgJson3.info.height;
@@ -457,8 +460,14 @@ class OperazioniVCS {
 													})
 
 													$('#span2').click(function () {
+														console.log("hai cliccato span1..");
+														console.log("IMGJSON1 NORMALE: " + JSON.stringify(imgJson1, null, '\t'));
 														imgJson1 = merge.incrementMerge(imgJson1);
-														imgJson3 = merge.mergeDG(imgJson1, imgJson2);
+														console.log("IMGJSON1 INCREMENT: " + JSON.stringify(imgJson1, null, '\t'));
+														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
+														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
+														var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+														console.log("MERGE DOPO CLICK INCREMENT SX: "+ JSON.stringify(imgJson3, null, '\t'));
 														canvas2.width = imgJson3.info.width;
 														canvas2.height = imgJson3.info.height;
 														ctx2.clearRect(0, 0, canvas3.width, canvas3.height);
@@ -471,7 +480,10 @@ class OperazioniVCS {
 
 													$('#span1b').click(function () {
 														imgJson2 = merge.decrementMerge(imgJson2);
-														imgJson3 = merge.mergeDG(imgJson1, imgJson2);
+														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
+														var imgJsonB = JSON.parse(JSON.stringify(imgJson1));
+														var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+														console.log("MERGE DOPO CLICK INCREMENT DX: "+ JSON.stringify(imgJson3, null, '\t'));
 														canvas2.width = imgJson3.info.width;
 														canvas2.height = imgJson3.info.height;
 														ctx2.clearRect(0, 0, canvas3.width, canvas3.height);
@@ -484,7 +496,10 @@ class OperazioniVCS {
 
 													$('#span2b').click(function () {
 														imgJson2 = merge.incrementMerge(imgJson2);
-														imgJson3 = merge.mergeDG(imgJson1, imgJson2);
+														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
+														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
+														var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+														console.log("MERGE DOPO CLICK INCREMENT DX: "+ JSON.stringify(imgJson3, null, '\t'));
 														canvas2.width = imgJson3.info.width;
 														canvas2.height = imgJson3.info.height;
 														ctx2.clearRect(0, 0, canvas3.width, canvas3.height);
