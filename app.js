@@ -10,6 +10,7 @@ const ConnessioneDB = require('./Backend/query');
 const Filesaver = require('filesaver');
 const fsPath = require('fs-path');
 var nodegit = require('./node_modules/nodegit');
+var addLfs = require('./node_modules/nodegit-lfs');
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 var fileName = "README.md";
@@ -21,6 +22,16 @@ var nomeUtente = "";
 var fs = require('fs');
 var carica = require('./carica.js');
 
+//chiamiamo la funzione ritornata da nodegit-lfs con nodegit come parametro
+addLfs(nodegit);
+
+//dopo che è stato argomentato nodegit, possiamo utilizzare LFS tramite l'oggetto LFS
+nodegit.LFS.register()
+  .then(() => {
+    console.log('The LFS filter has been registered!');
+  });
+
+  
 
 // *** DATABASE ***
 // creiamo la connessione al database ed utilizziamo il db 'vit'
@@ -146,6 +157,14 @@ app.post('/creaRepository', function (req, res) {
     }).then(function (repo) {
       repository = repo;
       var fileContent = req.body.readme;
+
+       /*
+      / Emuliamo il comportamento di GIT LFS TRACK "*.jpg"
+      / andando a creare il file .gitattributes al cui interno ci sarà la stringa:
+      / *.jpg filter=lfs diff=lfs merge=lfs -text
+      / (stringa che avremmo avuto andando ad effettuare il comando git lfs track "*.jpg")
+      */
+     fse.writeFile(path.join(repository.workdir(), ".gitattributes"), "*.jpg filter=lfs diff=lfs merge=lfs -text");
 
       //aggiungiamo il file README.MD all'interno della working directory
       return fse.writeFile(path.join(repository.workdir(), fileName), fileContent);
