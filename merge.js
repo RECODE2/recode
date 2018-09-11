@@ -159,9 +159,9 @@ function mergeDG(j1,j2){
     }
 
     var j3 = conc.merge(jA,jB);
-    j3.info.layer_active = jA.info.layer_active + jB.info.layer_active;
     j3 = aggiustaOrder(j3);
-    j3.info.layer_active = controllaOrder(j3);
+    var idActive = controllaOrder(j3);
+    j3.layers.active = idActive;
     return j3;
 }
 
