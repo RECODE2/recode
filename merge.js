@@ -159,9 +159,9 @@ function mergeDG(j1,j2){
     }
 
     var j3 = conc.merge(jA,jB);
-    j3.info.layer_active = jA.info.layer_active + jB.info.layer_active;
     j3 = aggiustaOrder(j3);
-    j3.info.layer_active = controllaID(j3);
+    var idActive = controllaOrder(j3);
+    j3.layers.active = idActive;
     return j3;
 }
 
@@ -173,6 +173,19 @@ function controllaID(j1){
     }
     var max = maxArray(arrayO);
     return max;
+}
+
+function controllaOrder(j1){
+    var arrayO = [];
+    for(var i = 0; i < j1.layers.length; i++){
+        arrayO[i] = j1.layers[i].order;
+    }
+    
+    var max = maxArray(arrayO);
+
+    var id = arrayO.indexOf(max);
+
+    return id;
 }
 
 
