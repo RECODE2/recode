@@ -226,7 +226,10 @@ class OperazioniVCS {
 
 									var canvas2 = document.createElement('canvas');
 									var ctx2 = canvas2.getContext("2d");
-
+									canvas2.setAttribute('id', 'minicanvas2');
+									canvas2.setAttribute('class', 'transparent');
+									canvas2.style.height = "100%";
+									canvas2.style.width = "100%";
 
 									var canvas3 = document.createElement('canvas');
 									var ctx3 = canvas3.getContext("2d");
@@ -375,7 +378,7 @@ class OperazioniVCS {
 											url: 'http://localhost:8081/caricaImmagine',
 											type: 'POST',
 											success: function (imgJson) {
-												immagineJson = imgJson;
+												//immagineJson = imgJson;
 												node = evt.target;
 
 
@@ -420,94 +423,77 @@ class OperazioniVCS {
 
 
 													// QUESTO SERVER PER LA DIV CENTRALE DEL MERGE..
-												//	console.log("IMGJSON1: " + JSON.stringify(imgJson2, null, '\t'));
-												//	console.log("IMGJSON2: " + JSON.stringify(imgJson2, null, '\t'));
-													var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
-													var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
-													imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
-
-													 
-													imgJson3 = JSON.parse(JSON.stringify(imgJson3));
-												
-
-													canvas2.width = imgJson3.info.width;
-													canvas2.height = imgJson3.info.height;
+												/* 	var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
+													var imgJsonB = JSON.parse(JSON.stringify(imgJson2)); */
+													var imgJsonMerge = merge.mergeDG(imgJson1, imgJson2);									
+													canvas2.width = imgJsonMerge.info.width;
+													canvas2.height = imgJsonMerge.info.height;
 													ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-													createCanvasForMerge(imgJson3, ctx2);
-													canvas2.setAttribute('id', 'minicanvas2');
+													createCanvasForMerge(imgJsonMerge, ctx2);
+/* 													canvas2.setAttribute('id', 'minicanvas2');
 													canvas2.setAttribute('class', 'transparent');
 													canvas2.style.height = "100%";
-													canvas2.style.width = "100%";
+													canvas2.style.width = "100%"; */
 													document.querySelector('#divminicanvas2').appendChild(canvas2);
+													console.log("JSON del MERGE: " + JSON.stringify(imgJsonMerge, null, '\t'));
 
-
-
+												}
 													$('#span1').click(function () {
 										
+														if (selezionato1 == true && selezionato2 == true) {
+
 														imgJson1 = merge.decrementMerge(imgJson1);
-
-												
-														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
-														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
-														imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
-														imgJson3 = JSON.parse(JSON.stringify(imgJson3));
+														var imgJsonMerge1 = merge.mergeDG(imgJson1, imgJson2);
 														ourctx.clearRect(0, 0, 800, 600);
-														
-											
-
-													
-													
-													})
-													console.log("Prima proprio: "+ JSON.stringify(imgJson3, null, '\t'));
-													document.getElementById('span2').onclick = function pippo(){
-														imgJson1 = merge.incrementMerge(imgJson1);
-													
-														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
-														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
-														imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
-														var x = JSON.parse(JSON.stringify(imgJson3));
-														document.querySelector("#divminicanvas2").removeChild(canvas2);
-														canvas2 = document.createElement("canvas");
-														ourctx = canvas2.getContext("2d");
-														canvas2.setAttribute('id', 'minicanvas2');
-														canvas2.setAttribute('class', 'transparent');
-														//ciao
 														canvas2.width = imgJson3.info.width;
 														canvas2.height = imgJson3.info.height;
 														ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-														createCanvasForMerge(imgJson3, ctx2);
+														createCanvasForMerge(imgJsonMerge1, ctx2);
 														canvas2.setAttribute('id', 'minicanvas2');
 														canvas2.setAttribute('class', 'transparent');
 														canvas2.style.height = "100%";
 														canvas2.style.width = "100%";
 														document.querySelector('#divminicanvas2').appendChild(canvas2);
-													}
+														
+														
+														}
+
+													
+													
+													})
+
 
 													$('#span2').click(function () {
 														
+														if (selezionato1 == true && selezionato2 == true) {
+
 														var imgJsonX = merge.incrementMerge(imgJson1);
-													
 														var imgJsonA = JSON.parse(JSON.stringify(imgJsonX));
 														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
-														imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
-														imgJson3 = JSON.parse(JSON.stringify(imgJson3));
-														console.log("Dopo click "+ JSON.stringify(imgJson3, null, '\t'));
 
-														canvas2.width = imgJson3.info.width;
-														canvas2.height = imgJson3.info.height;
+														var imgJsonMerge2 = JSON.parse(JSON.stringify(merge.mergeDG(imgJsonA, imgJsonB)));
+														console.log("Dopo click "+ JSON.stringify(imgJsonMerge2, null, '\t'));
+														
+														
+																										
+														canvas2.width = imgJsonMerge2.info.width;
+														canvas2.height = imgJsonMerge2.info.height;
 														ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-														createCanvasForMerge(imgJson3, ctx2);
+														createCanvasForMerge(imgJsonMerge2, ctx2);
+
+														console.log("Dopo create canvas for merge: " + JSON.stringify(imgJsonMerge2, null, '\t'));
+
 														canvas2.setAttribute('id', 'minicanvas2');
 														canvas2.setAttribute('class', 'transparent');
 														canvas2.style.height = "100%";
 														canvas2.style.width = "100%";
 														document.querySelector('#divminicanvas2').appendChild(canvas2);
-														
-													
-													
+														}
 													})
 
 													$('#span1b').click(function () {
+														if (selezionato1 == true && selezionato2 == true) {
+
 														imgJson2 = merge.decrementMerge(imgJson2);
 														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 														var imgJsonB = JSON.parse(JSON.stringify(imgJson1));
@@ -523,11 +509,13 @@ class OperazioniVCS {
 														canvas2.style.width = "100%";
 														document.querySelector('#divminicanvas2').appendChild(canvas2);
 											
-													
+														}
 													})
 													
 										
 													$('#span2b').click(function () {
+														if (selezionato1 == true && selezionato2 == true) {
+
 														imgJson2 = merge.incrementMerge(imgJson2);
 														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
@@ -542,14 +530,14 @@ class OperazioniVCS {
 														canvas2.style.height = "100%";
 														canvas2.style.width = "100%";
 														document.querySelector('#divminicanvas2').appendChild(canvas2);
-
+														}
 												
 													
 													})
 
 													
 												}
-											}
+											
 										})
 									});
 								},
