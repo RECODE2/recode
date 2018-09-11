@@ -36,7 +36,7 @@ function aggiustaOrder(j){
 
 }
 
-function setMergeDx(j){
+function setMergeSx(j){
 
     j = aggiustaOrder(j);
 
@@ -65,7 +65,7 @@ function setMergeDx(j){
     
 }
 
-function setMergeSx(j){
+function setMergeDx(j){
     j = aggiustaOrder(j);
 
     var arrayO = [];
@@ -108,7 +108,7 @@ function decrementMerge(j){
         ArrayO[i] = j.layers[i].order;
     }
     var min = minArray(ArrayO);
-    if(min !== 1 || min !== 2 ){
+    if(min !== 1 && min !== 2 ){
 
         for(var i = 0; i < j.layers.length; i++){
             j.layers[i].order = j.layers[i].order - 2;
@@ -161,6 +161,7 @@ function mergeDG(j1,j2){
     var j3 = conc.merge(jA,jB);
     j3.info.layer_active = jA.info.layer_active + jB.info.layer_active;
     j3 = aggiustaOrder(j3);
+    j3.info.layer_active = controllaID(j3);
     return j3;
 }
 
