@@ -1,0 +1,174 @@
+{
+	"info": {
+		"width": 640,
+		"height": 480,
+		"about": "Image data with multi-layers. Can be opened using miniPaint - https://github.com/viliusle/miniPaint",
+		"date": "2018-09-11",
+		"version": "4.0.0",
+		"layer_active": 1
+	},
+	"layers": [
+		{
+			"id": 1,
+			"parent_id": 0,
+			"name": "Rectangle #1",
+			"type": "brush",
+			"link": null,
+			"x": 0,
+			"y": 0,
+			"width": null,
+			"width_original": null,
+			"height": null,
+			"height_original": null,
+			"visible": true,
+			"is_vector": true,
+			"opacity": 100,
+			"order": 1,
+			"composition": "source-over",
+			"rotate": null,
+			"data": [
+				[
+					212,
+					80,
+					4
+				],
+				[
+					208,
+					82,
+					4
+				],
+				[
+					200,
+					86,
+					4
+				],
+				[
+					184,
+					97,
+					4
+				],
+				[
+					173,
+					107,
+					5
+				],
+				[
+					162,
+					116,
+					4
+				],
+				[
+					155,
+					124,
+					4
+				],
+				[
+					152,
+					132,
+					4
+				],
+				[
+					156,
+					142,
+					4
+				],
+				[
+					179,
+					161,
+					4
+				],
+				[
+					214,
+					183,
+					5
+				],
+				[
+					248,
+					199,
+					6
+				],
+				[
+					266,
+					213,
+					6
+				],
+				[
+					275,
+					221,
+					7
+				],
+				[
+					276,
+					234,
+					6
+				],
+				[
+					273,
+					239,
+					6
+				],
+				[
+					251,
+					255,
+					5
+				],
+				[
+					228,
+					264,
+					6
+				],
+				[
+					201,
+					270,
+					6
+				],
+				[
+					176,
+					274,
+					7
+				],
+				[
+					159,
+					276,
+					8
+				],
+				[
+					149,
+					276,
+					9
+				],
+				[
+					146,
+					275,
+					8
+				],
+				[
+					146,
+					271,
+					7
+				],
+				[
+					148,
+					266,
+					6
+				],
+				[
+					148,
+					266
+				]
+			],
+			"params": {
+				"size": 4,
+				"smart_brush": true
+			},
+			"status": null,
+			"color": "#5cabfb",
+			"filters": [],
+			"render_function": [
+				"brush",
+				"render"
+			]
+		}
+	],
+	"data": []
+}

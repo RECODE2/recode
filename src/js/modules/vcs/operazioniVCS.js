@@ -456,8 +456,10 @@ class OperazioniVCS {
 															url: 'http://localhost:8081/readJsonMerge',
 															type: 'POST',
 															data: {
-																mergeJson: imgJson3
+																mergeJson: JSON.stringify(imgJson3),
 															},
+															contentType: "application/json",
+															
 															success: function (imgJson3) {
 																
 																canvas2.width = imgJson3.info.width;
@@ -494,8 +496,9 @@ class OperazioniVCS {
 															url: 'http://localhost:8081/readJsonMerge',
 															type: 'POST',
 															data: {
-																mergeJson: imgJson3
+																mergeJson: JSON.stringify(imgJson3),
 															},
+															contentType: "application/json",
 															success: function (imgJson3) {
 																immaginePippo = imgJson3;
 																canvas2.width = immaginePippo.info.width;

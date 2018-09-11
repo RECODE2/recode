@@ -1,0 +1,38 @@
+{
+	"info": {
+		"width": 640,
+		"height": 480,
+		"about": "Image data with multi-layers. Can be opened using miniPaint - https://github.com/viliusle/miniPaint",
+		"date": "2018-09-11",
+		"version": "4.0.0",
+		"layer_active": 1
+	},
+	"layers": [
+		{
+			"id": 1,
+			"parent_id": 0,
+			"name": "Brush #1",
+			"type": null,
+			"link": null,
+			"x": 0,
+			"y": 0,
+			"width": 0,
+			"width_original": null,
+			"height": 0,
+			"height_original": null,
+			"visible": true,
+			"is_vector": false,
+			"opacity": 100,
+			"order": 1,
+			"composition": "source-over",
+			"rotate": 0,
+			"data": null,
+			"params": {},
+			"status": null,
+			"color": "#5cabfb",
+			"filters": [],
+			"render_function": null
+		}
+	],
+	"data": []
+}

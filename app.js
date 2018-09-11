@@ -276,8 +276,10 @@ app.post('/addRevision', function (req, res) {
   nodegit.Repository.open(path.resolve(__dirname, percorsoRepo + "/.git"))
     .then(function (repoResult) {
       repo = repoResult;
+      console.log("D"+repo);
     }).then(function () {
       //ADD FILE
+      console.log("C"+percorsoRepo);
       return fse.writeFile(percorsoRepo +"/Immagini/" + nomeFile, buf, function (err) {
         if (err) {
           console.log("Errore scrittura JPG " + err);
@@ -292,6 +294,7 @@ app.post('/addRevision', function (req, res) {
     })
     .then(function(){
       var percorso = "Immagini/" + nomeFile;
+      console.log("E"+percorso);
       return index.addByPath(percorso);
     })
     .then(function() {
@@ -485,7 +488,7 @@ app.post('/caricaImmagine', function (req, res) {
 
 app.post('/readJsonMerge', function(req,res) {
 
-  var imgJson = JSON.parse(JSON.stringify(req.body.mergeJson));
+  var imgJson = JSON.parse(req.body.mergeJson);
   console.log(JSON.stringify(imgJson, null, '\t'));
   res.send(imgJson);
 
