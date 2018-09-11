@@ -277,6 +277,7 @@ app.post('/addRevision', function (req, res) {
     .then(function (repoResult) {
       repo = repoResult;
     }).then(function () {
+
       //ADD FILE
       return fse.writeFile(percorsoRepo +"/Immagini/" + nomeFile, buf, function (err) {
         if (err) {
@@ -289,13 +290,6 @@ app.post('/addRevision', function (req, res) {
     })
     .then(function (indexResult) {
       index = indexResult;
-    })
-    .then(function(){
-      var percorso = "Immagini/" + nomeFile;
-      return index.addByPath(percorso);
-    })
-    .then(function() {
-      return index.write();
     })
     .then(function () {
       return index.writeTree();
@@ -315,13 +309,13 @@ app.post('/addRevision', function (req, res) {
       var committer = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
 
       //COMMIT
-      return repo.createCommit("HEAD", author, committer, "Immagine "+nomeFile+" creata... ", oid, [parent]);
+      return repo.createCommit("HEAD", author, committer, "Immagine creata... ", oid, [parent]);
     })
     .done(function (commitId) {
       console.log("Commit add revision: ", commitId);
     });
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
-    ConnessioneDB.insertAddRevision(percorsoRepo, req, res, result);
+    ConnessioneDB.insertAddRevision(path, req, res, result);
   });
   successo = true;
   res.write(toString(successo));
@@ -481,14 +475,6 @@ app.post('/caricaImmagine', function (req, res) {
     req.session.fileEliminate = JSON.parse(fs.readFileSync(req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json"));
     loop(req, res);
   }
-});
-
-app.post('/readJsonMerge', function(req,res) {
-
-  var imgJson = JSON.parse(JSON.stringify(req.body.mergeJson));
-  console.log(JSON.stringify(imgJson, null, '\t'));
-  res.send(imgJson);
-
 });
 
 
