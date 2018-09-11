@@ -3,6 +3,7 @@ import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.j
 import Base_layers_class from './../../../js/core/base-layers';
 import Helper_class from './../../libs/helpers.js';
 import merge from './../../../../merge';
+import filesaver from './../../../../node_modules/file-saver/FileSaver.min.js';
 
 
 var cytoscape = require('cytoscape');
@@ -235,6 +236,8 @@ class OperazioniVCS {
 									var selezionato2 = false;
 									var imgJson1;
 									var imgJson2;
+									var imgJson3;
+									var XX;
 
 									document.querySelector('#popup #dialog_content').appendChild(divJSON);
 									document.querySelector('#popup #dialog_content').appendChild(divSpan);
@@ -404,6 +407,7 @@ class OperazioniVCS {
 													selezionato2 = true;
 													document.querySelector('#divminicanvas3').appendChild(canvas3);
 													imgJson2 = JSON.parse(JSON.stringify(merge.setMergeDx(imgJson)));
+													
 												}
 
 
@@ -420,12 +424,15 @@ class OperazioniVCS {
 												//	console.log("IMGJSON2: " + JSON.stringify(imgJson2, null, '\t'));
 													var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
-													var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
-													console.log("IMGJSON3 MERGE: " + JSON.stringify(imgJson3, null, '\t'));
+													imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+
+													 
+													imgJson3 = JSON.parse(JSON.stringify(imgJson3));
+												
 
 													canvas2.width = imgJson3.info.width;
 													canvas2.height = imgJson3.info.height;
-													ctx2.clearRect(0, 0, canvas3.width, canvas3.height);
+													ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
 													createCanvasForMerge(imgJson3, ctx2);
 													canvas2.setAttribute('id', 'minicanvas2');
 													canvas2.setAttribute('class', 'transparent');
@@ -436,89 +443,119 @@ class OperazioniVCS {
 
 
 													$('#span1').click(function () {
-														console.log("hai cliccato span1..");
-														console.log("IMGJSON1 NORMALE: " + JSON.stringify(imgJson1, null, '\t'));
-
+										
 														imgJson1 = merge.decrementMerge(imgJson1);
 
-														console.log("IMGJSON1 DECREMENT: " + JSON.stringify(imgJson1, null, '\t'));
+												
 														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
-														var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
-														console.log("IMGJSON1 DOPO IL MERGE: " + JSON.stringify(imgJson1, null, '\t'));
-														console.log("IMGJSON3 DOPO IL MERGE: " + JSON.stringify(imgJson3, null, '\t'));
+														imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+														imgJson3 = JSON.parse(JSON.stringify(imgJson3));
+														ourctx.clearRect(0, 0, 800, 600);
+														
+											
 
+													
+													
+													})
+													console.log("Prima proprio: "+ JSON.stringify(imgJson3, null, '\t'));
+													document.getElementById('span2').onclick = function pippo(){
+														imgJson1 = merge.incrementMerge(imgJson1);
+													
+														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
+														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
+														imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+														var x = JSON.parse(JSON.stringify(imgJson3));
+														document.querySelector("#divminicanvas2").removeChild(canvas2);
+														canvas2 = document.createElement("canvas");
+														ourctx = canvas2.getContext("2d");
+														canvas2.setAttribute('id', 'minicanvas2');
+														canvas2.setAttribute('class', 'transparent');
+														//ciao
 														canvas2.width = imgJson3.info.width;
 														canvas2.height = imgJson3.info.height;
-														ctx2.clearRect(0, 0, canvas3.width, canvas3.height);
+														ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
 														createCanvasForMerge(imgJson3, ctx2);
 														canvas2.setAttribute('id', 'minicanvas2');
 														canvas2.setAttribute('class', 'transparent');
 														canvas2.style.height = "100%";
 														canvas2.style.width = "100%";
 														document.querySelector('#divminicanvas2').appendChild(canvas2);
-													})
+													}
 
 													$('#span2').click(function () {
-														console.log("hai cliccato span1..");
-														console.log("IMGJSON1 NORMALE: " + JSON.stringify(imgJson1, null, '\t'));
-														imgJson1 = merge.incrementMerge(imgJson1);
-														console.log("IMGJSON1 INCREMENT: " + JSON.stringify(imgJson1, null, '\t'));
-														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
+														
+														var imgJsonX = merge.incrementMerge(imgJson1);
+													
+														var imgJsonA = JSON.parse(JSON.stringify(imgJsonX));
 														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
-														var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
-														console.log("MERGE DOPO CLICK INCREMENT SX: "+ JSON.stringify(imgJson3, null, '\t'));
+														imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+														imgJson3 = JSON.parse(JSON.stringify(imgJson3));
+														console.log("Dopo click "+ JSON.stringify(imgJson3, null, '\t'));
+
 														canvas2.width = imgJson3.info.width;
 														canvas2.height = imgJson3.info.height;
-														ctx2.clearRect(0, 0, canvas3.width, canvas3.height);
+														ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
 														createCanvasForMerge(imgJson3, ctx2);
 														canvas2.setAttribute('id', 'minicanvas2');
 														canvas2.setAttribute('class', 'transparent');
 														canvas2.style.height = "100%";
 														canvas2.style.width = "100%";
-														document.querySelector('#divminicanvas2').appendChild(canvas2);													})
+														document.querySelector('#divminicanvas2').appendChild(canvas2);
+														
+													
+													
+													})
 
 													$('#span1b').click(function () {
 														imgJson2 = merge.decrementMerge(imgJson2);
 														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 														var imgJsonB = JSON.parse(JSON.stringify(imgJson1));
-														var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
-														console.log("MERGE DOPO CLICK INCREMENT DX: "+ JSON.stringify(imgJson3, null, '\t'));
+														imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+														imgJson3 = JSON.parse(JSON.stringify(imgJson3));
 														canvas2.width = imgJson3.info.width;
 														canvas2.height = imgJson3.info.height;
-														ctx2.clearRect(0, 0, canvas3.width, canvas3.height);
+														ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
 														createCanvasForMerge(imgJson3, ctx2);
 														canvas2.setAttribute('id', 'minicanvas2');
 														canvas2.setAttribute('class', 'transparent');
 														canvas2.style.height = "100%";
 														canvas2.style.width = "100%";
-														document.querySelector('#divminicanvas2').appendChild(canvas2);													})
-
+														document.querySelector('#divminicanvas2').appendChild(canvas2);
+											
+													
+													})
+													
+										
 													$('#span2b').click(function () {
 														imgJson2 = merge.incrementMerge(imgJson2);
 														var imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 														var imgJsonB = JSON.parse(JSON.stringify(imgJson2));
-														var imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
-														console.log("MERGE DOPO CLICK INCREMENT DX: "+ JSON.stringify(imgJson3, null, '\t'));
+														imgJson3 = merge.mergeDG(imgJsonA, imgJsonB);
+														imgJson3 = JSON.parse(JSON.stringify(imgJson3));
 														canvas2.width = imgJson3.info.width;
 														canvas2.height = imgJson3.info.height;
-														ctx2.clearRect(0, 0, canvas3.width, canvas3.height);
+														ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
 														createCanvasForMerge(imgJson3, ctx2);
 														canvas2.setAttribute('id', 'minicanvas2');
 														canvas2.setAttribute('class', 'transparent');
 														canvas2.style.height = "100%";
 														canvas2.style.width = "100%";
-														document.querySelector('#divminicanvas2').appendChild(canvas2);													})
+														document.querySelector('#divminicanvas2').appendChild(canvas2);
 
+												
+													
+													})
+
+													
 												}
 											}
 										})
 									});
 								},
 								on_finish: function () {
-									/* Quì inserirò il codice che consentirà di effettuare
-										il merge tra i due json selezionati dall'utente */
-								},
+									
+								}
 								/*FINE REVG*/
 							};
 							this.POP.show(settings);
@@ -532,4 +569,7 @@ class OperazioniVCS {
 		});
 	}
 }
+
+
+
 export default OperazioniVCS;

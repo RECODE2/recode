@@ -75,6 +75,7 @@
     "sha1": "^1.1.1",
     "sleep": "^5.2.3",
     "sort-json-array": "^0.1.7",
-    "synchronize": "^2.0.0"
+    "synchronize": "^2.0.0",
+    "yarn": "^1.9.4"
   }
 }
