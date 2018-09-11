@@ -477,6 +477,14 @@ app.post('/caricaImmagine', function (req, res) {
   }
 });
 
+app.post('/readJsonMerge', function(req,res) {
+
+  var imgJson = JSON.parse(JSON.stringify(req.body.mergeJson));
+  console.log(JSON.stringify(imgJson, null, '\t'));
+  res.send(imgJson);
+
+});
+
 
 
 //FUNZIONI
