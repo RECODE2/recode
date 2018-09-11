@@ -315,7 +315,7 @@ app.post('/addRevision', function (req, res) {
       console.log("Commit add revision: ", commitId);
     });
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
-    ConnessioneDB.insertAddRevision(path, req, res, result);
+    ConnessioneDB.insertAddRevision(percorsoRepo, req, res, result);
   });
   successo = true;
   res.write(toString(successo));
@@ -477,6 +477,18 @@ app.post('/caricaImmagine', function (req, res) {
   }
 });
 
+app.post('/merge', function (req, res) {
+  var nomedelfile = req.body.nomeFile;
+  var dataFile = req.body.jsonMerge;  
+  var percorsoRepo = req.session.repository;
+
+  //JSON
+  fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
+    if (err) {
+      console.log("Errore scrittura JSON " + err);
+    }
+  });
+});
 
 
 //FUNZIONI
