@@ -468,7 +468,7 @@ app.post('/readjson', function (req, res) {
 app.post('/caricaImmagine', function (req, res) {
   var imgJson = JSON.parse(fs.readFileSync(req.session.path));
   req.session.json = imgJson;
-  if (req.session.tipo == "Rev") {
+  if (req.session.tipo == "Rev" || req.session.tipo == "Mer") {
     res.send(req.session.json);
   } else if (req.session.tipo == "Com") {
     console.log("AAAA");
@@ -477,7 +477,15 @@ app.post('/caricaImmagine', function (req, res) {
   }
 });
 
+
+
 app.post('/merge', function (req, res) {
+  req.session.branch = req.body.branch;
+  req.session.idCorrente = req.body.idCorrente;
+  req.session.padre = req.body.idCorrente;
+  req.session.idCorrente2 = req.body.idCorrente2;
+  req.session.padre2 = req.body.idCorrente2;
+
   var nomedelfile = req.body.nomeFile;
   var dataFile = req.body.jsonMerge;  
   var percorsoRepo = req.session.repository;
@@ -488,9 +496,16 @@ app.post('/merge', function (req, res) {
       console.log("Errore scrittura JSON " + err);
     }
   });
+
+  ConnessioneDB.insertMergeFile(req,res); //OK!
+  ConnessioneDB.saveMerge(percorsoRepo,req,res,dataFile,nomedelfile);
+
+
+  //CORREGGI QUESTO PER CREARE NUOVO BRANCH....
+
+ /*  req.session.branch = ConnessioneDB.branchMasterC(req);
+  console.log(req.session.branch); */
 });
-
-
 //FUNZIONI
 
 

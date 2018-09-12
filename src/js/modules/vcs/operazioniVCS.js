@@ -5,6 +5,9 @@ import Helper_class from './../../libs/helpers.js';
 import merge from './../../../../merge';
 import File_open_class from "./../file/open.js";
 import Base_selection_class from "./../../core/base-selection"
+import filesaver from './../../../../node_modules/file-saver/FileSaver.min.js';
+var request = require('ajax-request');
+
 
 var cytoscape = require('cytoscape');
 var cydagre = require('cytoscape-dagre');
@@ -69,6 +72,8 @@ class OperazioniVCS {
 							var imgJsonMerge2;
 							var imgJsonMergeX;
 							var controllomerge = false;
+							var idPadre2;
+							var primoPadre;
 							var settings = {
 								title: 'Merge',
 								on_load: function () {
@@ -375,6 +380,12 @@ class OperazioniVCS {
 												//immagineJson = imgJson;
 
 
+											
+											/* 	var imgJsonS = JSON.stringify(imgJson, null, '\t');
+												var blob = new Blob([imgJsonS], {type: "text/plain"});
+												//var data = window.URL.createObjectURL(blob); //html5
+												filesaver.saveAs(blob, "imgJson.json"); */
+
 												if (selezionaDiv1 == true) {
 													node = evt.target;
 
@@ -391,22 +402,25 @@ class OperazioniVCS {
 													document.querySelector('#divminicanvas1').appendChild(canvas);
 													imgJson1 = JSON.parse(JSON.stringify(merge.setMergeSx(imgJson)));
 
+													primoPadre = node.id();
+													
 													$.ajax({
 														url: 'http://localhost:8081/readjson',
 														type: 'POST',
 														data: {
-															idCorrente: node.id(),
+															idCorrente: primoPadre,
 															nomeCorrente: node.data('nome'),
 															tipo: node.data('tipo'),
 															path: node.data('path'),
 															branch: node.data('branch')
 														}
 													})
+
+												
 												}
 
 												else {
 
-													node2 = evt.target;
 													ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
 													canvas3.width = imgJson.info.width;
 													canvas3.height = imgJson.info.height;
@@ -420,16 +434,14 @@ class OperazioniVCS {
 													document.querySelector('#divminicanvas3').appendChild(canvas3);
 													imgJson2 = JSON.parse(JSON.stringify(merge.setMergeDx(imgJson)));
 												
+
+													
 												
 													$.ajax({
 														url: 'http://localhost:8081/readjson',
 														type: 'POST',
 														data: {
-															idCorrente2: node2.id(),
-															nomeCorrente2: node2.data('nome'),
-															tipo2: node2.data('tipo'),
-															path2: node2.data('path'),
-															branch2: node2.data('branch')
+															idCorrente2: node.id()
 														}
 													})
 												}
@@ -441,11 +453,14 @@ class OperazioniVCS {
 												 */
 												if (selezionato1 == true && selezionato2 == true) {													
 
-													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
+											 		imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
-													imgJsonMerge = merge.mergeDG(imgJsonA, imgJsonB);
-													imgJsonMergeX = JSON.parse(JSON.stringify(imgJsonMerge));
-													
+													imgJsonMergeX = merge.mergeDG(imgJson1, imgJson2);
+
+
+											
+													//imgJsonMergeX = JSON.parse(JSON.stringify(imgJsonMerge));		
+
 													var base_selection = new Base_selection_class();
 													open.load_json(imgJsonMergeX);
 													base_selection.reset_selection();
@@ -522,32 +537,30 @@ class OperazioniVCS {
 								},
 								on_finish: function () {
 
+									var imgJsonSS = JSON.stringify(imgJsonMergeX, null, '\t');
+									var blob = new Blob([imgJsonSS], {type: "text/plain"});
+									//var data = window.URL.createObjectURL(blob); //html5
+									filesaver.saveAs(blob, "imgJsonMerge.json");
 
-									
-									$.ajax({
-										url: 'http://localhost:8081/readjson',
-										type: 'POST',
-										data: {
-											idCorrente: node.id(),
-											nomeCorrente: node.data('nome'),
-											tipo: node.data('tipo'),
-											path: node.data('path'),
-											branch: node.data('branch'),
-											idCorrente2: node2.id()
-										}
-									});
-
-									$.ajax({
+									request({
 										url: 'http://localhost:8081/merge',
-										type: 'POST',
+										method: 'POST',
 										data: {
 											jsonMerge: imgJsonMergeX,
-											nomeFile: "merge"
-										},
-										success: function(){
+											nomeFile: "merge.json",
+											idCorrente: primoPadre,
+											nomeCorrente: node.data('nome'),
+											branch: node.data('branch'),
+											idCorrente2: node.id()
+										}
+									}, function(err, res, body) {
+										if(err) {throw err;}
+										else{
 											alertify.success("Merge effettuato..");
-										},
-									})
+										}
+										
+									});
+							
 
 								}
 								/*FINE REVG*/
