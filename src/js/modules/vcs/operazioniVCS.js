@@ -74,6 +74,7 @@ class OperazioniVCS {
 							var controllomerge = false;
 							var idPadre2;
 							var primoPadre;
+							var primoBranch;
 							var settings = {
 								title: 'Merge',
 								on_load: function () {
@@ -403,6 +404,7 @@ class OperazioniVCS {
 													imgJson1 = JSON.parse(JSON.stringify(merge.setMergeSx(imgJson)));
 
 													primoPadre = node.id();
+													primoBranch = node.data('branch');
 													
 													$.ajax({
 														url: 'http://localhost:8081/readjson',
@@ -412,7 +414,7 @@ class OperazioniVCS {
 															nomeCorrente: node.data('nome'),
 															tipo: node.data('tipo'),
 															path: node.data('path'),
-															branch: node.data('branch')
+															branch: primoBranch
 														}
 													})
 
@@ -550,7 +552,7 @@ class OperazioniVCS {
 											nomeFile: "merge.json",
 											idCorrente: primoPadre,
 											nomeCorrente: node.data('nome'),
-											branch: node.data('branch'),
+											branch: primoBranch,
 											idCorrente2: node.id()
 										}
 									}, function(err, res, body) {

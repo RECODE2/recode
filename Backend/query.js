@@ -523,6 +523,28 @@ function setGlobal(req,res){
 }
 
 
+function setGlobal2(req,res,results){
+    req.session.branch = branchMasterRev(req, results);
+    console.log("SESSION BRANCH.. " + req.session.branch);
+    var queryC = "Select * from revg where Utente ='"+req.session.nickname+"' order by dataModifica desc;";
+    connection.query(queryC, function(err,result){
+        req.session.idCorrente = result[0].ID;
+        req.session.tipo = result[0].tipo;
+        req.session.path = result[0].path;
+        req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
+
+        res.write(toString(req.session.idCorrente));
+        res.write(toString(req.session.tipo));
+        res.write(toString(req.session.path));
+        res.write(toString(req.session.branch));
+
+        res.write(toString(req.session.eliminate));
+        console.log("SESSION BRANCH 222.. " + req.session.branch);
+
+        res.end();
+    });
+}
+
 function saveMerge(path, req,res, fileData, fileName){
 
     var idModifiche = Math.random().toString(36).substring(7);
@@ -545,6 +567,7 @@ function saveMerge(path, req,res, fileData, fileName){
                 console.log("CIAO" + err);
             } else{
                 idRevision(req,res, function(results){
+                    req.session.branch = branchMasterRev(req, results);
                     var fileEliminate = {eliminate:[]};
                     req.session.eliminate = path+"/Eliminate/"+results+".json";
                     fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function(err){
@@ -553,7 +576,8 @@ function saveMerge(path, req,res, fileData, fileName){
                         } else {
                             console.log('Eliminate Fatto');
                         }
-                    });                    
+                    });
+                    setGlobal2(req,res,results);
                  });
             }
         })
