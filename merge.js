@@ -140,8 +140,9 @@ function maxArray(array){
 }
 
 function mergeDG(j1,j2){
-    var jA = Object.assign({},j1);
-    var jB = Object.assign({},j2);
+    //var jA = Object.assign({},j1);
+    var jA = JSON.parse(JSON.stringify(j1));
+    var jB = JSON.parse(JSON.stringify(j2));
     var lastID = controllaID(jA);
     lastID++;
     var idProv;
@@ -157,8 +158,8 @@ function mergeDG(j1,j2){
         }
         lastID++;
     }
-
-    var j3 = conc.merge(jA,jB);
+    var j3 = {info: {}, layers: [], data: []};
+    j3 = conc.merge(jA,jB);
     j3 = aggiustaOrder(j3);
     var idActive = controllaOrder(j3);
     j3.layers.active = idActive;

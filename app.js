@@ -278,6 +278,7 @@ app.post('/addRevision', function (req, res) {
       repo = repoResult;
       console.log("D"+repo);
     }).then(function () {
+
       //ADD FILE
       console.log("C"+percorsoRepo);
       return fse.writeFile(percorsoRepo +"/Immagini/" + nomeFile, buf, function (err) {
@@ -291,14 +292,6 @@ app.post('/addRevision', function (req, res) {
     })
     .then(function (indexResult) {
       index = indexResult;
-    })
-    .then(function(){
-      var percorso = "Immagini/" + nomeFile;
-      console.log("E"+percorso);
-      return index.addByPath(percorso);
-    })
-    .then(function() {
-      return index.write();
     })
     .then(function () {
       return index.writeTree();
@@ -318,7 +311,7 @@ app.post('/addRevision', function (req, res) {
       var committer = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
 
       //COMMIT
-      return repo.createCommit("HEAD", author, committer, "Immagine "+nomeFile+" creata... ", oid, [parent]);
+      return repo.createCommit("HEAD", author, committer, "Immagine creata... ", oid, [parent]);
     })
     .done(function (commitId) {
       console.log("Commit add revision: ", commitId);
