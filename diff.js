@@ -18,8 +18,7 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
     for(i = 0; i < obj1.layers.length; i++){
         for(j = 0; j< obj2.layers.length; j++){
             if(obj1.layers[i].id == obj2.layers[j].id){
-                if(!deepEqual(obj1.layers[i], obj2.layers[j])){
-                    
+                if(!deepEqual(obj1.layers[i], obj2.layers[j])){                 
                     result.layers[k] = obj2.layers[j];
                     if(obj2.layers[j].type == "image"){
                         for(var t = 0; t < obj2.data.length; t++){
@@ -30,7 +29,18 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
                         }
                     }
                     k++;
-                } 
+                } else if(obj1.layers.length == 1 && obj2.layers.length == obj1.layers.length){
+                    result.layers[k] = obj2.layers[j];
+                    if(obj2.layers[j].type == "image"){
+                        for(var t = 0; t < obj2.data.length; t++){
+                            if(obj2.layers[j].id == obj2.data[t].id){
+                                result.data[g] = obj2.data[t];
+                                g++;
+                            }
+                        }
+                    }
+                    k++;
+                }
             }
         }
     }

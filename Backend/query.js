@@ -484,7 +484,7 @@ function branchMasterC(req){
         connection.query(queryB1, function(err, result){
             if(err) throw err;
         });
-    
+    req.session.branch = idBranch;
     return idBranch;
 
 }
@@ -522,9 +522,80 @@ function setGlobal(req,res){
     });
 }
 
-function insertAddRevisionFIle(){
+
+function setGlobal2(req,res,results){
+    req.session.branch = branchMasterRev(req, results);
+    console.log("SESSION BRANCH.. " + req.session.branch);
+    var queryC = "Select * from revg where Utente ='"+req.session.nickname+"' order by dataModifica desc;";
+    connection.query(queryC, function(err,result){
+        req.session.idCorrente = result[0].ID;
+        req.session.tipo = result[0].tipo;
+        req.session.path = result[0].path;
+        req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
+
+        res.write(toString(req.session.idCorrente));
+        res.write(toString(req.session.tipo));
+        res.write(toString(req.session.path));
+        res.write(toString(req.session.branch));
+
+        res.write(toString(req.session.eliminate));
+        console.log("SESSION BRANCH 222.. " + req.session.branch);
+
+        res.end();
+    });
+}
+
+function saveMerge(path, req,res, fileData, fileName){
+
+    var idModifiche = Math.random().toString(36).substring(7);
+    queryV = "Select * from file f where f.repository ='"+req.session.idRepository+"'  order by idFile desc";
+    connection.query(queryV, function(err, result, fields){
+        var d = new Date();
+        var anno = d.getFullYear();
+        var mese = d.getMonth()+1;
+        var giorno = d.getDate();
+        var ora = d.getHours();
+        console.log("ora: "+ora);
+        var minuto = d.getMinutes();
+        console.log("minuti: "+minuto);
+        var secondo = d.getSeconds();
+        console.log("secondi: "+secondo);
+        const dataModifica = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
+        querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', '"+req.session.padre2+"', '"+result[0].idFile+"', '"+req.session.nickname+"', '', "+dataModifica+", '"+req.session.branch+"');";
+        connection.query(querySQL, function(err,result){
+            if (err){
+                console.log("CIAO" + err);
+            } else{
+                idRevision(req,res, function(results){
+                    req.session.branch = branchMasterRev(req, results);
+                    var fileEliminate = {eliminate:[]};
+                    req.session.eliminate = path+"/Eliminate/"+results+".json";
+                    fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function(err){
+                        if(err) {
+                            throw err;
+                        } else {
+                            console.log('Eliminate Fatto');
+                        }
+                    });
+                    setGlobal2(req,res,results);
+                 });
+            }
+        })
+    });
+    
 
 }
+
+function insertMergeFile(req,res){
+    var nome = req.body.nomeFile;
+    var path1 = req.session.repository + "/JSON/" + nome;
+    var querySQL = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Mer', 'json');";
+    connection.query(querySQL, function(err, result){
+        if (err) throw err;
+    });
+}
+
+
 
 
 
@@ -560,4 +631,5 @@ exports.branchMasterRev = branchMasterRev;
 exports.idRevision = idRevision
 exports.branchMasterC = branchMasterC;
 exports.datiPadre = datiPadre;
-//exports.pathTipo = pathTipo;
+exports.insertMergeFile = insertMergeFile;
+exports.saveMerge = saveMerge;
