@@ -1,5 +1,6 @@
 import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
+import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Helper_class from './../../libs/helpers.js';
 import Dialog_class from './../../libs/popup.js';
 var request = require('ajax-request');
@@ -66,7 +67,10 @@ class Commit_Class{
                       name: params.name
                     }
                   }, function(err, res, body) {
-                    
+					if(err) {throw err;}
+					else{
+						alertify.success("Commit effettuato..");
+					}
                   });
                
 			},

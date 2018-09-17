@@ -74,6 +74,8 @@ class OperazioniVCS {
 							var controllomerge = false;
 							var idPadre2;
 							var primoPadre;
+							var primoNome = "";					
+							var secondoNome = "";
 							var primoBranch;
 							var settings = {
 								title: 'Merge',
@@ -405,13 +407,14 @@ class OperazioniVCS {
 
 													primoPadre = node.id();
 													primoBranch = node.data('branch');
+													primoNome = node.data('nome');
 													
 													$.ajax({
 														url: 'http://localhost:8081/readjson',
 														type: 'POST',
 														data: {
 															idCorrente: primoPadre,
-															nomeCorrente: node.data('nome'),
+															nomeCorrente: primoNome,
 															tipo: node.data('tipo'),
 															path: node.data('path'),
 															branch: primoBranch
@@ -436,14 +439,15 @@ class OperazioniVCS {
 													document.querySelector('#divminicanvas3').appendChild(canvas3);
 													imgJson2 = JSON.parse(JSON.stringify(merge.setMergeDx(imgJson)));
 												
-
+													secondoNome = node.data('nome');
 													
 												
 													$.ajax({
 														url: 'http://localhost:8081/readjson',
 														type: 'POST',
 														data: {
-															idCorrente2: node.id()
+															idCorrente2: node.id(),
+															secondoNome: secondoNome
 														}
 													})
 												}
@@ -544,12 +548,15 @@ class OperazioniVCS {
 									//var data = window.URL.createObjectURL(blob); //html5
 									filesaver.saveAs(blob, "imgJsonMerge.json");
 
+									var rand = Math.random().toString(36).substring(2,5);
+
+
 									request({
 										url: 'http://localhost:8081/merge',
 										method: 'POST',
 										data: {
 											jsonMerge: imgJsonMergeX,
-											nomeFile: "merge.json",
+											nomeFile: primoNome.slice(0,-5)+"_"+secondoNome.slice(0,-5)+"_merged_"+rand+".json",
 											idCorrente: primoPadre,
 											nomeCorrente: node.data('nome'),
 											branch: primoBranch,

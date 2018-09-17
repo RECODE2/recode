@@ -161,7 +161,7 @@ function mergeDG(j1,j2){
     var j3 = conc.merge(jA,jB);
     j3 = aggiustaOrder(j3);
     var idActive = controllaOrder(j3);
-    j3.layers.active = idActive;
+    j3.info.layer_active = idActive;
     return j3;
 }
 
