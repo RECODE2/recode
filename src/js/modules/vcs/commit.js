@@ -2,6 +2,7 @@ import config from './../../config.js';
 import Base_layers_class from './../../core/base-layers.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
 import Helper_class from './../../libs/helpers.js';
+import host from './../../host.js';
 import Dialog_class from './../../libs/popup.js';
 var request = require('ajax-request');
 
@@ -58,7 +59,7 @@ class Commit_Class{
 			on_finish: function (params) {
                var json_file = _this._action(params);
                 request({
-                    url: 'http://localhost:8081/commit',
+                    url: host.name+'commit',
                     method: 'POST',
                     data: {
                       file_json_name: json_file[1],

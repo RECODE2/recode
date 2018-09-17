@@ -3,6 +3,7 @@ import Base_layers_class from './../../core/base-layers.js';
 import Helper_class from './../../libs/helpers.js';
 import Dialog_class from './../../libs/popup.js';
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
+import host from './../../host.js';
 var request = require('ajax-request');
 
 
@@ -43,7 +44,7 @@ class Elenco_Class{
         this.POP.hide();
 
         request({
-            url: 'http://localhost:8081/elenco',
+            url: host.name+'elenco',
             method: 'POST',
             data: {
             }

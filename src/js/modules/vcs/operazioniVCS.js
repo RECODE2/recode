@@ -6,6 +6,8 @@ import merge from './../../../../merge';
 import File_open_class from "./../file/open.js";
 import Base_selection_class from "./../../core/base-selection"
 import filesaver from './../../../../node_modules/file-saver/FileSaver.min.js';
+import host from './../../host.js';
+
 var request = require('ajax-request');
 
 
@@ -42,13 +44,13 @@ class OperazioniVCS {
 	merge() {
 		//PRENDIAMO IL JSON
 		$.ajax({
-			url: 'http://localhost:8081/controllaselezionerepo',
+			url: host.name+'controllaselezionerepo',
 			type: 'POST',
 			success: function (repo) {
 				if (repo) {
 
 					$.ajax({
-						url: 'http://localhost:8081/revg',
+						url: host.name+'revg',
 						type: 'POST',
 						success: function (result) {
 							this.POP = new Dialog_class();
@@ -365,7 +367,7 @@ class OperazioniVCS {
 										node = evt.target;
 
 										$.ajax({
-											url: 'http://localhost:8081/readjson',
+											url: host.name+'readjson',
 											type: 'POST',
 											data: {
 												idCorrente: node.id(),
@@ -377,7 +379,7 @@ class OperazioniVCS {
 										});
 
 										$.ajax({
-											url: 'http://localhost:8081/caricaImmagine',
+											url: host.name+'caricaImmagine',
 											type: 'POST',
 											success: function (imgJson) {
 												//immagineJson = imgJson;
@@ -410,7 +412,7 @@ class OperazioniVCS {
 													primoNome = node.data('nome');
 													
 													$.ajax({
-														url: 'http://localhost:8081/readjson',
+														url: host.name+'readjson',
 														type: 'POST',
 														data: {
 															idCorrente: primoPadre,
@@ -443,7 +445,7 @@ class OperazioniVCS {
 													
 												
 													$.ajax({
-														url: 'http://localhost:8081/readjson',
+														url: host.name+'readjson',
 														type: 'POST',
 														data: {
 															idCorrente2: node.id(),
@@ -552,7 +554,7 @@ class OperazioniVCS {
 
 
 									request({
-										url: 'http://localhost:8081/merge',
+										url: host.name+'merge',
 										method: 'POST',
 										data: {
 											jsonMerge: imgJsonMergeX,
