@@ -77,9 +77,9 @@ function insertAddRevision(path, req,res, repository,callback) {
     var nome = req.body.file_jpeg_name;
     var nome1 = req.body.file_json_name;
     console.log(repository + "SOLUZIONE FINALE");
-    var querySQL = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('" + path1 + "', '" + nome + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'jpeg');";
-    var querySQL1 = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('"+ path2 + "', '" + nome1 + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'json');";
-    //var querySQL1 = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,tipo) VALUES ('"+path+"', '"+nome+"', '"+repository+"', '"+utente+"', 'Rev');";
+    var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('" + path1 + "', '" + nome + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'jpeg');";
+    var querySQL1 = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('"+ path2 + "', '" + nome1 + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'json');";
+    //var querySQL1 = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,tipo) VALUES ('"+path+"', '"+nome+"', '"+repository+"', '"+utente+"', 'Rev');";
     connection.query(querySQL, function (err, results, fields) {
         if (err) throw err;
     });
@@ -92,11 +92,11 @@ function insertAddRevision(path, req,res, repository,callback) {
     connection.query(queryV, function(err, result, fields){
         var idModifiche = Math.random().toString(36).substring(7);
         if (result.length == 2){
-            querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', 'init', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');"
+            querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', 'init', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');"
             connection.query(querySQL, function(err,result,fields){
                 if (err) throw err;
             });
-        } else {querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
+        } else {querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
         connection.query(querySQL, function(err,result,fields){
             if (err) throw err;
         });
@@ -181,7 +181,7 @@ function registrazione(req, callback) {
     var nome = req.body.nome;
     var cognome = req.body.cognome;
     var mail = req.body.mail;
-    var queryR = "INSERT INTO `vit`.`utenti` (`nickname`, `password`, `nome`, `cognome`, `mail`) VALUES ('" + nickname + "', '" + password + "', '" + nome + "', '" + cognome + "', '" + mail + "');";
+    var queryR = "INSERT INTO `utenti` (`nickname`, `password`, `nome`, `cognome`, `mail`) VALUES ('" + nickname + "', '" + password + "', '" + nome + "', '" + cognome + "', '" + mail + "');";
     connection.query(queryR, function (err, result) {
         controllo = false;
         if (err) {
@@ -206,7 +206,7 @@ function partecipazioneRepo(req, idRepository) {
     var secondo = d.getSeconds();
     console.log("secondi: "+secondo);
     const dataPartecipazione = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
-    queryP = "INSERT INTO `vit`.`partecipazione` (`utente`, `repository`, `diritto`, `data`) VALUES ('" + req.session.nickname + "', '" + idRepository + "', '0', "+dataPartecipazione+")";
+    queryP = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`, `data`) VALUES ('" + req.session.nickname + "', '" + idRepository + "', '0', "+dataPartecipazione+")";
     connection.query(queryP);
 }
 
@@ -231,7 +231,7 @@ function newBranch(req,res){
     console.log(req.body.nameBranch);
     var idBranch = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZIONO
-    queryB = "INSERT INTO `vit`.`branch` (`idbranch`, `revision`, `nome`, `utente`) VALUES ('"+idBranch+"', '15', '"+req.body.nameBranch+"', '"+req.session.nickname+"');"
+    queryB = "INSERT INTO `branch` (`idbranch`, `revision`, `nome`, `utente`) VALUES ('"+idBranch+"', '15', '"+req.body.nameBranch+"', '"+req.session.nickname+"');"
     connection.query(queryB, function(err, result){
         if(err){
             console.log("Errore nella query"+ err)
@@ -241,7 +241,7 @@ function newBranch(req,res){
 function branchMaster(req,result){
     var idBranch = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
-        queryB1 = "INSERT INTO `vit`.`branch` (`idbranch`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"', 'master', '"+req.session.nickname+"', '"+result+"');"
+        queryB1 = "INSERT INTO `branch` (`idbranch`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"', 'master', '"+req.session.nickname+"', '"+result+"');"
         connection.query(queryB1, function(err, result){
             if(err){
                 console.log("Errore nella query"+ err)
@@ -277,7 +277,7 @@ function saveCommit(req,res, fileData, fileName){
         var secondo = d.getSeconds();
         console.log("secondi: "+secondo);
         const dataModifica = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
-        querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica+", '"+req.session.branch+"');";
+        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica+", '"+req.session.branch+"');";
         connection.query(querySQL, function(err,result){
             if (err){
                 console.log("CIAO" + err);
@@ -304,7 +304,7 @@ function saveCommit(req,res, fileData, fileName){
 function insertCommitFile(req,res){
     var nome = req.body.file_json_name;
     var path1 = req.session.repository + "/JSON/" + nome;
-    var querySQL = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Com', 'json');";
+    var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Com', 'json');";
     connection.query(querySQL, function(err, result){
         if (err) throw err;
     });
@@ -391,7 +391,7 @@ function elencoUtentiInvito(req, callback) {
 function invitaUtente(req, callback) {
     var utente = req.body.utente;
     var repo = req.session.idRepository;
-    var queryU = "INSERT INTO `vit`.`partecipazione` (`utente`, `repository`, `diritto`) VALUES ('"+utente+"', '"+repo+"', '1')";
+    var queryU = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`) VALUES ('"+utente+"', '"+repo+"', '1')";
     connection.query(queryU, function (err, result) {
         if (err) {
             console.log("C'è un errore nella query: " + err);
@@ -467,7 +467,7 @@ function branchMasterRev(req, idRev, result){
     var idBranch = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
         console.log(idRev + "SEI TU?")
-        queryB1 = "INSERT INTO `vit`.`branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+idRev+"', 'master', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
+        queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+idRev+"', 'master', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
         connection.query(queryB1, function(err, result){
             if(err) throw err;
         });
@@ -480,7 +480,7 @@ function branchMasterC(req){
     var idBranch = Math.random().toString(36).substring(7);
     var name = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
-        queryB1 = "INSERT INTO `vit`.`branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+req.session.idCorrente+"', '"+name+"', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
+        queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+req.session.idCorrente+"', '"+name+"', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
         connection.query(queryB1, function(err, result){
             if(err) throw err;
         });
@@ -561,7 +561,7 @@ function saveMerge(path, req,res, fileData, fileName){
         var secondo = d.getSeconds();
         console.log("secondi: "+secondo);
         const dataModifica = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
-        querySQL = "INSERT INTO `vit`.`commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', '"+req.session.padre2+"', '"+result[0].idFile+"', '"+req.session.nickname+"', '', "+dataModifica+", '"+req.session.branch+"');";
+        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', '"+req.session.padre2+"', '"+result[0].idFile+"', '"+req.session.nickname+"', '', "+dataModifica+", '"+req.session.branch+"');";
         connection.query(querySQL, function(err,result){
             if (err){
                 console.log("CIAO" + err);
@@ -589,7 +589,7 @@ function saveMerge(path, req,res, fileData, fileName){
 function insertMergeFile(req,res){
     var nome = req.body.nomeFile;
     var path1 = req.session.repository + "/JSON/" + nome;
-    var querySQL = "INSERT INTO `vit`.`file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Mer', 'json');";
+    var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Mer', 'json');";
     connection.query(querySQL, function(err, result){
         if (err) throw err;
     });
