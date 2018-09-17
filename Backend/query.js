@@ -140,7 +140,7 @@ function settaDatiRepo(req, res, callback) {
         nome = req.session.nameRepository;
     }
    
-    var querySQL = "SELECT * FROM repository r WHERE r.nome ='" + nome + "' AND r.admin = '"+req.session.nickname+"'order by r.dataCreazione desc";
+    var querySQL = "SELECT * FROM repository r, partecipazione p WHERE p.repository=r.idRepository AND r.nome ='" + nome + "' AND p.utente = '"+req.session.nickname+"'order by r.dataCreazione desc";
     connection.query(querySQL, function (err, result) {
 
         if (err) {
