@@ -1,16 +1,16 @@
 //File che tiene traccia dei dati relativi alla connessione al database
-module.exports = {
+/* module.exports = {
   'connection': {
       'host': 'localhost',
       'user': 'root',
       'password': ''
   },
 'database': 'vit',
-};
+}; */
 
 
 // DATI HEROKU
-/* 
+
 
 module.exports = {
   'connection': {
@@ -22,4 +22,3 @@ module.exports = {
 };
 
 
-*/
