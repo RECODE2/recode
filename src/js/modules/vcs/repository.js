@@ -1,6 +1,5 @@
 import Dialog_class from "../../libs/popup";
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
-import host from './../../host.js';
 import File_open_class from "./../file/open.js";
 import Base_layers_class from "./../../core/base-layers";
 import Base_selection_class from "./../../core/base-selection";

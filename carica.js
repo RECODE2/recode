@@ -1,7 +1,3 @@
-var conc = require('merge-json');
-var fs = require('fs');
-const fsPath = require('fs-path');
-var deepEqual = require('deep-equal');
 var filter = require('array-filter');
 
 function caricaImmagine(j1, j2, fileEliminate){

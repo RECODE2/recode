@@ -1,4 +1,3 @@
-var conc = require('merge-json');
 var deepEqual = require('deep-equal')
 var fs = require('fs');
 const fsPath = require('fs-path');

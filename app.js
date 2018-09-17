@@ -10,7 +10,6 @@ const ConnessioneDB = require('./Backend/query');
 const Filesaver = require('filesaver');
 const fsPath = require('fs-path');
 var nodegit = require('./node_modules/nodegit');
-var addLfs = require('./node_modules/nodegit-lfs');
 var promisify = require("promisify-node");
 var fse = promisify(require("fs-extra"));
 var fileName = "README.md";
@@ -21,16 +20,6 @@ var morgan = require('morgan');
 var nomeUtente = "";
 var fs = require('fs');
 var carica = require('./carica.js');
-
-
-//chiamiamo la funzione ritornata da nodegit-lfs con nodegit come parametro
-addLfs(nodegit);
-
-//dopo che è stato argomentato nodegit, possiamo utilizzare LFS tramite l'oggetto LFS
-nodegit.LFS.register()
-  .then(() => {
-    console.log('The LFS filter has been registered!');
-  });
 
 // *** DATABASE ***
 // creiamo la connessione al database ed utilizziamo il db 'vit'

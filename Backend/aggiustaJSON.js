@@ -4,29 +4,6 @@ giusta di layers utilizzati e inserendo i giusti "ID" e "Order"
 nel JSON in ordine crescente a partire da 1.
 */
 
-/*
-function aggiustaJSON(j){
-    var idProv;
-    j.info.layer_active = j.layers.length;
-    var z = 1;
-    var k = 0;
-    for (var i = 0 ; i < j.layers.length; i++){
-        idProv = j.layers[i].id;
-        j.layers[i].order = z;
-        j.layers[i].id = z;
-        if(j.layers[i].type == "image"){
-            for(k = 0; k<j.data.length; k++){
-                if(j.data[k].id == idProv){
-                    j.data[k].id = z;
-                }
-            }
-        }
-        z++;
-    }
-    return j;
-
-}*/
-
 function aggiustaOrder(j){
     var arrayO = [];
     var arrayT = []; //ho tutti gli order dei layers
