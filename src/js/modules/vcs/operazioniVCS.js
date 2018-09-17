@@ -543,10 +543,10 @@ class OperazioniVCS {
 								},
 								on_finish: function () {
 
-									var imgJsonSS = JSON.stringify(imgJsonMergeX, null, '\t');
+								/* 	var imgJsonSS = JSON.stringify(imgJsonMergeX, null, '\t');
 									var blob = new Blob([imgJsonSS], {type: "text/plain"});
 									//var data = window.URL.createObjectURL(blob); //html5
-									filesaver.saveAs(blob, "imgJsonMerge.json");
+									filesaver.saveAs(blob, "imgJsonMerge.json"); */
 
 									var rand = Math.random().toString(36).substring(2,5);
 
