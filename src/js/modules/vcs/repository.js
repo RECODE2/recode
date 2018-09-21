@@ -1,9 +1,9 @@
 import Dialog_class from "../../libs/popup";
 import alertify from './../../../../node_modules/alertifyjs/build/alertify.min.js';
-import File_open_class from "./../file/open.js";
-import Base_layers_class from "./../../core/base-layers";
-import Base_selection_class from "./../../core/base-selection";
 import host from './../../host.js';
+import Base_layers_class from "./../../core/base-layers"
+import Base_selection_class from "./../../core/base-selection"
+import File_open_class from "./../file/open.js";
 
 
 var moment = require('moment');
@@ -38,7 +38,7 @@ class VCS_class {
             ],
             on_finish: function (params) {
                 $.ajax({
-                    url: host.name+'creaRepository',
+                    url: 'http://localhost:8081/creaRepository',
                     type: 'POST',
                     data: {
                         nomeRepo: params.name,
@@ -60,7 +60,7 @@ class VCS_class {
 
     elencoSceltaRepository() {
         $.ajax({
-            url: host.name+'elencoRepo',
+            url: 'http://localhost:8081/elencoRepo',
             type: 'POST',
             success: function (result) {
                 if (result.length > 0) {
@@ -73,7 +73,7 @@ class VCS_class {
                         ],
                         on_finish: function (params) {
                             $.ajax({
-                                url: host.name+'settaRepo',
+                                url: 'http://localhost:8081/settaRepo',
                                 type: 'POST',
                                 data: {
                                     nomeRepo: params.name,
@@ -100,7 +100,7 @@ class VCS_class {
         this.controllaSelezioneRepo(function (repo) {
             if (repo) {
                 $.ajax({
-                    url: host.name+'infoRepo',
+                    url: 'http://localhost:8081/infoRepo',
                     type: 'POST',
                     success: function (result) {
                         if (!result[0].descrizione) {
@@ -116,7 +116,7 @@ class VCS_class {
                             ],
                             on_finish: function (params) {
                                 $.ajax({
-                                    url: host.name+'modificaRepo',
+                                    url: 'http://localhost:8081/modificaRepo',
                                     type: 'POST',
                                     data: {
                                         nome: params.name,
@@ -147,13 +147,14 @@ class VCS_class {
         this.controllaSelezioneRepo(function (repo) {
             if (repo) {
                 $.ajax({
-                    url: host.name+'revg',
+                    url: 'http://localhost:8081/revg',
                     type: 'POST',
                     success: function (result) {
                         this.POP = new Dialog_class();
                         this.POP.hide();
                         var open = new File_open_class();
                         var Base_layers = new Base_layers_class();
+                        //var File_open = new File_open_class();
                         var immagineJson;
                         var node;
                         var settings = {
@@ -166,6 +167,8 @@ class VCS_class {
                                 * @param {*} contesto 
                                 */
                                 function createCanvasForMerge(jsonObject, contesto) {
+
+                                    //open.loadOurJson(jsonObject,contesto);
 
                                     for (var i in jsonObject.layers) {
                                         var value = jsonObject.layers[i];
@@ -205,13 +208,27 @@ class VCS_class {
                                                 else if (typeof value.data == 'string') {
                                                     value.link = new Image();
                                                     value.link.onload = function () {
-                                                        //render canvas
+                                               
+                                                        //take data
+                                                        var layers_sorted = jsonObject.layers.concat().sort(
+                                                            //sort function
+                                                                (a, b) => b.order - a.order
+                                                            );
+
+                                                        //render main canvas
+                                                        for (var i = layers_sorted.length - 1; i >= 0; i--) {
+                                                            var value = layers_sorted[i];
+                                                            contesto.globalAlpha = value.opacity / 100;
+                                                            contesto.globalCompositeOperation = value.composition;
+                                                            Base_layers.render_object(contesto, value);
+                                                        }
+/* 
                                                         for (var i in jsonObject.layers) {
                                                             var value = jsonObject.layers[i];
                                                             contesto.globalAlpha = value.opacity / 100;
                                                             contesto.globalCompositeOperation = value.composition;
                                                             Base_layers.render_object(contesto, value);
-                                                        }
+                                                        } */
                                                     };
                                                     value.link.src = value.data;
                                                 }
@@ -417,7 +434,7 @@ class VCS_class {
                                 cy.nodes().on("click", function (evt) {
                                     node = evt.target;
                                     $.ajax({
-                                        url: host.name+'readjson',
+                                        url: 'http://localhost:8081/readjson',
                                         type: 'POST',
                                         data: {
                                             idCorrente: node.id(),
@@ -449,7 +466,7 @@ class VCS_class {
                                             document.querySelector('#elencoprop').appendChild(tipoProp);
                                             document.querySelector('#elencoprop').appendChild(branchProp);
                                             document.querySelector('#elencoprop').appendChild(padre1Prop);
-                                            
+
                                             if (node.data('tipo') == "Mer") {
                                                 document.querySelector('#elencoprop').appendChild(padre2Prop);
                                             }
@@ -457,7 +474,7 @@ class VCS_class {
 
                                     });
                                     $.ajax({
-                                        url: host.name+'caricaImmagine',
+                                        url: 'http://localhost:8081/caricaImmagine',
                                         type: 'POST',
                                         success: function (imgJson) {
                                             immagineJson = imgJson;
@@ -469,19 +486,19 @@ class VCS_class {
                                             canvas.style.height = "100%";
                                             canvas.style.width = "100%";
 
-                                            
+
 
                                             document.querySelector('#divminicanvas1').appendChild(canvas);
-                                            
+
                                         }
-                                        
+
                                     })
                                 });
                             },
-                            on_finish: function(){ 
+                            on_finish: function () {
                                 //alert("Questo nodo ha nome: " + node.data('nome'));
                                 $.ajax({
-                                    url: host.name+'readjson',
+                                    url: 'http://localhost:8081/readjson',
                                     type: 'POST',
                                     data: {
                                         idCorrente: node.id(),
@@ -490,23 +507,23 @@ class VCS_class {
                                         path: node.data('path'),
                                         branch: node.data('branch')
                                     },
-                                    success: function(branch){
+                                    success: function (branch) {
                                         document.getElementById('branch').innerHTML = branch;
                                         var base_layer = new Base_layers_class();
                                         base_layer.reset_layers();
-                                        
+
                                     },
                                 });
-                                    $.ajax({
-                                        url: host.name+'caricaImmagine',
-                                        type: 'POST',
-                                        success: function(imgJson){
-                                                var base_selection = new Base_selection_class();
-                                                immagineJson = imgJson;
-                                                open.load_json(immagineJson);
-                                                base_selection.reset_selection();
-                                        },
-                                    });
+                                $.ajax({
+                                    url: 'http://localhost:8081/caricaImmagine',
+                                    type: 'POST',
+                                    success: function (imgJson) {
+                                        var base_selection = new Base_selection_class();
+                                        immagineJson = imgJson;
+                                        open.load_json(immagineJson);
+                                        base_selection.reset_selection();
+                                    },
+                                });
                             }
                             /* FINE REVG */
                         };
@@ -524,12 +541,12 @@ class VCS_class {
         this.controllaSelezioneRepo(function (repo) {
             if (repo) {
                 $.ajax({
-                    url: host.name+'verificaAdmin',
+                    url: 'http://localhost:8081/verificaAdmin',
                     type: 'POST',
                     success: function (admin) {
                         if (admin) {
                             $.ajax({
-                                url: host.name+'elencoUtentiInvito',
+                                url: 'http://localhost:8081/elencoUtentiInvito',
                                 type: 'POST',
                                 success: function (result) {
                                     if (result.length > 0) {
@@ -542,7 +559,7 @@ class VCS_class {
                                             ],
                                             on_finish: function (params) {
                                                 $.ajax({
-                                                    url: host.name+'invitaUtente',
+                                                    url: 'http://localhost:8081/invitaUtente',
                                                     type: 'POST',
                                                     data: {
                                                         utente: params.utente,
@@ -581,12 +598,12 @@ class VCS_class {
         this.controllaSelezioneRepo(function (repo) {
             if (repo) {
                 $.ajax({
-                    url: host.name+'verificaAdmin',
+                    url: 'http://localhost:8081/verificaAdmin',
                     type: 'POST',
                     success: function (admin) {
                         if (admin) {
                             $.ajax({
-                                url: host.name+'elencoUtentiElimina',
+                                url: 'http://localhost:8081/elencoUtentiElimina',
                                 type: 'POST',
                                 success: function (result) {
                                     if (result.length > 0) {
@@ -599,7 +616,7 @@ class VCS_class {
                                             ],
                                             on_finish: function (params) {
                                                 $.ajax({
-                                                    url: host.name+'eliminaUtente',
+                                                    url: 'http://localhost:8081/eliminaUtente',
                                                     type: 'POST',
                                                     data: {
                                                         utente: params.utente,
@@ -636,14 +653,13 @@ class VCS_class {
 
     controllaSelezioneRepo(callback) {
         $.ajax({
-            url: host.name+'controllaSelezioneRepo',
+            url: 'http://localhost:8081/controllaSelezioneRepo',
             type: 'POST',
             success: function (repo) {
                 return callback(repo);
             }
         });
     }
-
 }
 
 export default VCS_class;

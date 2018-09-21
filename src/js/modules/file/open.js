@@ -423,6 +423,32 @@ class File_open_class {
 		}
 	}
 
+
+
+	loadOurJson(data,contesto){
+			var json;
+			if(typeof data == 'string')
+				json = JSON.parse(data);
+			else
+				json = data;
+		
+			for (var i in json.layers) {
+				var value = json.layers[i];
+	
+				if (value.type == 'image') {
+					//add image data
+					value.link = null;
+					for (var j in json.data) {
+						if (json.data[j].id == value.id) {
+							value.data = json.data[j].data;
+						}
+					}
+				}
+				this.Base_layers.ourInsert(contesto, value, json);
+			}
+	}
+
+
 	extract_exif(object) {
 		var exif_data = {
 			general: [],

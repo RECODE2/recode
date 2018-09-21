@@ -102,6 +102,11 @@ class Base_layers_class {
 		this.ctx.clearRect(0, 0, config.WIDTH * config.ZOOM, config.HEIGHT * config.ZOOM);
 	}
 
+	ourPrender(contesto, width, height){
+		contesto.save();
+		contesto.clearRect(0, 0, width, height);
+	}
+
 	after_render() {
 		config.need_render = false;
 		this.ctx.restore();
@@ -180,6 +185,23 @@ class Base_layers_class {
 		requestAnimationFrame(function () {
 			_this.render(force);
 		});
+	}
+
+
+	ourRender(contesto, value, json) {	
+			//take data
+			var layers_sorted = json.layers.concat().sort(
+				//sort function
+					(a, b) => b.order - a.order
+				);
+			//render main canvas
+			for (var i = layers_sorted.length - 1; i >= 0; i--) {
+				var value = layers_sorted[i];
+				contesto.globalAlpha = value.opacity / 100;
+				contesto.globalCompositeOperation = value.composition;
+
+				this.ourRenderObject(contesto, value);
+			}
 	}
 
 	render_preview(layers) {
@@ -276,6 +298,65 @@ class Base_layers_class {
 			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](ctx, object);
 		}
 		ctx.filter = 'none';
+	}
+
+
+	ourRenderObject(contesto, object) {
+		if (object.visible == false || object.type == null)
+			return;
+
+		//apply filters
+		var filter_code = '';
+		for (var i in object.filters) {
+			var filter = object.filters[i];
+
+			if (filter_code != '')
+				filter_code += ' ';
+			filter_code += filter.name + "(" + filter.params.value + ")";
+		}
+		if (filter_code != '')
+		contesto.filter = filter_code;
+		else
+		contesto.filter = 'none';
+
+		//example with canvas object - other types should overwrite this method
+		if (object.type == 'image') {
+			//image - default behaviour
+			var rotateSupport = true;
+			if (rotateSupport == false) {
+				if (object.link_canvas != undefined && object.link_canvas != null) {
+					//we have draft canvas - use it
+					contesto.drawImage(object.link_canvas, object.x, object.y, object.width, object.height);
+				}
+				else {
+					contesto.drawImage(object.link, object.x, object.y, object.width, object.height);
+				}
+			}
+			else {
+				contesto.save();
+
+				contesto.translate(object.x + object.width / 2, object.y + object.height / 2);
+				contesto.rotate(object.rotate * Math.PI / 180);
+				if (object.link_canvas != undefined && object.link_canvas != null) {
+					//we have draft canvas - use it
+					contesto.drawImage(object.link_canvas, -object.width / 2, -object.height / 2,
+						object.width, object.height);
+				}
+				else {
+					contesto.drawImage(object.link, -object.width / 2, -object.height / 2, object.width, object.height);
+				}
+
+				contesto.restore();
+			}
+		}
+		else {
+			//call render function from other module
+			var render_class = object.render_function[0];
+			var render_function = object.render_function[1];
+
+			this.Base_gui.GUI_tools.tools_modules[render_class][render_function](contesto, object);
+		}
+		contesto.filter = 'none';
 	}
 
 	/**
@@ -431,6 +512,85 @@ class Base_layers_class {
 				resolve(true);
 			}
 		});
+	}
+
+
+		/**
+	 * creates new layer
+	 *
+	 * @param {array} settings
+	 * @param {boolean} can_automate
+	 */
+	ourInsert(contesto, settings, json) {
+			//default data
+			var _this = this;
+			var layer = {
+				id: 1,
+				parent_id: 0,
+				name: "1",
+				type: null,
+				link: null,
+				x: 0,
+				y: 0,
+				width: 0,
+				width_original: null,
+				height: 0,
+				height_original: null,
+				visible: true,
+				is_vector: false,
+				opacity: 100,
+				order: 1,
+				composition: 'source-over',
+				rotate: 0,
+				data: null,
+				params: {},
+				status: null,
+				color: "",
+				filters: [],
+				render_function: null,
+			};
+
+			//build data
+			for (var i in settings) {
+				if (typeof layer[i] == "undefined") {
+					alertify.error('Error: wrong key: ' + i);
+					continue;
+				}
+				layer[i] = settings[i];
+			}
+
+			//prepare image
+			if (layer.type == 'image') {
+				
+				if (layer.link == null) {
+					if (typeof layer.data == 'object') {
+						//load actual image
+						if (layer.width == 0)
+							layer.width = layer.data.width;
+						if (layer.height == 0)
+							layer.height = layer.data.height;
+						layer.link = layer.data.cloneNode(true);
+						layer.data = null;
+					}
+					else if (typeof layer.data == 'string') {
+						layer.link = new Image();
+						layer.link.onload = function () {
+							//render canvas
+							for (var i in json.layers) {
+								var layer = json.layers[i];
+								contesto.globalAlpha = layer.opacity / 100;
+								contesto.globalCompositeOperation = layer.composition;
+								_this.render_object(contesto, layer);
+							}
+						};
+						layer.link.src = layer.data;
+					}
+					else {
+						alertify.error('Error: can not load image.');
+					}
+				}
+			}
+			//_this.ourRender(contesto,layer,json);
 	}
 
 	/**
