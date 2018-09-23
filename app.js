@@ -18,8 +18,23 @@ var session = require('express-session');
 var flash = require('connect-flash');
 var morgan = require('morgan');
 var nomeUtente = "";
-var fs = require('fs');
 var carica = require('./carica.js');
+var AWS = require('aws-sdk');
+const USER = 'recode18';
+const PASS = 'Sfinge123';
+const gitP = require('simple-git/promise');
+const git = gitP(__dirname);
+
+/* var credentials = new AWS.SharedIniFileCredentials({profile: 'default'});
+AWS.config.credentials = credentials;
+ */
+
+var s3Bucket = new AWS.S3({
+  apiVersion: '2006-03-01',
+  params: {
+    Bucket: 'recode18'
+  }
+})
 
 // *** DATABASE ***
 // creiamo la connessione al database ed utilizziamo il db 'vit'
@@ -123,87 +138,55 @@ app.post('/registrazione', function (req, res) {
 });
 
 app.post('/creaRepository', function (req, res) {
+
+  /**
+   * INSERISCI COSA SUCCEDE CON GIT...
+   * git init + creazione file readme.md + git commit + git add
+   */
+
   ConnessioneDB.insertRepository(req, function (result) {
     var successo = false;
     if (result) {
       successo = true;
     }
     res.send(successo);
-
   });
-
-  var repository;
-  var index;
 
   ConnessioneDB.inserisciDatiRepo(req, res, function (result) {
     idRepository = result.idRepository;
-    var pathR = "./Server/" + result.idRepository;
     ConnessioneDB.partecipazioneRepo(req, idRepository);
-    var repoDir = pathR + "/.git";
-    fse.ensureDir(path.resolve(__dirname, repoDir))
-    .then(function () {
-      //Inseriamo la repository sul DB
-      //Creiamo la cartella .git all'interno della repository
-      return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
-    }).then(function (repo) {
-      repository = repo;
-      var fileContent = req.body.readme;
-      /*
-     / Emuliamo il comportamento di GIT LFS TRACK "*.jpg"
-     / andando a creare il file .gitattributes al cui interno ci sarà la stringa:
-     / *.jpg filter=lfs diff=lfs merge=lfs -text
-     / (stringa che avremmo avuto andando ad effettuare il comando git lfs track "*.jpg")
-     */
-      fse.writeFile(path.join(repository.workdir(), ".gitattributes"), "*.jpg filter=lfs diff=lfs merge=lfs -text");
-
-      //aggiungiamo il file README.MD all'interno della working directory
-      return fse.writeFile(path.join(repository.workdir(), fileName), fileContent);
-    }).then(function () {
-      return repository.refreshIndex();
-    })
-      .then(function (idx) {
-        index = idx;
-      })
-      .then(function () {
-        return index.addByPath(fileName);
-      })
-      .then(function () {
-        return index.write();
-      })
-      .then(function () {
-        return index.writeTree();
-      })
-      .then(function (oid) {
-
-        var dataOdierna = new Date().getTime() / 1000;
-
-        //in author e in committer si scrive: nome, email, data, GMT
-        //abbiamo scritto 120 in quanto è GMT +2 (i minuti in più rispetto al meridiano di Greenwich)
-        var author = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
-
-        var committer = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
-
-        return repository.createCommit("HEAD", author, committer, "Readme creato", oid, []);
-      }).then(function (commitId) {
-        console.log("Commit readme: " + commitId);
-      });
-
 
     //Quando si crea la repository, saranno create le cartelle (vuote inizialmente) IMMAGINI e JSON
-    var filesaver = new Filesaver({ safenames: true });
-
-    filesaver.folder('Immagini', pathR + "/Immagini", function (err, data) {
+    var params = {
+      Key: idRepository + "/Immagini/",
+      Body: ""
+    }
+    s3Bucket.upload(params, function (err, data) {
       if (err) {
-        console.log("Errore " + err);
+        console.log("Errore s3 creazione cartella: " + params.Key + "  ... errore: " + err);
       }
     });
+
     req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
 
-    filesaver.folder('JSON', pathR + "/JSON", function (err, data) {
+    var params = {
+      Key: idRepository + "/JSON/",
+      Body: ""
+    }
+    s3Bucket.upload(params, function (err, data) {
       if (err) {
-        console.log("Errore " + err);
+        console.log("Errore s3 creazione cartella: " + params.Key + "  ... errore: " + err);
       }
     });
+
+    //const REPO = 'github.com/recode18/'+idRepository;
+    require('simple-git')()
+    .init()
+    .add('./*')
+    .commit("Repo creata!")
+    .addRemote('origin','https://github.com/recode18/'+idRepository+".git")
+    .push('origin','master');
+    //const remote = `https://${USER}:${PASS}@${REPO}`;
   });
 });
 
@@ -216,7 +199,7 @@ app.post('/elencoRepo', function (req, res) {
 app.post('/settaRepo', function (req, res) {
   req.session.nameRepository = req.body.nomeRepo;
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
-    req.session.repository = "./Server/" + result;
+    req.session.repository = result;
     req.session.idRepository = result;
     res.write(res.toString(req.session.repository));
 
@@ -227,7 +210,6 @@ app.post('/settaRepo', function (req, res) {
     });
   });
 });
-
 
 app.post('/addRevision', function (req, res) {
   var nomedelfile = req.body.file_json_name;
@@ -247,64 +229,32 @@ app.post('/addRevision', function (req, res) {
   var successo = false;
 
   //JSON
-  fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
+  var params = {
+    Key: percorsoRepo + '/JSON/' + nomedelfile,
+    Body: JSON.stringify(dataFile, null, '\t'),
+  }
+
+  s3Bucket.upload(params, function (err, data) {
     if (err) {
-      console.log("Errore scrittura JSON " + err);
+      console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
     }
   });
-  
-  
+
+  s3Bucket.getObject(params, function (err, data) {
+    console.log("parametri.. " + params.Key);
+  });
+
   //JPG
-  /**
-  * GIT ADD AND COMMIT (ADD REVISION)
-  */
-  var repo;
-  var oid;
-  var index;
+  var params = {
+    Key: percorsoRepo + "/Immagini/" + nomeFile,
+    Body: buf
+  }
+  s3Bucket.upload(params, function (err, data) {
+    if (err) {
+      console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
+    }
+  });
 
-  nodegit.Repository.open(path.resolve(__dirname, percorsoRepo + "/.git"))
-    .then(function (repoResult) {
-      repo = repoResult;
-      console.log("D"+repo);
-    }).then(function () {
-
-      //ADD FILE
-      console.log("C"+percorsoRepo);
-      return fse.writeFile(percorsoRepo +"/Immagini/" + nomeFile, buf, function (err) {
-        if (err) {
-          console.log("Errore scrittura JPG " + err);
-        }
-      });
-    })
-    .then(function () {
-      return repo.refreshIndex();
-    })
-    .then(function (indexResult) {
-      index = indexResult;
-    })
-    .then(function () {
-      return index.writeTree();
-    })
-    .then(function(oidResult) {
-      oid = oidResult;
-      return nodegit.Reference.nameToId(repo, "HEAD");
-    })
-    .then(function(head) {
-      return repo.getCommit(head);
-    })
-    .then(function (parent) {
-      var dataOdierna = new Date().getTime() / 1000;
-
-      var author = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
-
-      var committer = nodegit.Signature.create(req.session.nickname, req.session.mail, dataOdierna, 120);
-
-      //COMMIT
-      return repo.createCommit("HEAD", author, committer, "Immagine creata... ", oid, [parent]);
-    })
-    .done(function (commitId) {
-      console.log("Commit add revision: ", commitId);
-    });
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
     ConnessioneDB.insertAddRevision(percorsoRepo, req, res, result);
   });
@@ -318,11 +268,8 @@ sul desktop.. (è giusto un tentativo per dimostrare il passaggio da frontend
 a backend tramite ajax)
 */
 app.post('/branch', function (req, res) {
-
   //console.log("Hai creato il branch" + req.body.nameBranch);
-
   ConnessioneDB.newBranch(req, res);
-
 });
 
 // FINE MODIFICHE DAVIDE MANTELLINI
@@ -334,16 +281,12 @@ app.post('/commit', function (req, res) {
   //INSERIRE QUI LA FUNZIONE diffJSON non appena avrò il caricamento file col REVG
   ConnessioneDB.insertCommitFile(req, res);
   ConnessioneDB.saveCommit(req, res, fileData, fileName1);
-
-
-
 })
 //FINE MODIFICHE COMMIT DM
 
 
 // REVISION GRAPH VESTITA
 app.post('/revg', function (req, res) {
-
   var repoAttuale = req.session.idRepository;
   // console.log("Repo attuale: " + repoAttuale);
   ConnessioneDB.elencoDatiRevG(repoAttuale, function (result) {
@@ -457,18 +400,45 @@ app.post('/readjson', function (req, res) {
 });
 
 app.post('/caricaImmagine', function (req, res) {
-  var imgJson = JSON.parse(fs.readFileSync(req.session.path));
-  req.session.json = imgJson;
-  if (req.session.tipo == "Rev" || req.session.tipo == "Mer") {
-    res.send(req.session.json);
-  } else if (req.session.tipo == "Com") {
-    console.log("AAAA");
-    req.session.fileEliminate = JSON.parse(fs.readFileSync(req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json"));
-    loop(req, res);
+  var params = {
+    Bucket: 'recode18',
+    Key: req.session.path,
   }
+
+  s3Bucket.getObject(params, function (err, data) {
+    if (err) {
+      console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
+    }
+    else {
+      //var imgJson = JSON.parse(fs.readFileSync(req.session.path));
+      req.session.json = JSON.parse(data.Body.toString());
+      if (req.session.tipo == "Rev" || req.session.tipo == "Mer") {
+        res.send(req.session.json);
+      } else if (req.session.tipo == "Com") {
+        console.log("AAAA");
+
+        var params = {
+          Bucket: 'recode18',
+          Key: req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json",
+        }
+
+        s3Bucket.getObject(params, function (err, data1) {
+          if (err) {
+            console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
+          }
+          else {
+            req.session.fileEliminate = JSON.parse(data1.Body.toString());
+            loop(req, res);
+          }
+        })
+      }
+    }
+  })
+
+
 });
 
-app.post('/readJsonMerge', function(req,res) {
+app.post('/readJsonMerge', function (req, res) {
 
   var imgJson = JSON.parse(req.body.mergeJson);
   console.log(JSON.stringify(imgJson, null, '\t'));
@@ -486,24 +456,37 @@ app.post('/merge', function (req, res) {
   req.session.padre2 = req.body.idCorrente2;
 
   var nomedelfile = req.body.nomeFile;
-  var dataFile = req.body.jsonMerge;  
+  var dataFile = req.body.jsonMerge;
   var percorsoRepo = req.session.repository;
 
+  console.log("BRANCH NEL MERGE.. " + req.body.branch);
+
   //JSON
-  fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
+  var params = {
+    Key: percorsoRepo + '/JSON/' + nomedelfile,
+    Body: JSON.stringify(dataFile, null, '\t')
+  }
+
+  s3Bucket.upload(params, function (err, data) {
     if (err) {
-      console.log("Errore scrittura JSON " + err);
+      console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
     }
   });
 
-  ConnessioneDB.insertMergeFile(req,res); //OK!
-  ConnessioneDB.saveMerge(percorsoRepo,req,res,dataFile,nomedelfile);
+  /*   fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
+      if (err) {
+        console.log("Errore scrittura JSON " + err);
+      }
+    }); */
+
+  ConnessioneDB.insertMergeFile(req, res); //OK!
+  ConnessioneDB.saveMerge(percorsoRepo, req, res, dataFile, nomedelfile);
 
 
   //CORREGGI QUESTO PER CREARE NUOVO BRANCH....
 
- /*  req.session.branch = ConnessioneDB.branchMasterC(req);
-  console.log(req.session.branch); */
+  /*  req.session.branch = ConnessioneDB.branchMasterC(req);
+   console.log(req.session.branch); */
 });
 //FUNZIONI
 
@@ -511,17 +494,32 @@ app.post('/merge', function (req, res) {
 
 function loop(req, res) {
   ConnessioneDB.datiPadre(req, function (req) {
-    if (req.session.tipo == "Com") {
-      console.log(req.session.path + "Stampa del percorso");
-      var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
-      req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
-      loop(req, res);
-    } else {
-      var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
-      req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
-      res.send(req.session.json);
-      return;
+
+    var params = {
+      Bucket: 'recode18',
+      Key: req.session.path,
     }
+
+    s3Bucket.getObject(params, function (err, data) {
+      if (err) {
+        console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
+      }
+      else {
+        if (req.session.tipo == "Com") {
+          console.log(req.session.path + "Stampa del percorso");
+          var jsonPadre = JSON.parse(data.Body.toString());
+          req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
+          loop(req, res);
+        } else {
+          var jsonPadre = JSON.parse(data.Body.toString());
+          req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
+          res.send(req.session.json);
+          return;
+        }
+      }
+    })
+
+
   })
 }
 

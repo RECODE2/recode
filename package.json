@@ -43,6 +43,7 @@
     "ajax-request": "^1.2.3",
     "alertifyjs": "^1.11.0",
     "array-filter": "^1.0.0",
+    "aws-sdk": "^2.320.0",
     "babel-polyfill": "^6.26.0",
     "blueimp-canvas-to-blob": "^3.14.0",
     "body-parser": "^1.18.3",
@@ -65,6 +66,7 @@
     "gif.js.optimized": "^1.0.1",
     "hermite-resize": "git+https://github.com/viliusle/Hermite-resize.git",
     "install": "^0.12.1",
+    "isomorphic-git": "^0.35.4",
     "jquery": "^3.3.1",
     "merge-json": "0.1.0-b.3",
     "moment": "^2.22.2",
@@ -75,6 +77,7 @@
     "path": "^0.12.7",
     "promisify-node": "^0.5.0",
     "sha1": "^1.1.1",
+    "simple-git": "^1.102.0",
     "sleep": "^5.2.3",
     "sort-json-array": "^0.1.7",
     "synchronize": "^2.0.0"

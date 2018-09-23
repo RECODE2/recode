@@ -22,6 +22,10 @@ var imgJsonB;
 var imgJsonX;
 var imgJsonMerge;
 var imgJsonMergeX;
+var primoPadre;
+var primoNome = "";
+var secondoNome = "";
+var primoBranch;
 
 
 /**
@@ -76,10 +80,7 @@ class OperazioniVCS {
 							var selezionato2 = false;
 
 							var idPadre2;
-							var primoPadre;
-							var primoNome = "";
-							var secondoNome = "";
-							var primoBranch;
+
 							var settings = {
 								title: 'Merge',
 								on_load: function () {
@@ -338,11 +339,11 @@ class OperazioniVCS {
 												 * E QUANDO VENGONO CARICATE TUTTE E DUE, CARICHI LA TERZA...
 												 */
 												if (selezionaDiv1 == true) {
-													_this.caricaDiv1(node, evt, canvas, ourctx, primoPadre, primoBranch, primoNome, imgJson);
+													_this.caricaDiv1(node, evt, canvas, ourctx, imgJson);
 													selezionaDiv1 = false;
 												}
 												else {
-													_this.caricaDiv3(canvas3, ctx3, secondoNome, node, imgJson, function () {
+													_this.caricaDiv3(canvas3, ctx3, node, imgJson, function () {
 														_this.caricaDiv2(open, canvas2, ctx2);
 													});
 													selezionaDiv1 = true;
@@ -570,7 +571,7 @@ class OperazioniVCS {
 		}
 	}
 
-	caricaDiv1(node, evt, canvas, ourctx, primoPadre, primoBranch, primoNome, imgJson) {
+	caricaDiv1(node, evt, canvas, ourctx, imgJson) {
 
 		var _this = this;
 		node = evt.target;
@@ -605,7 +606,7 @@ class OperazioniVCS {
 		})
 	}
 
-	caricaDiv3(canvas3, ctx3, secondoNome, node, imgJson, callback) {
+	caricaDiv3(canvas3, ctx3, node, imgJson, callback) {
 		console.log("3..");
 
 		var _this = this;

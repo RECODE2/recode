@@ -6,7 +6,13 @@ const connection = mysql.createConnection(dbconfig.connection);
 const fsPath = require('fs-path');
 var fs = require('fs');
 var diffJ = require('./../diff.js')
-
+var AWS = require('aws-sdk');
+var s3Bucket = new AWS.S3({
+    apiVersion: '2006-03-01',
+    params: {
+        Bucket: 'recode18'
+    }
+})
 
 function creaConnessione() {
     connection.connect(function (err) {
@@ -35,17 +41,17 @@ function insertRepository(req, callback) {
     var descrizione = req.body.readme;
     var d = new Date();
     var anno = d.getFullYear();
-    var mese = d.getMonth()+1;
+    var mese = d.getMonth() + 1;
     var giorno = d.getDate();
     var ora = d.getHours();
-    console.log("ora: "+ora);
+    console.log("ora: " + ora);
     var minuto = d.getMinutes();
-    console.log("minuti: "+minuto);
+    console.log("minuti: " + minuto);
     var secondo = d.getSeconds();
-    console.log("secondi: "+secondo);
-    const dataCreazioneRepo = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
+    console.log("secondi: " + secondo);
+    const dataCreazioneRepo = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
     var admin = req.session.nickname;
-    connection.query("INSERT INTO repository (nome,admin,dataCreazione,descrizione) VALUES ('" + nomeRepository + "','" + admin + "'," + dataCreazioneRepo + ",'"+ descrizione +"')", function (err, result) {
+    connection.query("INSERT INTO repository (nome,admin,dataCreazione,descrizione) VALUES ('" + nomeRepository + "','" + admin + "'," + dataCreazioneRepo + ",'" + descrizione + "')", function (err, result) {
         if (err) {
             console.log("C'è un errore nella query: " + err);
             console.log("C'è un errore nella query: " + admin);
@@ -57,65 +63,78 @@ function insertRepository(req, callback) {
     });
 }
 
-function insertAddRevision(path, req,res, repository,callback) {
+function insertAddRevision(path, req, res, repository, callback) {
     var d = new Date();
     var anno = d.getFullYear();
-    var mese = d.getMonth()+1;
+    var mese = d.getMonth() + 1;
     var giorno = d.getDate();
     var ora = d.getHours();
-   // d.setUTCHours(11);
-    console.log("ora: "+ora);
+    // d.setUTCHours(11);
+    console.log("ora: " + ora);
     var minuto = d.getMinutes();
-    console.log("minuti: "+minuto);
+    console.log("minuti: " + minuto);
     var secondo = d.getSeconds();
-    console.log("secondi: "+secondo);
-    const dataModifica = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
+    console.log("secondi: " + secondo);
+    const dataModifica = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
 
     var path1 = path + "/Immagini/" + req.body.file_jpeg_name;
     var path2 = path + "/JSON/" + req.body.file_json_name;
-    
+
     var nome = req.body.file_jpeg_name;
     var nome1 = req.body.file_json_name;
     console.log(repository + "SOLUZIONE FINALE");
     var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('" + path1 + "', '" + nome + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'jpeg');";
-    var querySQL1 = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('"+ path2 + "', '" + nome1 + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'json');";
+    var querySQL1 = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('" + path2 + "', '" + nome1 + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'json');";
     //var querySQL1 = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,tipo) VALUES ('"+path+"', '"+nome+"', '"+repository+"', '"+utente+"', 'Rev');";
     connection.query(querySQL, function (err, results, fields) {
         if (err) throw err;
     });
     connection.query(querySQL1, function (err, results, fields) {
         if (err) throw err;
-        
+
     });
-    queryV = "Select * from file f where f.repository ='"+repository+"' order by idFile desc";
-    
-    connection.query(queryV, function(err, result, fields){
+    queryV = "Select * from file f where f.repository ='" + repository + "' order by idFile desc";
+
+    connection.query(queryV, function (err, result, fields) {
         var idModifiche = Math.random().toString(36).substring(7);
-        if (result.length == 2){
-            querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', 'init', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');"
-            connection.query(querySQL, function(err,result,fields){
+        if (result.length == 2) {
+            querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('" + idModifiche + "', 'init', 'init', '" + result[0].idFile + "', '" + req.session.nickname + "', '" + req.body.desc + "', " + dataModifica + ", '" + req.session.branch + "');"
+            connection.query(querySQL, function (err, result, fields) {
                 if (err) throw err;
             });
-        } else {querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica + ", '"+req.session.branch+"');";
-        connection.query(querySQL, function(err,result,fields){
-            if (err) throw err;
-        });
+        } else {
+            querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES ('" + idModifiche + "', '" + req.session.idCorrente + "', 'init', '" + result[0].idFile + "', '" + req.session.nickname + "', '" + req.body.desc + "', " + dataModifica + ", '" + req.session.branch + "');";
+            connection.query(querySQL, function (err, result, fields) {
+                if (err) throw err;
+            });
 
         }
         //AGGIUNGERE ELSE SE CI SONO PIU' FILE PERCHE' ha PADRE
-        idRevision(req,res, function(results){
+        idRevision(req, res, function (results) {
             req.session.branch = branchMasterRev(req, results);
-            var fileEliminate = {eliminate:[]};
-            req.session.eliminate = path+"/Eliminate/"+results+".json";
-            fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function(err){
-                if(err) {
-                    throw err;
-                } else {
-                    console.log('Eliminate Fatto');
+            var fileEliminate = { eliminate: [] };
+            req.session.eliminate = path + "/Eliminate/" + results + ".json";
+            var params = {
+                Key: req.session.eliminate,
+                Body: JSON.stringify(fileEliminate, null, "\t"),
+            }
+
+            s3Bucket.upload(params, function (err, data) {
+                if (err) {
+                    console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
                 }
             });
-            setGlobal(req,res);
-            });
+
+            /*             fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function(err){
+                            if(err) {
+                                throw err;
+                            } else {
+                                console.log('Eliminate Fatto');
+                            }
+                        }); */
+
+            setGlobal(req, res);
+        });
     });
 
 }
@@ -139,8 +158,8 @@ function settaDatiRepo(req, res, callback) {
     } else {
         nome = req.session.nameRepository;
     }
-   
-    var querySQL = "SELECT * FROM repository r, partecipazione p WHERE p.repository=r.idRepository AND r.nome ='" + nome + "' AND p.utente = '"+req.session.nickname+"' order by r.dataCreazione desc";
+
+    var querySQL = "SELECT * FROM repository r, partecipazione p WHERE p.repository=r.idRepository AND r.nome ='" + nome + "' AND p.utente = '" + req.session.nickname + "' order by r.dataCreazione desc";
     connection.query(querySQL, function (err, result) {
 
         if (err) {
@@ -197,16 +216,16 @@ function registrazione(req, callback) {
 function partecipazioneRepo(req, idRepository) {
     var d = new Date();
     var anno = d.getFullYear();
-    var mese = d.getMonth()+1;
+    var mese = d.getMonth() + 1;
     var giorno = d.getDate();
     var ora = d.getHours();
-    console.log("ora: "+ora);
+    console.log("ora: " + ora);
     var minuto = d.getMinutes();
-    console.log("minuti: "+minuto);
+    console.log("minuti: " + minuto);
     var secondo = d.getSeconds();
-    console.log("secondi: "+secondo);
-    const dataPartecipazione = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
-    queryP = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`, `data`) VALUES ('" + req.session.nickname + "', '" + idRepository + "', '0', "+dataPartecipazione+")";
+    console.log("secondi: " + secondo);
+    const dataPartecipazione = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
+    queryP = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`, `data`) VALUES ('" + req.session.nickname + "', '" + idRepository + "', '0', " + dataPartecipazione + ")";
     connection.query(queryP);
 }
 
@@ -227,129 +246,169 @@ function elencoRepo(req, callback) {
     })
 }
 
-function newBranch(req,res){
+function newBranch(req, res) {
     console.log(req.body.nameBranch);
     var idBranch = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZIONO
-    queryB = "INSERT INTO `branch` (`idbranch`, `revision`, `nome`, `utente`) VALUES ('"+idBranch+"', '15', '"+req.body.nameBranch+"', '"+req.session.nickname+"');"
-    connection.query(queryB, function(err, result){
-        if(err){
-            console.log("Errore nella query"+ err)
+    queryB = "INSERT INTO `branch` (`idbranch`, `revision`, `nome`, `utente`) VALUES ('" + idBranch + "', '15', '" + req.body.nameBranch + "', '" + req.session.nickname + "');"
+    connection.query(queryB, function (err, result) {
+        if (err) {
+            console.log("Errore nella query" + err)
         }
     });
 }
-function branchMaster(req,result){
+function branchMaster(req, result) {
     var idBranch = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
-        queryB1 = "INSERT INTO `branch` (`idbranch`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"', 'master', '"+req.session.nickname+"', '"+result+"');"
-        connection.query(queryB1, function(err, result){
-            if(err){
-                console.log("Errore nella query"+ err)
-            }
-        });
-    
+    queryB1 = "INSERT INTO `branch` (`idbranch`, `nome`, `utente`,`repository`) VALUES ('" + idBranch + "', 'master', '" + req.session.nickname + "', '" + result + "');"
+    connection.query(queryB1, function (err, result) {
+        if (err) {
+            console.log("Errore nella query" + err)
+        }
+    });
+
     return idBranch;
 }
 
-function setIdBranchMaster(req,res,callback){
-    console.log(req.session.idRepository + " QUAA"); 
-    queryB = "select idbranch from branch where repository ='" +req.session.idRepository+"' AND nome = 'master' AND revision IS NULL;"
-    connection.query(queryB, function(err, result){
+function setIdBranchMaster(req, res, callback) {
+    console.log(req.session.idRepository + " QUAA");
+    queryB = "select idbranch from branch where repository ='" + req.session.idRepository + "' AND nome = 'master' AND revision IS NULL;"
+    connection.query(queryB, function (err, result) {
         if (err) throw err;
-        console.log(req.session.repository +"  " +result[0].idbranch);
+        console.log(req.session.repository + "  " + result[0].idbranch);
         return callback(result[0].idbranch);
     });
 }
 
-function saveCommit(req,res, fileData, fileName){
-    
+function saveCommit(req, res, fileData, fileName) {
+
     var idModifiche = Math.random().toString(36).substring(7);
-    queryV = "Select * from file f where f.repository ='"+req.session.idRepository+"'  order by idFile desc";
-    connection.query(queryV, function(err, result, fields){
+    queryV = "Select * from file f where f.repository ='" + req.session.idRepository + "'  order by idFile desc";
+    connection.query(queryV, function (err, result, fields) {
         var d = new Date();
         var anno = d.getFullYear();
-        var mese = d.getMonth()+1;
+        var mese = d.getMonth() + 1;
         var giorno = d.getDate();
         var ora = d.getHours();
-        console.log("ora: "+ora);
+        console.log("ora: " + ora);
         var minuto = d.getMinutes();
-        console.log("minuti: "+minuto);
+        console.log("minuti: " + minuto);
         var secondo = d.getSeconds();
-        console.log("secondi: "+secondo);
-        const dataModifica = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
-        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', 'init', '"+result[0].idFile+"', '"+req.session.nickname+"', '"+req.body.desc+"', "+dataModifica+", '"+req.session.branch+"');";
-        connection.query(querySQL, function(err,result){
-            if (err){
+        console.log("secondi: " + secondo);
+        const dataModifica = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
+        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('" + idModifiche + "', '" + req.session.idCorrente + "', 'init', '" + result[0].idFile + "', '" + req.session.nickname + "', '" + req.body.desc + "', " + dataModifica + ", '" + req.session.branch + "');";
+        connection.query(querySQL, function (err, result) {
+            if (err) {
                 console.log("CIAO" + err);
-            } else{
-                   var fileEliminate = JSON.parse(fs.readFileSync(req.session.eliminate));
-                    var j2 = JSON.parse(fileData);
-                    var imgJson = diffJ.caricaJSONPadre(req);
-                    var jCommit = diffJ.diffJSON(imgJson,j2, fileEliminate, req, res);
-                    fsPath.writeFile(req.session.repository + '/JSON/' + fileName, JSON.stringify(jCommit, null, '\t'), function (err) {
-                    if (err) {
-                        throw err;
-                    } else {
-                        // console.log('Json fatto');
-                    }
-                    setGlobal(req,res);
-                });
+            } else {
+
+                var params = {
+                    Bucket: 'recode18',
+                    Key: req.session.eliminate
+                }
+
+/*                 var filee = require('fs').createWriteStream(req.session.eliminate);
+                s3Bucket.getObject(params).createReadStream().pipe(filee); */
+
+                s3Bucket.getObject(params,function(err,data){
+                    if(err){
+                        console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
+                      }
+                      else{
+                        var fileEliminate = JSON.parse(data.Body.toString());
+
+                        var j2 = JSON.parse(fileData);
+                        //var imgJson = diffJ.caricaJSONPadre(req);
+                        var params = {
+                            Bucket: 'recode18',
+                            Key: req.session.path,
+                          }
+                    
+                          s3Bucket.getObject(params,function(err,data1){
+                            if(err){
+                              console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
+                            }
+                            else{
+                                //imgJson = JSON.parse(fs.readFileSync(req.session.path));
+                                var jCommit = diffJ.diffJSON(JSON.parse(data1.Body.toString()), j2, fileEliminate, req, res);
+        
+                                var params = {
+                                    Key: req.session.repository + '/JSON/' + fileName,
+                                    Body: JSON.stringify(jCommit, null, '\t'),
+                                  }
+                          
+                                  s3Bucket.upload(params, function (err, data) {
+                                    if (err) {
+                                      console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
+                                    }
+                                    else{
+                                        setGlobal(req, res);
+                                    }
+                                  });         
+                            }
+                          })
+
+        
+      
+                      }
+                })
             }
         })
     });
-    
+
 
 }
 
-function insertCommitFile(req,res){
+function insertCommitFile(req, res) {
     var nome = req.body.file_json_name;
     var path1 = req.session.repository + "/JSON/" + nome;
     var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Com', 'json');";
-    connection.query(querySQL, function(err, result){
+    connection.query(querySQL, function (err, result) {
         if (err) throw err;
     });
 }
 
-function elencoDatiRevG(idRepository, callback){
-    var queryA = "SELECT * FROM revg WHERE repository="+idRepository;
+function elencoDatiRevG(idRepository, callback) {
+    var queryA = "SELECT * FROM revg WHERE repository=" + idRepository;
     connection.query(queryA, function (err, result) {
-        if (err) console.log("Errore!"+err);
-        console.log(result);
-        return callback(result);
-    });}
-
-
-function leggiDatiUtente(nomeutente, callback){
-    var queryA = "SELECT * FROM utenti where nickname="+"'"+nomeutente+"'";
-    connection.query(queryA, function (err, result) {
-        if (err) console.log("Errore!"+err);
+        if (err) console.log("Errore!" + err);
         console.log(result);
         return callback(result);
     });
 }
 
- function modificaDatiUtente(req, callback){
+
+function leggiDatiUtente(nomeutente, callback) {
+    var queryA = "SELECT * FROM utenti where nickname=" + "'" + nomeutente + "'";
+    connection.query(queryA, function (err, result) {
+        if (err) console.log("Errore!" + err);
+        console.log(result);
+        return callback(result);
+    });
+}
+
+function modificaDatiUtente(req, callback) {
     var nickname = req.session.nickname;
     var nome = req.body.nome;
     var password = req.body.password;
     var cognome = req.body.cognome;
     var mail = req.body.mail;
 
-    var queryA = "UPDATE utenti SET password='"+password+"', nome='"+nome+"', cognome='"+cognome+"', mail='"+mail+"' WHERE nickname='"+nickname+"'";
+    var queryA = "UPDATE utenti SET password='" + password + "', nome='" + nome + "', cognome='" + cognome + "', mail='" + mail + "' WHERE nickname='" + nickname + "'";
     connection.query(queryA, function (err, result) {
-        if (err) console.log("Errore!"+err);
+        if (err) console.log("Errore!" + err);
         return callback(result);
     });
 }
 
 function infoRepo(req, callback) {
     var repo = req.session.idRepository;
-    var queryR = "SELECT r.nome, r.descrizione FROM repository r where r.idRepository="+repo;
-    connection.query(queryR, function(err, result) {
+    var queryR = "SELECT r.nome, r.descrizione FROM repository r where r.idRepository=" + repo;
+    connection.query(queryR, function (err, result) {
         if (err) {
             console.log("C'è un errore nella query: " + err);
         }
-        else{
+        else {
             console.log("Query ok!");
         }
         return callback(result);
@@ -360,12 +419,12 @@ function modificaRepo(req, callback) {
     var repo = req.session.idRepository;
     var nome = req.body.nome;
     var descrizione = req.body.descrizione;
-    var queryR = "UPDATE repository SET `nome`='"+nome+"', `descrizione`='"+descrizione+"' WHERE `idRepository`="+repo;
-    connection.query(queryR, function(err, result) {
+    var queryR = "UPDATE repository SET `nome`='" + nome + "', `descrizione`='" + descrizione + "' WHERE `idRepository`=" + repo;
+    connection.query(queryR, function (err, result) {
         if (err) {
             console.log("C'è un errore nella query: " + err);
         }
-        else{
+        else {
             console.log("Query ok!");
         }
         return callback(result);
@@ -373,7 +432,7 @@ function modificaRepo(req, callback) {
 }
 
 function elencoUtentiInvito(req, callback) {
-    var queryE = "SELECT u.nickname FROM utenti u WHERE u.nickname NOT IN (SELECT p.utente FROM partecipazione p where p.repository="+req.session.idRepository+")";
+    var queryE = "SELECT u.nickname FROM utenti u WHERE u.nickname NOT IN (SELECT p.utente FROM partecipazione p where p.repository=" + req.session.idRepository + ")";
     connection.query(queryE, function (err, result) {
         var arrayR = [];
         var i = 0;
@@ -391,7 +450,7 @@ function elencoUtentiInvito(req, callback) {
 function invitaUtente(req, callback) {
     var utente = req.body.utente;
     var repo = req.session.idRepository;
-    var queryU = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`) VALUES ('"+utente+"', '"+repo+"', '1')";
+    var queryU = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`) VALUES ('" + utente + "', '" + repo + "', '1')";
     connection.query(queryU, function (err, result) {
         if (err) {
             console.log("C'è un errore nella query: " + err);
@@ -403,11 +462,11 @@ function invitaUtente(req, callback) {
     })
 }
 
-function verificaAdmin(req, callback){
+function verificaAdmin(req, callback) {
     var utente = req.session.nickname;
     var repo = req.session.idRepository;
-    var queryV = "SELECT p.diritto FROM partecipazione p WHERE p.utente='"+utente+"' and p.repository="+repo;
-    connection.query(queryV, function(err, result){
+    var queryV = "SELECT p.diritto FROM partecipazione p WHERE p.utente='" + utente + "' and p.repository=" + repo;
+    connection.query(queryV, function (err, result) {
         if (err) {
             console.log("C'è un errore nella query: " + err);
         }
@@ -415,12 +474,12 @@ function verificaAdmin(req, callback){
             console.log("Query ok!");
         }
         return callback(result);
-    }); 
+    });
 }
 
 function elencoUtentiElimina(req, callback) {
     var repo = req.session.idRepository;
-    var queryE = "SELECT p.utente FROM partecipazione p WHERE p.diritto!=0 and p.repository="+repo;
+    var queryE = "SELECT p.utente FROM partecipazione p WHERE p.diritto!=0 and p.repository=" + repo;
     connection.query(queryE, function (err, result) {
         var arrayR = [];
         var i = 0;
@@ -438,7 +497,7 @@ function elencoUtentiElimina(req, callback) {
 function eliminaUtente(req, callback) {
     var utente = req.body.utente;
     var repo = req.session.idRepository;
-    var queryU = "DELETE FROM partecipazione WHERE `utente`='"+utente+"' and`repository`="+repo;
+    var queryU = "DELETE FROM partecipazione WHERE `utente`='" + utente + "' and`repository`=" + repo;
     connection.query(queryU, function (err, result) {
         if (err) {
             console.log("C'è un errore nella query: " + err);
@@ -450,68 +509,68 @@ function eliminaUtente(req, callback) {
     })
 }
 
-function idRevision(req,res, callback){
+function idRevision(req, res, callback) {
     console.log(req.session.nickname);
-    var queryRev="SELECT * from commit c where utente ='"+req.session.nickname+"' order by file desc";
-    connection.query(queryRev, function(err,results, fields){
-        if(err){
-            console.log("Sono in idRevision "+ err);
+    var queryRev = "SELECT * from commit c where utente ='" + req.session.nickname + "' order by file desc";
+    connection.query(queryRev, function (err, results, fields) {
+        if (err) {
+            console.log("Sono in idRevision " + err);
         }
         console.log(results[0].file);
         return callback(results[0].file);
-    });  
+    });
 }
 
 /*DAVIDE NEW QUERY BRANCH*/
-function branchMasterRev(req, idRev, result){
+function branchMasterRev(req, idRev, result) {
     var idBranch = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
-        console.log(idRev + "SEI TU?")
-        queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+idRev+"', 'master', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
-        connection.query(queryB1, function(err, result){
-            if(err) throw err;
-        });
-    
+    console.log(idRev + "SEI TU?")
+    queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('" + idBranch + "','" + idRev + "', 'master', '" + req.session.nickname + "', '" + req.session.idRepository + "');"
+    connection.query(queryB1, function (err, result) {
+        if (err) throw err;
+    });
+
     return idBranch;
 
 }
 
-function branchMasterC(req){
+function branchMasterC(req) {
     var idBranch = Math.random().toString(36).substring(7);
     var name = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
-        queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('"+idBranch+"','"+req.session.idCorrente+"', '"+name+"', '"+req.session.nickname+"', '"+req.session.idRepository+"');"
-        connection.query(queryB1, function(err, result){
-            if(err) throw err;
-        });
+    queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('" + idBranch + "','" + req.session.idCorrente + "', '" + name + "', '" + req.session.nickname + "', '" + req.session.idRepository + "');"
+    connection.query(queryB1, function (err, result) {
+        if (err) throw err;
+    });
     req.session.branch = idBranch;
     return idBranch;
 
 }
 
-function datiPadre(req, callback){
-    var queryP = "SELECT padre1 FROM commit where file ='"+req.session.padre+"'";
-    connection.query(queryP,function(err,result){
-        if(err) throw err;
+function datiPadre(req, callback) {
+    var queryP = "SELECT padre1 FROM commit where file ='" + req.session.padre + "'";
+    connection.query(queryP, function (err, result) {
+        if (err) throw err;
         req.session.padre = result[0].padre1;
     });
-    var queryPath = "Select path, tipo from file where idFile='"+req.session.padre+"'";
-        connection.query(queryPath, function(err,result){
-        if(err) throw err;
+    var queryPath = "Select path, tipo from file where idFile='" + req.session.padre + "'";
+    connection.query(queryPath, function (err, result) {
+        if (err) throw err;
         req.session.path = result[0].path;
         req.session.tipo = result[0].tipo;
         return callback(req);
-        })
+    })
 }
 
-function setGlobal(req,res){
-    var queryC = "Select * from revg where Utente ='"+req.session.nickname+"' order by dataModifica desc;";
-    connection.query(queryC, function(err,result){
+function setGlobal(req, res) {
+    var queryC = "Select * from revg where Utente ='" + req.session.nickname + "' order by dataModifica desc;";
+    connection.query(queryC, function (err, result) {
         req.session.branch = result[0].branch;
         req.session.idCorrente = result[0].ID;
         req.session.tipo = result[0].tipo;
         req.session.path = result[0].path;
-        req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
+        req.session.eliminate = req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json";
 
         res.write(toString(req.session.branch));
         res.write(toString(req.session.idCorrente));
@@ -523,15 +582,15 @@ function setGlobal(req,res){
 }
 
 
-function setGlobal2(req,res,results){
+function setGlobal2(req, res, results) {
     req.session.branch = branchMasterRev(req, results);
     console.log("SESSION BRANCH.. " + req.session.branch);
-    var queryC = "Select * from revg where Utente ='"+req.session.nickname+"' order by dataModifica desc;";
-    connection.query(queryC, function(err,result){
+    var queryC = "Select * from revg where Utente ='" + req.session.nickname + "' order by dataModifica desc;";
+    connection.query(queryC, function (err, result) {
         req.session.idCorrente = result[0].ID;
         req.session.tipo = result[0].tipo;
         req.session.path = result[0].path;
-        req.session.eliminate = req.session.repository + "/Eliminate/" +req.session.idCorrente +".json";
+        req.session.eliminate = req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json";
 
         res.write(toString(req.session.idCorrente));
         res.write(toString(req.session.tipo));
@@ -545,52 +604,64 @@ function setGlobal2(req,res,results){
     });
 }
 
-function saveMerge(path, req,res, fileData, fileName){
+function saveMerge(path, req, res, fileData, fileName) {
 
     var idModifiche = Math.random().toString(36).substring(7);
-    queryV = "Select * from file f where f.repository ='"+req.session.idRepository+"'  order by idFile desc";
-    connection.query(queryV, function(err, result, fields){
+    queryV = "Select * from file f where f.repository ='" + req.session.idRepository + "'  order by idFile desc";
+    connection.query(queryV, function (err, result, fields) {
         var d = new Date();
         var anno = d.getFullYear();
-        var mese = d.getMonth()+1;
+        var mese = d.getMonth() + 1;
         var giorno = d.getDate();
         var ora = d.getHours();
-        console.log("ora: "+ora);
+        console.log("ora: " + ora);
         var minuto = d.getMinutes();
-        console.log("minuti: "+minuto);
+        console.log("minuti: " + minuto);
         var secondo = d.getSeconds();
-        console.log("secondi: "+secondo);
-        const dataModifica = "'"+anno+"-"+mese+"-"+giorno+" "+ora+":"+minuto+":"+secondo+"'";
-        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('"+idModifiche+"', '"+req.session.idCorrente+"', '"+req.session.padre2+"', '"+result[0].idFile+"', '"+req.session.nickname+"', '', "+dataModifica+", '"+req.session.branch+"');";
-        connection.query(querySQL, function(err,result){
-            if (err){
+        console.log("secondi: " + secondo);
+        const dataModifica = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
+        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('" + idModifiche + "', '" + req.session.idCorrente + "', '" + req.session.padre2 + "', '" + result[0].idFile + "', '" + req.session.nickname + "', '', " + dataModifica + ", '" + req.session.branch + "');";
+        connection.query(querySQL, function (err, result) {
+            if (err) {
                 console.log("CIAO" + err);
-            } else{
-                idRevision(req,res, function(results){
+            } else {
+                idRevision(req, res, function (results) {
                     req.session.branch = branchMasterRev(req, results);
-                    var fileEliminate = {eliminate:[]};
-                    req.session.eliminate = path+"/Eliminate/"+results+".json";
-                    fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function(err){
-                        if(err) {
+                    var fileEliminate = { eliminate: [] };
+                    req.session.eliminate = path + "/Eliminate/" + results + ".json";
+                    
+                    var params = {
+                        Key: req.session.eliminate,
+                        Body: JSON.stringify(fileEliminate, null, "\t"),
+                      }
+              
+                      s3Bucket.upload(params, function (err, data) {
+                        if (err) {
+                          console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
+                        }
+                      });
+
+/*                      fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function (err) {
+                        if (err) {
                             throw err;
                         } else {
                             console.log('Eliminate Fatto');
                         }
-                    });
-                    setGlobal2(req,res,results);
-                 });
+                    }); */
+                    setGlobal2(req, res, results);
+                });
             }
         })
     });
-    
+
 
 }
 
-function insertMergeFile(req,res){
+function insertMergeFile(req, res) {
     var nome = req.body.nomeFile;
     var path1 = req.session.repository + "/JSON/" + nome;
     var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Mer', 'json');";
-    connection.query(querySQL, function(err, result){
+    connection.query(querySQL, function (err, result) {
         if (err) throw err;
     });
 }
@@ -600,7 +671,7 @@ function insertMergeFile(req,res){
 
 
 /*FINE*/
-    
+
 exports.creaConnessione = creaConnessione;
 exports.chiudiConnessione = chiudiConnessione;
 exports.usaDB = usaDB;

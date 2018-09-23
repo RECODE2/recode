@@ -2,6 +2,15 @@ var deepEqual = require('deep-equal')
 var fs = require('fs');
 const fsPath = require('fs-path');
 const ConnessioneDB = require('./Backend/query');
+var AWS = require('aws-sdk');
+
+var s3Bucket = new AWS.S3({
+    apiVersion: '2006-03-01',
+    params: {
+      Bucket: 'recode18'
+    }
+  })
+  
 
 function diffJSON(obj1, obj2, fileEliminate2, req, res) {
     var result = {info: {}, layers: [], data: []};
@@ -68,14 +77,25 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
         }
     }
     ConnessioneDB.idRevision(req, res, function(result){
-       fsPath.writeFile(req.session.repository + "/Eliminate/"+result+".json", JSON.stringify(fileEliminate, null, "\t"), function(err){
+        var params = {
+            Key: req.session.repository + "/Eliminate/"+result+".json",
+            Body: JSON.stringify(fileEliminate, null, "\t"),
+          }
+  
+          s3Bucket.upload(params, function (err, data) {
+            if (err) {
+              console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
+            }
+          });
+           
+/*        fsPath.writeFile(req.session.repository + "/Eliminate/"+result+".json", JSON.stringify(fileEliminate, null, "\t"), function(err){
             if(err) {
               throw err;
             } else {
                 
               console.log('Eliminate Fatto');
             }
-          });
+          }); */
     });
 
     //SETTO IL L'ULTIMO LAYER ATTIVO
@@ -107,11 +127,21 @@ function controllaFileEliminate(id2,fileEliminate){
     }
     return false;
 }
-
+/* 
 function caricaJSONPadre(req){
-    imgJson = JSON.parse(fs.readFileSync(req.session.path));
-    return imgJson;
-}
+    var params = {
+        Bucket: 'recode18',
+        Key: req.session.path,
+      }
+
+      s3Bucket.getObject(params,function(err,data){
+        if(err){
+          console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
+        }
+        else{
+            var imgJson = JSON.parse(fs.readFileSync(req.session.path));
+        }
+      })
+} */
 
 exports.diffJSON = diffJSON;
-exports.caricaJSONPadre = caricaJSONPadre;
