@@ -284,6 +284,7 @@ function saveCommit(req,res, fileData, fileName){
             } else{
                    var fileEliminate = JSON.parse(fs.readFileSync(req.session.eliminate));
                     var j2 = JSON.parse(fileData);
+                    diffJ.correggiJSON(j2);
                     var imgJson = diffJ.caricaJSONPadre(req);
                     var jCommit = diffJ.diffJSON(imgJson,j2, fileEliminate, req, res);
                     fsPath.writeFile(req.session.repository + '/JSON/' + fileName, JSON.stringify(jCommit, null, '\t'), function (err) {
