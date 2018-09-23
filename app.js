@@ -179,14 +179,17 @@ app.post('/creaRepository', function (req, res) {
       }
     });
 
-    //const REPO = 'github.com/recode18/'+idRepository;
+    const REPO = 'github.com/recode18/'+idRepository;
     require('simple-git')()
     .init()
     .add('./*')
     .commit("Repo creata!")
     .addRemote('origin','https://github.com/recode18/'+idRepository+".git")
     .push('origin','master');
+
+
     //const remote = `https://${USER}:${PASS}@${REPO}`;
+
   });
 });
 
