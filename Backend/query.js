@@ -118,7 +118,9 @@ function insertAddRevision(path, req, res, repository, callback) {
         idRevision(req, res, function (results) {
             req.session.branch = branchMasterRev(req, results);
             var fileEliminate = { eliminate: [] };
+            console.log("path: "+path);
             req.session.eliminate = path + "/Eliminate/" + results + ".json";
+            
             var params = {
                 Key: req.session.eliminate,
                 Body: JSON.stringify(fileEliminate, null, "\t"),
@@ -311,6 +313,8 @@ function saveCommit(req, res, fileData, fileName) {
                     Bucket: 'recode18',
                     Key: req.session.eliminate
                 }
+
+                console.log("req.session.eliminate: "+req.session.eliminate);
 
 /*                 var filee = require('fs').createWriteStream(req.session.eliminate);
                 s3Bucket.getObject(params).createReadStream().pipe(filee); */
