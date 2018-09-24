@@ -34,6 +34,10 @@ var user = github.getUser();
 var repo;
 
 
+AWS.config = new AWS.Config();
+AWS.config.accessKeyId = "AKIAIB7K4DL52XI3AKLA";
+AWS.config.secretAccessKey = "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";
+
 
 var s3Bucket = new AWS.S3({
   apiVersion: '2006-03-01',
