@@ -343,8 +343,7 @@ app.post('/addRevision', function (req, res) {
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
     ConnessioneDB.insertAddRevision(percorsoRepo, req, res, result);
   });
-  successo = true;
-  res.write(toString(successo));
+
 });
 
 /*

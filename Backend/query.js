@@ -141,9 +141,10 @@ function insertAddRevision(path, req, res, repository, callback) {
                         }); */
 
             setGlobal(req, res);
+            successo = true;
+            res.write(toString(successo));
         });
     });
-
 }
 function inserisciDatiRepo(req, res, callback) {
     var nome = "";
