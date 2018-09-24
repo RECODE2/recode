@@ -3,7 +3,9 @@ var fs = require('fs');
 const fsPath = require('fs-path');
 const ConnessioneDB = require('./Backend/query');
 var AWS = require('aws-sdk');
-
+AWS.config = new AWS.Config();
+AWS.config.accessKeyId = "AKIAIB7K4DL52XI3AKLA";
+AWS.config.secretAccessKey = "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";
 var s3Bucket = new AWS.S3({
     apiVersion: '2006-03-01',
     params: {
