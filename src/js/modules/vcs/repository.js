@@ -38,7 +38,7 @@ class VCS_class {
             ],
             on_finish: function (params) {
                 $.ajax({
-                    url: 'http://localhost:8081/creaRepository',
+                    url: host.name + 'creaRepository',
                     type: 'POST',
                     data: {
                         nomeRepo: params.name,
@@ -60,7 +60,7 @@ class VCS_class {
 
     elencoSceltaRepository() {
         $.ajax({
-            url: 'http://localhost:8081/elencoRepo',
+            url: host.name + 'elencoRepo',
             type: 'POST',
             success: function (result) {
                 if (result.length > 0) {
@@ -73,7 +73,7 @@ class VCS_class {
                         ],
                         on_finish: function (params) {
                             $.ajax({
-                                url: 'http://localhost:8081/settaRepo',
+                                url: host.name + 'settaRepo',
                                 type: 'POST',
                                 data: {
                                     nomeRepo: params.name,
@@ -100,7 +100,7 @@ class VCS_class {
         this.controllaSelezioneRepo(function (repo) {
             if (repo) {
                 $.ajax({
-                    url: 'http://localhost:8081/infoRepo',
+                    url: host.name + 'infoRepo',
                     type: 'POST',
                     success: function (result) {
                         if (!result[0].descrizione) {
@@ -116,7 +116,7 @@ class VCS_class {
                             ],
                             on_finish: function (params) {
                                 $.ajax({
-                                    url: 'http://localhost:8081/modificaRepo',
+                                    url: host.name + 'modificaRepo',
                                     type: 'POST',
                                     data: {
                                         nome: params.name,
@@ -147,7 +147,7 @@ class VCS_class {
         this.controllaSelezioneRepo(function (repo) {
             if (repo) {
                 $.ajax({
-                    url: 'http://localhost:8081/revg',
+                    url: host.name + 'revg',
                     type: 'POST',
                     success: function (result) {
                         this.POP = new Dialog_class();
@@ -434,7 +434,7 @@ class VCS_class {
                                 cy.nodes().on("click", function (evt) {
                                     node = evt.target;
                                     $.ajax({
-                                        url: 'http://localhost:8081/readjson',
+                                        url: host.name + 'readjson',
                                         type: 'POST',
                                         data: {
                                             idCorrente: node.id(),
@@ -474,7 +474,7 @@ class VCS_class {
 
                                     });
                                     $.ajax({
-                                        url: 'http://localhost:8081/caricaImmagine',
+                                        url: host.name + 'caricaImmagine',
                                         type: 'POST',
                                         success: function (imgJson) {
                                             immagineJson = imgJson;
@@ -498,7 +498,7 @@ class VCS_class {
                             on_finish: function () {
                                 //alert("Questo nodo ha nome: " + node.data('nome'));
                                 $.ajax({
-                                    url: 'http://localhost:8081/readjson',
+                                    url: host.name + 'readjson',
                                     type: 'POST',
                                     data: {
                                         idCorrente: node.id(),
@@ -515,7 +515,7 @@ class VCS_class {
                                     },
                                 });
                                 $.ajax({
-                                    url: 'http://localhost:8081/caricaImmagine',
+                                    url: host.name + 'caricaImmagine',
                                     type: 'POST',
                                     success: function (imgJson) {
                                         var base_selection = new Base_selection_class();
@@ -541,12 +541,12 @@ class VCS_class {
         this.controllaSelezioneRepo(function (repo) {
             if (repo) {
                 $.ajax({
-                    url: 'http://localhost:8081/verificaAdmin',
+                    url: host.name + 'verificaAdmin',
                     type: 'POST',
                     success: function (admin) {
                         if (admin) {
                             $.ajax({
-                                url: 'http://localhost:8081/elencoUtentiInvito',
+                                url: host.name + 'elencoUtentiInvito',
                                 type: 'POST',
                                 success: function (result) {
                                     if (result.length > 0) {
@@ -559,7 +559,7 @@ class VCS_class {
                                             ],
                                             on_finish: function (params) {
                                                 $.ajax({
-                                                    url: 'http://localhost:8081/invitaUtente',
+                                                    url: host.name + 'invitaUtente',
                                                     type: 'POST',
                                                     data: {
                                                         utente: params.utente,
@@ -598,12 +598,12 @@ class VCS_class {
         this.controllaSelezioneRepo(function (repo) {
             if (repo) {
                 $.ajax({
-                    url: 'http://localhost:8081/verificaAdmin',
+                    url: host.name + 'verificaAdmin',
                     type: 'POST',
                     success: function (admin) {
                         if (admin) {
                             $.ajax({
-                                url: 'http://localhost:8081/elencoUtentiElimina',
+                                url: host.name + 'elencoUtentiElimina',
                                 type: 'POST',
                                 success: function (result) {
                                     if (result.length > 0) {
@@ -616,7 +616,7 @@ class VCS_class {
                                             ],
                                             on_finish: function (params) {
                                                 $.ajax({
-                                                    url: 'http://localhost:8081/eliminaUtente',
+                                                    url: host.name + 'eliminaUtente',
                                                     type: 'POST',
                                                     data: {
                                                         utente: params.utente,
@@ -653,7 +653,7 @@ class VCS_class {
 
     controllaSelezioneRepo(callback) {
         $.ajax({
-            url: 'http://localhost:8081/controllaSelezioneRepo',
+            url: host.name + 'controllaSelezioneRepo',
             type: 'POST',
             success: function (repo) {
                 return callback(repo);
