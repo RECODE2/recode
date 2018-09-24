@@ -2,7 +2,6 @@ var deepEqual = require('deep-equal')
 var fs = require('fs');
 const fsPath = require('fs-path');
 const ConnessioneDB = require('./Backend/query');
-<<<<<<< HEAD
 var AWS = require('aws-sdk');
 
 var s3Bucket = new AWS.S3({
@@ -12,9 +11,7 @@ var s3Bucket = new AWS.S3({
     }
   })
   
-=======
 var filter = require('array-filter');
->>>>>>> 2ac8d7d2959b0db9a6c7a4f11a14aa53b3595ec7
 
 function diffJSON(obj1, obj2, fileEliminate2, req, res) {
     var result = { info: {}, layers: [], data: [] };
@@ -79,7 +76,6 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
             fileEliminate.eliminate[fileEliminate2.eliminate.length] = obj1.layers[i].id;
         }
     }
-<<<<<<< HEAD
     ConnessioneDB.idRevision(req, res, function(result){
         var params = {
             Key: req.session.repository + "/Eliminate/"+result+".json",
@@ -95,21 +91,11 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
 /*        fsPath.writeFile(req.session.repository + "/Eliminate/"+result+".json", JSON.stringify(fileEliminate, null, "\t"), function(err){
             if(err) {
               throw err;
-=======
-    ConnessioneDB.idRevision(req, res, function (result) {
-        fsPath.writeFile(req.session.repository + "/Eliminate/" + result + ".json", JSON.stringify(fileEliminate, null, "\t"), function (err) {
-            if (err) {
-                throw err;
->>>>>>> 2ac8d7d2959b0db9a6c7a4f11a14aa53b3595ec7
             } else {
 
                 console.log('Eliminate Fatto');
             }
-<<<<<<< HEAD
           }); */
-=======
-        });
->>>>>>> 2ac8d7d2959b0db9a6c7a4f11a14aa53b3595ec7
     });
 
     //SETTO IL L'ULTIMO LAYER ATTIVO
@@ -158,7 +144,6 @@ function controllaFileEliminate(id2, fileEliminate) {
     }
     return false;
 }
-<<<<<<< HEAD
 /* 
 function caricaJSONPadre(req){
     var params = {
@@ -175,13 +160,6 @@ function caricaJSONPadre(req){
         }
       })
 } */
-=======
-
-function caricaJSONPadre(req) {
-    imgJson = JSON.parse(fs.readFileSync(req.session.path));
-    return imgJson;
-}
->>>>>>> 2ac8d7d2959b0db9a6c7a4f11a14aa53b3595ec7
 
 exports.correggiJSON = correggiJSON;
 exports.diffJSON = diffJSON;
