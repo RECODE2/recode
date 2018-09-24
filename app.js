@@ -22,12 +22,18 @@ var carica = require('./carica.js');
 var AWS = require('aws-sdk');
 const USER = 'recode18';
 const PASS = 'Sfinge123';
-const gitP = require('simple-git/promise');
-const git = gitP(__dirname);
+var Github = require('github-api');
 
-/* var credentials = new AWS.SharedIniFileCredentials({profile: 'default'});
-AWS.config.credentials = credentials;
- */
+var github = new Github({
+  username: "recode18",
+  password: "Sfinge123",
+});
+
+
+var user = github.getUser();
+var repo;
+
+
 
 var s3Bucket = new AWS.S3({
   apiVersion: '2006-03-01',
@@ -179,16 +185,28 @@ app.post('/creaRepository', function (req, res) {
       }
     });
 
-    const REPO = 'github.com/recode18/'+idRepository;
-    require('simple-git')()
-    .init()
-    .add('./*')
-    .commit("Repo creata!")
-    .addRemote('origin','https://github.com/recode18/'+idRepository+".git")
-    .push('origin','master');
+
+    user.createRepo({"name": idRepository}, function(err, res) {});
+
+    repo = github.getRepo('recode18', idRepository);
 
 
-    //const remote = `https://${USER}:${PASS}@${REPO}`;
+    //var fileContent = req.body.readme;
+    var options = {
+      author: {name: req.session.nickname, email: req.session.mail},
+      committer: {name: 'recode18', email: 'davide300395@gmail.com'},
+      encode: true // Whether to base64 encode the file. (default: true)
+    }
+
+    repo.writeFile('master','readme.md',req.body.readme,'readme creato',options, function(err){
+      if(err){
+        console.log("Errore..."+err);
+      }
+      else{
+        console.log("Commit creato..");
+      }
+    })
+ 
 
   });
 });
@@ -204,6 +222,7 @@ app.post('/settaRepo', function (req, res) {
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
     req.session.repository = result;
     req.session.idRepository = result;
+    repo = github.getRepo('recode18', req.session.idRepository);
     res.write(res.toString(req.session.repository));
 
     ConnessioneDB.setIdBranchMaster(req, res, function (result) {
@@ -224,8 +243,10 @@ app.post('/addRevision', function (req, res) {
   if (dataFile.layers[0].type == "image") {
     dataFile.data[0].id = 1;
   }
+
+  //var immagineGit = req.body.file_jpeg_data.replace(/^data:image\/jpeg;base64,/,"");
   var img = req.body.file_jpeg_data;
-  var data = img.replace(/^data:image\/\w+;base64,/, "");
+  var data = img.replace(/^data:image\/(jpeg);base64,/,'');
   var buf = new Buffer(data, 'base64');
   var percorsoRepo = req.session.repository;
   var nomeFile = req.body.file_jpeg_name;
@@ -256,7 +277,68 @@ app.post('/addRevision', function (req, res) {
     if (err) {
       console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
     }
+    else{
+
+  var paramsX = {
+    Bucket: 'recode18',
+    Key: percorsoRepo+"/Immagini/"+nomeFile,
+  }
+
+  s3Bucket.getObject(paramsX,function(err,data){
+    if(err){
+      console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
+    }
+    else{
+      var options = {
+        author: {name: req.session.nickname, email: req.session.mail},
+        committer: {name: 'recode18', email: 'davide300395@gmail.com'},
+        encode: true,
+        // Whether to base64 encode the file. (default: true)
+        //inserisci la data...
+        //date: variabiledata
+      }
+    
+       //repo = github.getRepo('recode18',idRepository);
+    
+      //var test = repo.createBlob(buf,function(){});
+      //var utf8encoded = (new Buffer(data, 'base64')).toString('utf8');
+    
+      //Invece di revision creata passagli la descrizione (desc)
+      //var utf8encoded = new Buffer(data,'base64').toString('utf8');
+
+      stringaIMG = buf.toString('base64'); //STRINGA FUNZIONANTE...
+     // var immagineGit2 = 'data:image/jpeg;charset=utf-8;base64, '+immagineGit;
+
+     // var dataX = Buffer.from(data.toString('binary'),'base64');
+      //var blob = new Blob([req.body.file_jpeg_data], {type: 'image/jpeg'});
+      //var dataX = Buffer.from(buf,'base64');
+
+/*         repo.createBlob(buf,function(err,res){
+        if(err){
+          console.log("errore...."+err);
+        }
+        else{
+          console.log("Blob creato..");
+          console.log("res: "+JSON.stringify(res));
+        }
+      });  */
+
+        repo.writeFile('master','revision.jpeg',stringaIMG,'Revision creata',options, function(err){
+        if(err){
+          console.log("Errore..."+err);
+        }
+        else{
+          console.log("Commit creato..");
+        }
+      });
+    }
+  })
+    }
   });
+
+
+
+
 
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
     ConnessioneDB.insertAddRevision(percorsoRepo, req, res, result);
