@@ -21,7 +21,7 @@ var s3Bucket = new AWS.S3({
 
 function creaConnessione() {
     connection.connect(function (err) {
-        if (err) console.log("Errore nella connessione al db!");
+        if (err) console.log("Errore nella connessione al db: "+err);
         else console.log("Sei connesso!");
     });
 }
