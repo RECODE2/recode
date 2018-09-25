@@ -1,7 +1,7 @@
 //File che tiene traccia dei dati relativi alla connessione al database
  module.exports = {
   'connection': {
-      'host': 'localhost',
+      'host': 'recode_db',
       'user': 'root',
       'password': ''
   },
