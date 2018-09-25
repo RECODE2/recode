@@ -1,4 +1,5 @@
-# docker-compose down -v --remove-orphans --rmi all
+# docker-compose down -v --remove-orphans # --rmi all
+# docker-compose up --force-recreate --build
 
 version: '3'
 
@@ -17,6 +18,7 @@ services:
       always
     environment:
       - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
     volumes:
       - /opt/docker/mariadb/conf.d:/etc/mysql/conf.d
       - /opt/docker/mariadb/datadir:/var/lib/mysql
