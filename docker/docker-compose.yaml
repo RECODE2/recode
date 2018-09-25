@@ -1,0 +1,43 @@
+# docker-compose down -v --remove-orphans --rmi all
+
+version: '3'
+
+networks:
+  default:
+  backend:
+    internal: true
+
+services:
+  recode_db:
+    container_name:
+      recode_db
+    image:
+      library/mariadb:10.1.36
+    restart:
+      always
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+    volumes:
+      - /opt/docker/mariadb/conf.d:/etc/mysql/conf.d
+      - /opt/docker/mariadb/datadir:/var/lib/mysql
+    networks:
+      - backend
+
+  recode:
+    container_name:
+      recode
+    image:
+      recode:1.0
+    build:
+      ./recode
+    restart:
+      always
+    ports:
+      - 8081:8081/tcp
+    volumes:
+      - /opt/docker/recode:/home/recode
+    depends_on:
+      - recode_db
+    networks:
+      - default
+      - backend
