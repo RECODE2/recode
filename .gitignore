@@ -11,6 +11,7 @@ nbproject/
 .git/
 /.project
 *.log
+*~
 
 /node_modules/
 
