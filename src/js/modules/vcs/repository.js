@@ -671,9 +671,9 @@ class VCS_class {
                         this.POP = new Dialog_class();
                         this.POP.hide();
                         var settings = {
-                            title: 'Elenco repository',
+                            title: 'Clona repository',
                             params: [
-                                {title: "Name:", value: 'https://github.com/recode18/'+idrepo+'.git'}
+                                {title: "Repository git:", value: 'https://github.com/recode18/'+idrepo+'.git'}
                             ],
                         };
                         this.POP.show(settings);
