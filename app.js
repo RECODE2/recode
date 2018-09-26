@@ -455,6 +455,11 @@ app.post('/merge', function (req, res) {
   /*  req.session.branch = ConnessioneDB.branchMasterC(req);
    console.log(req.session.branch); */
 });
+
+app.post('/idRepo', function (req, res) {
+  var idRepo = req.session.idRepository;
+  res.send(""+idRepo);
+});
 //FUNZIONI
 
 
