@@ -2,16 +2,6 @@ var deepEqual = require('deep-equal')
 var fs = require('fs');
 const fsPath = require('fs-path');
 const ConnessioneDB = require('./Backend/query');
-var AWS = require('aws-sdk');
-AWS.config = new AWS.Config();
-AWS.config.accessKeyId = "AKIAIB7K4DL52XI3AKLA";
-AWS.config.secretAccessKey = "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";
-var s3Bucket = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: {
-      Bucket: 'recode18'
-    }
-  })
   
 var filter = require('array-filter');
 
@@ -79,26 +69,15 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
         }
     }
     ConnessioneDB.idRevision(req, res, function(result){
-        var params = {
-            Key: req.session.repository + "/Eliminate/"+result+".json",
-            Body: JSON.stringify(fileEliminate, null, "\t"),
-          }
-  
-          s3Bucket.upload(params, function (err, data) {
-            if (err) {
-              console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
-            }
-          });
-           
-/*        fsPath.writeFile(req.session.repository + "/Eliminate/"+result+".json", JSON.stringify(fileEliminate, null, "\t"), function(err){
-            if(err) {
-              throw err;
-            } else {
-
-                console.log('Eliminate Fatto');
-            }
-          }); */
-    });
+        fsPath.writeFile(req.session.repository + "/Eliminate/"+result+".json", JSON.stringify(fileEliminate, null, "\t"), function(err){
+             if(err) {
+               throw err;
+             } else {
+                 
+               console.log('Eliminate Fatto');
+             }
+           });
+     });
 
     //SETTO IL L'ULTIMO LAYER ATTIVO
     max = 0;
@@ -146,22 +125,12 @@ function controllaFileEliminate(id2, fileEliminate) {
     }
     return false;
 }
-/* 
-function caricaJSONPadre(req){
-    var params = {
-        Bucket: 'recode18',
-        Key: req.session.path,
-      }
 
-      s3Bucket.getObject(params,function(err,data){
-        if(err){
-          console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
-        }
-        else{
-            var imgJson = JSON.parse(fs.readFileSync(req.session.path));
-        }
-      })
-} */
+function caricaJSONPadre(req){
+    imgJson = JSON.parse(fs.readFileSync(req.session.path));
+    return imgJson;
+}
 
 exports.correggiJSON = correggiJSON;
 exports.diffJSON = diffJSON;
+exports.caricaJSONPadre = caricaJSONPadre;

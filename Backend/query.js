@@ -6,22 +6,10 @@ const connection = mysql.createConnection(dbconfig.connection);
 const fsPath = require('fs-path');
 var fs = require('fs');
 var diffJ = require('./../diff.js')
-var AWS = require('aws-sdk');
-
-AWS.config = new AWS.Config();
-AWS.config.accessKeyId = "AKIAIB7K4DL52XI3AKLA";
-AWS.config.secretAccessKey = "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";
-
-var s3Bucket = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: {
-        Bucket: 'recode18'
-    }
-})
 
 function creaConnessione() {
     connection.connect(function (err) {
-        if (err) console.log("Errore nella connessione al db: "+err);
+        if (err) console.log("Errore nella connessione al db: " + err);
         else console.log("Sei connesso!");
     });
 }
@@ -118,31 +106,17 @@ function insertAddRevision(path, req, res, repository, callback) {
         idRevision(req, res, function (results) {
             req.session.branch = branchMasterRev(req, results);
             var fileEliminate = { eliminate: [] };
-            console.log("path: "+path);
+            console.log("path: " + path);
             req.session.eliminate = path + "/Eliminate/" + results + ".json";
-            
-            var params = {
-                Key: req.session.eliminate,
-                Body: JSON.stringify(fileEliminate, null, "\t"),
-            }
 
-            s3Bucket.upload(params, function (err, data) {
+            fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function (err) {
                 if (err) {
-                    console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
+                    throw err;
+                } else {
+                    console.log('Eliminate Fatto');
                 }
             });
-
-            /*             fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function(err){
-                            if(err) {
-                                throw err;
-                            } else {
-                                console.log('Eliminate Fatto');
-                            }
-                        }); */
-
             setGlobal(req, res);
-            successo = true;
-            res.write(toString(successo));
         });
     });
 }
@@ -309,59 +283,16 @@ function saveCommit(req, res, fileData, fileName) {
             if (err) {
                 console.log("CIAO" + err);
             } else {
-
-                var params = {
-                    Bucket: 'recode18',
-                    Key: req.session.eliminate
-                }
-
-                console.log("req.session.eliminate: "+req.session.eliminate);
-
-/*                 var filee = require('fs').createWriteStream(req.session.eliminate);
-                s3Bucket.getObject(params).createReadStream().pipe(filee); */
-
-                s3Bucket.getObject(params,function(err,data){
-                    if(err){
-                        console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
-                      }
-                      else{
-                        var fileEliminate = JSON.parse(data.Body.toString());
-
-                        var j2 = JSON.parse(fileData);
-                        //var imgJson = diffJ.caricaJSONPadre(req);
-                        var params = {
-                            Bucket: 'recode18',
-                            Key: req.session.path,
-                          }
-                    
-                          s3Bucket.getObject(params,function(err,data1){
-                            if(err){
-                              console.log("Errore s3 lettura del file: " + params.Key + "  ... errore: " + err);
-                            }
-                            else{
-                                //imgJson = JSON.parse(fs.readFileSync(req.session.path));
-                                var jCommit = diffJ.diffJSON(JSON.parse(data1.Body.toString()), j2, fileEliminate, req, res);
-        
-                                var params = {
-                                    Key: req.session.repository + '/JSON/' + fileName,
-                                    Body: JSON.stringify(jCommit, null, '\t'),
-                                  }
-                          
-                                  s3Bucket.upload(params, function (err, data) {
-                                    if (err) {
-                                      console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
-                                    }
-                                    else{
-                                        setGlobal(req, res);
-                                    }
-                                  });         
-                            }
-                          })
-
-        
-      
-                      }
-                })
+                var fileEliminate = JSON.parse(fs.readFileSync(req.session.eliminate));
+                var j2 = JSON.parse(fileData);
+                var imgJson = diffJ.caricaJSONPadre(req);
+                var jCommit = diffJ.diffJSON(imgJson, j2, fileEliminate, req, res);
+                fsPath.writeFile(req.session.repository + '/JSON/' + fileName, JSON.stringify(jCommit, null, '\t'), function (err) {
+                    if (err) {
+                        throw err;
+                    }
+                    setGlobal(req, res);
+                });
             }
         })
     });
@@ -587,6 +518,8 @@ function setGlobal(req, res) {
         res.write(toString(req.session.tipo));
         res.write(toString(req.session.path));
         res.write(toString(req.session.eliminate));
+        successo = true;
+        res.write(toString(successo));
         res.end()
     });
 }
@@ -639,25 +572,13 @@ function saveMerge(path, req, res, fileData, fileName) {
                     req.session.branch = branchMasterRev(req, results);
                     var fileEliminate = { eliminate: [] };
                     req.session.eliminate = path + "/Eliminate/" + results + ".json";
-                    
-                    var params = {
-                        Key: req.session.eliminate,
-                        Body: JSON.stringify(fileEliminate, null, "\t"),
-                      }
-              
-                      s3Bucket.upload(params, function (err, data) {
-                        if (err) {
-                          console.log("Errore s3 upload del file: " + params.Key + "  ... errore: " + err);
-                        }
-                      });
-
-/*                      fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function (err) {
+                    fsPath.writeFile(req.session.eliminate, JSON.stringify(fileEliminate, null, "\t"), function (err) {
                         if (err) {
                             throw err;
                         } else {
                             console.log('Eliminate Fatto');
                         }
-                    }); */
+                    });
                     setGlobal2(req, res, results);
                 });
             }

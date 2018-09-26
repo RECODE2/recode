@@ -349,12 +349,12 @@ class OperazioniVCS {
 													});
 													selezionaDiv1 = true;
 												}
-												
+
 												$('#span1').click(function () {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson1 = merge.decrementMerge(imgJsonA);
-													_this.caricaDiv2(open,canvas2,ctx2);
+													_this.caricaDiv2(open, canvas2, ctx2);
 												})
 
 
@@ -362,14 +362,14 @@ class OperazioniVCS {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson1 = merge.incrementMerge(imgJsonA);
-													_this.caricaDiv2(open,canvas2,ctx2);
+													_this.caricaDiv2(open, canvas2, ctx2);
 												})
 
 												$('#span1b').click(function () {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson2 = merge.decrementMerge(imgJsonB);
-													_this.caricaDiv2(open,canvas2,ctx2);
+													_this.caricaDiv2(open, canvas2, ctx2);
 												})
 
 
@@ -378,8 +378,8 @@ class OperazioniVCS {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson2 = merge.incrementMerge(imgJsonB);
-													_this.caricaDiv2(open,canvas2,ctx2);
-												})										
+													_this.caricaDiv2(open, canvas2, ctx2);
+												})
 											}
 										})
 
@@ -432,9 +432,18 @@ class OperazioniVCS {
 	createCanvasForMerge(jsonObject, contesto) {
 		var Base_layers = new Base_layers_class();
 		//var json = JSON.parse(JSON.stringify(jsonObject));
-		var json = jsonObject;
-		for (var i in json.layers) {
-			var value = json.layers[i];
+		//var json = jsonObject;
+		var isImage = false;
+
+		for(var i in jsonObject.layers){
+			if(jsonObject.layers[i].type=='image'){
+				isImage = true;
+			}
+		}
+		console.log("IS IMAGE?" + isImage);
+
+		for (var i in jsonObject.layers) {
+			var value = jsonObject.layers[i];
 			var initial_x = null;
 			var initial_y = null;
 			if (value.x != null && value.y != null && value.width != null && value.height != null) {
@@ -449,53 +458,77 @@ class OperazioniVCS {
 				value.y = initial_y;
 			}
 
-			if (value.type == 'image') {
-				//add image data
-				value.link = null;
-				for (var j in json.data) {
-					if (json.data[j].id == value.id) {
-						value.data = json.data[j].data;
-					}
-				}
-				if (value.link == null) {
-					if (typeof value.data == 'object') {
-						//load actual image
-						if (value.width == 0)
-							value.width = value.data.width;
-						if (value.height == 0)
-							value.height = value.data.height;
-						value.link = value.data.cloneNode(true);
+			if(isImage){
+				console.log("yayo: " + i);
+				this.isIMG(value,jsonObject,contesto,Base_layers);
+			}
+			else{
+				this.isnotIMG(jsonObject,contesto,Base_layers);
+			}
+		}
+	}
 
-						value.data = null;
-					}
-					else if (typeof value.data == 'string') {
-						value.link = new Image();
-						value.link.onload = function () {
-							//render canvas
-
-							//take data
-							var layers_sorted = jsonObject.layers.concat().sort(
-								//sort function
-								(a, b) => b.order - a.order
-							);
-
-							//render main canvas
-							for (var i = layers_sorted.length - 1; i >= 0; i--) {
-								var value = layers_sorted[i];
-								contesto.globalAlpha = value.opacity / 100;
-								contesto.globalCompositeOperation = value.composition;
-								Base_layers.render_object(contesto, value);
-							}
-						};
-						value.link.src = value.data;
-					}
-					else {
-						alertify.error('Error: can not load image.');
-					}
+	isIMG(value,jsonObject,contesto,Base_layers){
+		if (value.type == 'image') {
+			//add image data
+			value.link = null;
+			for (var j in jsonObject.data) {
+				if (jsonObject.data[j].id == value.id) {
+					value.data = jsonObject.data[j].data;
 				}
 			}
-			Base_layers.render_object(contesto, value);
+			if (value.link == null) {
+				if (typeof value.data == 'object') {
+					//load actual image
+					if (value.width == 0)
+						value.width = value.data.width;
+					if (value.height == 0)
+						value.height = value.data.height;
+					value.link = value.data.cloneNode(true);
+
+					value.data = null;
+				}
+				else if (typeof value.data == 'string') {
+					value.link = new Image();					
+					value.link.onload = function () {
+						//render canvas
+
+						//take data
+						var layers_sorted = jsonObject.layers.concat().sort(
+							//sort function
+							(a, b) => b.order - a.order
+						);
+
+						//render main canvas
+						for (var i = layers_sorted.length - 1; i >= 0; i--) {
+							var value = layers_sorted[i];
+							contesto.globalAlpha = value.opacity / 100;
+							contesto.globalCompositeOperation = value.composition;
+							Base_layers.render_object(contesto, value);
+						}
+					};
+					value.link.src = value.data;
+				}
+				else {
+					alertify.error('Error: can not load image.');
+				}
+			}
 		}
+		Base_layers.render_object(contesto, value);
+	}
+
+	isnotIMG(jsonObject,contesto,Base_layers){
+				//take data
+				var layers_sorted = jsonObject.layers.concat().sort(
+					//sort function
+					(a, b) => b.order - a.order
+				);
+
+				//render main canvas
+				for (var i = layers_sorted.length - 1; i >= 0; i--) {
+					var value = layers_sorted[i];
+					Base_layers.render_object(contesto, value);
+				}
 	}
 
 	caricaDiv1(node, evt, canvas, ourctx, imgJson) {
@@ -577,7 +610,7 @@ class OperazioniVCS {
 		//imgJsonMergeX = JSON.parse(JSON.stringify(imgJsonMerge));		
 
 		//var base_selection = new Base_selection_class();
-		open.load_json(imgJsonMergeX);
+		//open.load_json(imgJsonMergeX);
 
 
 		canvas2.width = imgJsonMergeX.info.width;
