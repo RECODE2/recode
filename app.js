@@ -20,19 +20,19 @@ var morgan = require('morgan');
 var nomeUtente = "";
 var carica = require('./carica.js');
 const fs = require('fs');
-
 const USER = 'recode18';
 const PASS = 'Sfinge123';
-var Github = require('github-api');
 
+// *** Configurazione dati per GitHub ***
+var Github = require('github-api');
 var github = new Github({
   username: "recode18",
   password: "Sfinge123",
 });
 var user = github.getUser();
 var repo;
+
 // *** DATABASE ***
-// creiamo la connessione al database ed utilizziamo il db 'vit'
 mysql.createConnection(dbconfig.connection);
 ConnessioneDB.creaConnessione();
 ConnessioneDB.usaDB();
@@ -42,7 +42,6 @@ app.use(session({
   saveUninitialized: true
 }));
 app.use(flash());
-//SET APP
 app.use(bodyParser.urlencoded({ limit: '80mb', extended: true }));
 app.use(bodyParser.json({ limit: '80mb' }));
 app.use(cors());
@@ -55,14 +54,8 @@ app.listen(port, function () {
 //READ EJS ENGINE
 app.set('view engine', 'ejs');
 
-//GESTIONE COOKIE
-
-
-
-
 //SET PAGINA INIZIALE
 app.get('*', (req, res) => {
-  //res.sendFile(path.resolve(__dirname, 'index.html'));
   if (!req.session.nickname) {
     nomeUtente = "Guest";
   }
@@ -76,16 +69,11 @@ app.get('*', (req, res) => {
   });
 });
 
-// *** LATO BACKEND ***
-
-
-// *** LOGOUT
 app.post('/logout', function (req, res) {
   req.session.destroy();
   res.send();
 });
 
-// *** LOGIN
 app.post('/login', function (req, res) {
   ConnessioneDB.login(req, function (result) {
     var successo = false;
@@ -102,18 +90,7 @@ app.post('/login', function (req, res) {
     res.send(successo);
   });
 });
-/*
-app.post('/login', function(req, res){
-  console.log(req.session.nickname);
-  ConnessioneDB.datiUtente(req,function(result){
-    console.log(result.mail + "PIPPO");
-    req.session.mail = result.mail;
-    console.log(req.session.mail);
-  });
-});*/
 
-
-// REGISTRAZIONE NEGLIA MANTELLINI
 app.post('/registrazione', function (req, res) {
   ConnessioneDB.registrazione(req, function (result, err) {
     var successo = "";
@@ -133,12 +110,6 @@ app.post('/registrazione', function (req, res) {
 });
 
 app.post('/creaRepository', function (req, res) {
-
-  /**
-   * INSERISCI COSA SUCCEDE CON GIT...
-   * git init + creazione file readme.md + git commit + git add
-   */
-
   ConnessioneDB.insertRepository(req, function (result) {
     var successo = false;
     if (result) {
@@ -148,48 +119,64 @@ app.post('/creaRepository', function (req, res) {
   });
 
   ConnessioneDB.inserisciDatiRepo(req, res, function (result) {
+    /**
+     * Quando l'utente crea un repository, verrà creata automaticamente
+     * la cartella JSON all'interno del sistema centralizzato ./Server/idRepo/.
+     * All'interno della repo su github invece verrà creato un file
+     * README.md ed un file info.txt
+     */
+
     idRepository = result.idRepository;
     var pathR = "./Server/" + result.idRepository;
     ConnessioneDB.partecipazioneRepo(req, idRepository);
 
-    //Quando si crea la repository, saranno create le cartelle (vuote inizialmente) IMMAGINI e JSON
     var filesaver = new Filesaver({ safenames: true });
 
-    filesaver.folder('Immagini', pathR + "/Immagini", function (err, data) {
-      if (err) {
-        console.log("Errore " + err);
-      }
-    });
     req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
 
     filesaver.folder('JSON', pathR + "/JSON", function (err, data) {
       if (err) {
-        console.log("Errore " + err);
+        console.log("Errore creazione cartella JSON: " + err);
       }
     });
 
-
-    user.createRepo({ "name": idRepository }, function (err, res) { });
-
+    user.createRepo({ "name": idRepository }, function (err, res) {
+      if (err) {
+        console.log("Errore creazione Repo su GitHub: " + err);
+      }
+    });
     repo = github.getRepo('recode18', idRepository);
 
-
-    //var fileContent = req.body.readme;
     var options = {
       author: { name: req.session.nickname, email: req.session.mail },
       committer: { name: 'recode18', email: 'davide300395@gmail.com' },
-      encode: true // Whether to base64 encode the file. (default: true)
+      encode: true
     }
 
     repo.writeFile('master', 'readme.md', req.body.readme, 'readme creato', options, function (err) {
       if (err) {
-        console.log("Errore..." + err);
+        console.log("Errore creazione readme.md: " + err);
       }
       else {
-        console.log("Commit creato..");
+        console.log("Readme creato!");
       }
     })
 
+    var help = `Momentaneamente le revisioni sono disponibili come dataURL (base64). \n
+                Puoi utilizzare normalmente i comandi git per tornare a vecchie versioni 
+                delle immagini. \n
+                Le puoi visualizzare utilizzando un qualsiasi convertitore online (base64 to Image), 
+                ad esempio: https://codebeautify.org/base64-to-image-converter
+                Puoi salvare l'immagine nel formato desiderato ed avere a disposizione la revisione.`
+
+    repo.writeFile('master', 'info.txt', help, 'readme creato', options, function (err) {
+      if (err) {
+        console.log("Errore creazione info.txt: " + err);
+      }
+      else {
+        console.log("Help creato!");
+      }
+    })
 
   });
 });
@@ -216,6 +203,11 @@ app.post('/settaRepo', function (req, res) {
   });
 });
 
+/**
+ * Quando l'utente effettua un ADD REVISION viene creato il JSON
+ * sul sistema centralizzato. Sul sistema distribuito (GitHub) viene
+ * effettuato il commit della revisione.
+ */
 app.post('/addRevision', function (req, res) {
   var nomedelfile = req.body.file_json_name;
   var dataFile = req.body.file_json_data;
@@ -227,7 +219,6 @@ app.post('/addRevision', function (req, res) {
     dataFile.data[0].id = 1;
   }
 
-  //var immagineGit = req.body.file_jpeg_data.replace(/^data:image\/jpeg;base64,/,"");
   var img = req.body.file_jpeg_data;
   var data = img.replace(/^data:image\/(jpeg);base64,/, '');
   var buf = new Buffer(data, 'base64');
@@ -243,12 +234,11 @@ app.post('/addRevision', function (req, res) {
   });
 
 
-  //JPG (su github)
+  //JPG (su GITHUB)
   var options = {
     author: { name: req.session.nickname, email: req.session.mail },
     committer: { name: 'recode18', email: 'davide300395@gmail.com' },
     encode: true, // Whether to base64 encode the file. (default: true)
-    //inserisci la data...
     //date: variabiledata
   }
   stringaIMG = buf.toString('base64'); //STRINGA FUNZIONANTE...
@@ -268,60 +258,42 @@ app.post('/addRevision', function (req, res) {
 
 });
 
-/*
-Da save.js prendiamo il nome del file e andiamo a creare una cartella
-sul desktop.. (è giusto un tentativo per dimostrare il passaggio da frontend
-a backend tramite ajax)
-*/
+
 app.post('/branch', function (req, res) {
-  //console.log("Hai creato il branch" + req.body.nameBranch);
   ConnessioneDB.newBranch(req, res);
 });
 
-// FINE MODIFICHE DAVIDE MANTELLINI
 
-//INIZIO MODIFICHE COMMIT DM
 app.post('/commit', function (req, res) {
   fileName1 = req.body.file_json_name;
   fileData = req.body.file_json_data;
-
-  //INSERIRE QUI LA FUNZIONE diffJSON non appena avrò il caricamento file col REVG
   ConnessioneDB.insertCommitFile(req, res);
   ConnessioneDB.saveCommit(req, res, fileData, fileName1);
 })
-//FINE MODIFICHE COMMIT DM
 
 
-// REVISION GRAPH VESTITA
 app.post('/revg', function (req, res) {
   var repoAttuale = req.session.idRepository;
-  // console.log("Repo attuale: " + repoAttuale);
   ConnessioneDB.elencoDatiRevG(repoAttuale, function (result) {
     res.send(result);
   });
 });
 
-// CONTROLLA SELEZIONE REPO VESTITA
-// (Controlliamo se è stata selezionata la repo prima di aprire il revg)
 app.post('/controllaselezionerepo', function (req, res) {
   var repo = false;
   if (req.session.idRepository) {
     repo = true;
-    //console.log("La repo è stata selezionata");
   }
   res.send(repo);
 });
 
-// LEGGI DATI UTENTE VESTITA
 app.post('/leggidatiutente', function (req, res) {
   var nomeUtente = req.session.nickname;
-  //console.log("Utente attuale: " + nomeUtente);
   ConnessioneDB.leggiDatiUtente(nomeUtente, function (result) {
     res.send(result);
   });
 });
 
-// MODIFICA DATI UTENTE VESTITA
 app.post('/modificadatiutente', function (req, res) {
   ConnessioneDB.modificaDatiUtente(req, function (result) {
     var successo = false;
@@ -396,7 +368,6 @@ app.post('/readjson', function (req, res) {
   req.session.idCorrente = req.body.idCorrente;
   req.session.tipo = req.body.tipo;
   req.session.path = req.body.path;
-
   req.session.padre = req.body.idCorrente;
   req.session.eliminate = req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json";
   if (req.session.tipo == "Rev") {
@@ -437,27 +408,16 @@ app.post('/merge', function (req, res) {
   var dataFile = req.body.jsonMerge;
   var percorsoRepo = req.session.repository;
 
-  console.log("BRANCH NEL MERGE.. " + req.body.branch);
-
   //JSON
-   fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
-      if (err) {
-        console.log("Errore scrittura JSON " + err);
-      }
-    });
+  fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
+    if (err) {
+      console.log("Errore scrittura JSON " + err);
+    }
+  });
 
   ConnessioneDB.insertMergeFile(req, res); //OK!
   ConnessioneDB.saveMerge(percorsoRepo, req, res, dataFile, nomedelfile);
-
-
-  //CORREGGI QUESTO PER CREARE NUOVO BRANCH....
-
-  /*  req.session.branch = ConnessioneDB.branchMasterC(req);
-   console.log(req.session.branch); */
 });
-//FUNZIONI
-
-
 
 
 function loop(req, res) {
@@ -467,7 +427,8 @@ function loop(req, res) {
       var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
       req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
       loop(req, res);
-    } else {
+    }
+    else {
       var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
       req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
       res.send(req.session.json);

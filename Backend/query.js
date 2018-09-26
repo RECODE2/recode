@@ -25,7 +25,10 @@ function usaDB() {
     const querySQL = 'USE ' + dbconfig.database;
     connection.query(querySQL, function (err, result) {
         if (err) console.log("Errore!" + err);
-        else console.log("Stai utilizzando il db: " + dbconfig.database);
+        else {
+            console.log("Stai utilizzando il db: " + dbconfig.database);
+            console.log("Accedi a: http://localhost:8081/ per utilizzare RECODE!")
+        }
     });
 }
 
