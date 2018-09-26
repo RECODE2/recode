@@ -419,6 +419,10 @@ app.post('/merge', function (req, res) {
   ConnessioneDB.saveMerge(percorsoRepo, req, res, dataFile, nomedelfile);
 });
 
+app.post('/idRepo', function (req, res) {
+  var idRepo = req.session.idRepository;
+  res.send(""+idRepo);
+});
 
 function loop(req, res) {
   ConnessioneDB.datiPadre(req, function (req) {

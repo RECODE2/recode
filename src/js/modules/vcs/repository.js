@@ -660,6 +660,32 @@ class VCS_class {
             }
         });
     }
+
+    clonaRepo(){
+        this.controllaSelezioneRepo(function(repo){
+            if (repo){
+                $.ajax({
+                    url: host.name + 'idRepo',
+                    type: 'POST',
+                    success: function (idrepo) {
+                        this.POP = new Dialog_class();
+                        this.POP.hide();
+                        var settings = {
+                            title: 'Clona repository',
+                            params: [
+                                {title: "Repository git:", value: 'https://github.com/recode18/'+idrepo+'.git'}
+                            ],
+                        };
+                        this.POP.show(settings);
+                    }
+                })
+            }
+            else{
+                alertify.error("ERRORE: Non hai ancora selezionato la repository!");
+            }
+        })
+    }
+    
 }
 
 export default VCS_class;
