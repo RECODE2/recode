@@ -14,7 +14,7 @@ RUN mkdir -p /opt && \
     cd /opt/recode && \
     /usr/local/bin/npm install && \
     /usr/local/bin/npm run build && \
-    echo build1
+    echo build2
 
 COPY recode_start.sh /usr/bin
 
