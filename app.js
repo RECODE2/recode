@@ -1,27 +1,18 @@
 const express = require('express');
-const path = require('path');
 const port = process.env.PORT || 8081;
 const cors = require('cors');
 const app = express();
-const mysql = require('mysql');
-const dbconfig = require('./Backend/database');
 const bodyParser = require('body-parser');
 const ConnessioneDB = require('./Backend/query');
 const Filesaver = require('filesaver');
 const fsPath = require('fs-path');
-var nodegit = require('./node_modules/nodegit');
-var promisify = require("promisify-node");
-var fse = promisify(require("fs-extra"));
-var fileName = "README.md";
+const fs = require('fs');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var flash = require('connect-flash');
 var morgan = require('morgan');
 var nomeUtente = "";
 var carica = require('./carica.js');
-const fs = require('fs');
-const USER = 'recode18';
-const PASS = 'Sfinge123';
 
 // *** Configurazione dati per GitHub ***
 var Github = require('github-api');
@@ -33,9 +24,8 @@ var user = github.getUser();
 var repo;
 
 // *** DATABASE ***
-mysql.createConnection(dbconfig.connection);
+//ConnessioneDB.usaDB();
 ConnessioneDB.creaConnessione();
-ConnessioneDB.usaDB();
 app.use(session({
   resave: true,
   secret: 'stringacasualepercrittografareilcookie',

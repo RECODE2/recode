@@ -1,5 +1,3 @@
-//query.js
-
 const mysql = require('mysql');
 const dbconfig = require('./database');
 const connection = mysql.createConnection(dbconfig.connection);
@@ -8,26 +6,38 @@ var fs = require('fs');
 var diffJ = require('./../diff.js')
 
 function creaConnessione() {
-    connection.connect(function (err) {
-        if (err) console.log("Errore nella connessione al db: " + err);
-        else console.log("Sei connesso!");
-    });
+    connection.connect(function(err){
+        if(err){
+            console.log("Errore nella connessione al db: " + err);
+        }
+        else{
+            console.log("Sei connesso!");
+            connection.query('SET GLOBAL connect_timeout=28800')
+            connection.query('SET GLOBAL wait_timeout=28800')
+            connection.query('SET GLOBAL interactive_timeout=28800')
+            usaDB();
+        }
+    })
 }
 
 function chiudiConnessione() {
     connection.end(function (err) {
-        if (err) console.log("Non puoi terminare la connessione se non sei connesso! LOL");
-        else console.log("Connessione terminata!");
+        if(err){
+            console.log("Errore nella chiusura della connessione: " + err);
+        }
+        else{
+            console.log("Connessione terminata!");
+        }
     });
 }
 
 function usaDB() {
-    const querySQL = 'USE ' + dbconfig.database;
-    connection.query(querySQL, function (err, result) {
-        if (err) console.log("Errore!" + err);
-        else {
-            console.log("Stai utilizzando il db: " + dbconfig.database);
-            console.log("Accedi a: http://localhost:8081/ per utilizzare RECODE!")
+    connection.query('USE vit',function(err){
+        if(err){
+            console.log("Errore nella selezione del db: " + err);
+        }
+        else{
+            console.log("Stai utilizzando il db vit!");
         }
     });
 }
@@ -40,20 +50,16 @@ function insertRepository(req, callback) {
     var mese = d.getMonth() + 1;
     var giorno = d.getDate();
     var ora = d.getHours();
-    console.log("ora: " + ora);
     var minuto = d.getMinutes();
-    console.log("minuti: " + minuto);
     var secondo = d.getSeconds();
-    console.log("secondi: " + secondo);
     const dataCreazioneRepo = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
     var admin = req.session.nickname;
     connection.query("INSERT INTO repository (nome,admin,dataCreazione,descrizione) VALUES ('" + nomeRepository + "','" + admin + "'," + dataCreazioneRepo + ",'" + descrizione + "')", function (err, result) {
         if (err) {
-            console.log("C'è un errore nella query: " + err);
-            console.log("C'è un errore nella query: " + admin);
+            console.log("Errore inserimento repository: " + err);
         }
         else {
-            console.log("Repository inserita sul DB!");
+            console.log("Repository inserito con successo!");
         }
         return callback(result);
     });
@@ -65,29 +71,30 @@ function insertAddRevision(path, req, res, repository, callback) {
     var mese = d.getMonth() + 1;
     var giorno = d.getDate();
     var ora = d.getHours();
-    // d.setUTCHours(11);
-    console.log("ora: " + ora);
     var minuto = d.getMinutes();
-    console.log("minuti: " + minuto);
     var secondo = d.getSeconds();
-    console.log("secondi: " + secondo);
     const dataModifica = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
-
     var path1 = path + "/Immagini/" + req.body.file_jpeg_name;
     var path2 = path + "/JSON/" + req.body.file_json_name;
-
     var nome = req.body.file_jpeg_name;
     var nome1 = req.body.file_json_name;
-    console.log(repository + "SOLUZIONE FINALE");
     var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('" + path1 + "', '" + nome + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'jpeg');";
     var querySQL1 = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES ('" + path2 + "', '" + nome1 + "', '" + repository + "', '" + req.session.nickname + "', 'Rev', 'json');";
-    //var querySQL1 = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,tipo) VALUES ('"+path+"', '"+nome+"', '"+repository+"', '"+utente+"', 'Rev');";
     connection.query(querySQL, function (err, results, fields) {
-        if (err) throw err;
+        if(err){
+            console.log("Errore nell'inserimento della revisione: " + err);
+        }
+        else{
+            console.log("Revisione inserita con successo! (IMG)");
+        }
     });
     connection.query(querySQL1, function (err, results, fields) {
-        if (err) throw err;
-
+        if(err){
+            console.log("Errore nell'inserimento della revisione: " + err);
+        }
+        else{
+            console.log("Revisione inserita con successo! (JSON)");
+        }
     });
     queryV = "Select * from file f where f.repository ='" + repository + "' order by idFile desc";
 
