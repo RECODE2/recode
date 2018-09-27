@@ -68,7 +68,7 @@ class VCS_class {
                     var settings = {
                         title: 'Elenco repository',
                         params: [
-                            { name: "name", values: result },
+                            { name: "name", values: result, type:"select" },
                         ],
                         on_finish: function (params) {
                             $.ajax({
