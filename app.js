@@ -143,7 +143,7 @@ app.post('/creaRepository', function (req, res) {
       encode: true
     }
 
-    repo.writeFile('master', 'readme.md', req.body.readme, 'readme creato', options, function (err) {
+    repo.writeFile('master', 'readme.md', req.body.readme, 'Readme creato', options, function (err) {
       if (err) {
         console.log("Errore creazione readme.md: " + err);
       }
@@ -151,23 +151,6 @@ app.post('/creaRepository', function (req, res) {
         console.log("Readme creato!");
       }
     })
-
-    var help = `Momentaneamente le revisioni sono disponibili come dataURL (base64). \n
-                Puoi utilizzare normalmente i comandi git per tornare a vecchie versioni 
-                delle immagini. \n
-                Le puoi visualizzare utilizzando un qualsiasi convertitore online (base64 to Image), 
-                ad esempio: https://codebeautify.org/base64-to-image-converter
-                Puoi salvare l'immagine nel formato desiderato ed avere a disposizione la revisione.`
-
-    repo.writeFile('master', 'info.txt', help, 'readme creato', options, function (err) {
-      if (err) {
-        console.log("Errore creazione info.txt: " + err);
-      }
-      else {
-        console.log("Help creato!");
-      }
-    })
-
   });
 });
 
@@ -200,6 +183,8 @@ app.post('/settaRepo', function (req, res) {
  */
 app.post('/addRevision', function (req, res) {
   var nomedelfile = req.body.file_json_name;
+  var descrizioneCommit = req.body.desc;
+  console.log("Stringa nuova... " + descrizioneCommit);
   var dataFile = req.body.file_json_data;
   dataFile = JSON.parse(dataFile);
   dataFile.info.layer_active = 1;
@@ -227,7 +212,7 @@ app.post('/addRevision', function (req, res) {
     committer: { name: 'recode18', email: 'davide300395@gmail.com' },
     encode: false //setto a false l'encoding in base64 dal momento che è già base64
   }
-  repo.writeFile('master', 'revision.jpeg', data, 'Revision creata', options, function (err) {
+  repo.writeFile('master', 'revision.jpeg', data, descrizioneCommit, options, function (err) {
     if (err) {
       console.log("Errore..." + err);
     }
