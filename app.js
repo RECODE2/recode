@@ -126,7 +126,7 @@ app.post('/creaRepository', function (req, res) {
 
     filesaver.folder('JSON', pathR + "/JSON", function (err, data) {
       if (err) {
-        console.log("Errore creazione cartella JSON: " + err);
+        console.log("Errore creazione cartella JSON (iniziale): " + err);
       }
     });
 
@@ -148,7 +148,7 @@ app.post('/creaRepository', function (req, res) {
         console.log("Errore creazione readme.md: " + err);
       }
       else {
-        console.log("Readme creato!");
+        console.log("Readme creato con successo!");
       }
     })
   });
@@ -184,7 +184,6 @@ app.post('/settaRepo', function (req, res) {
 app.post('/addRevision', function (req, res) {
   var nomedelfile = req.body.file_json_name;
   var descrizioneCommit = req.body.desc;
-  console.log("Stringa nuova... " + descrizioneCommit);
   var dataFile = req.body.file_json_data;
   dataFile = JSON.parse(dataFile);
   dataFile.info.layer_active = 1;
@@ -201,7 +200,7 @@ app.post('/addRevision', function (req, res) {
   //JSON
   fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
     if (err) {
-      console.log("Errore scrittura JSON " + err);
+      console.log("Errore scrittura file JSON: " + err);
     }
   });
 
@@ -214,10 +213,10 @@ app.post('/addRevision', function (req, res) {
   }
   repo.writeFile('master', 'revision.jpeg', data, descrizioneCommit, options, function (err) {
     if (err) {
-      console.log("Errore..." + err);
+      console.log("Errore scrittura revision.jpg:" + err);
     }
     else {
-      console.log("Commit creato..");
+      console.log("Revision inserita con successo su GitHub!");
     }
   });
 
@@ -341,7 +340,6 @@ app.post('/readjson', function (req, res) {
   req.session.eliminate = req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json";
   if (req.session.tipo == "Rev") {
     req.session.branch = ConnessioneDB.branchMasterC(req);
-    console.log(req.session.branch);
   }
   res.send(req.session.branch);
 });
@@ -352,7 +350,6 @@ app.post('/caricaImmagine', function (req, res) {
   if (req.session.tipo == "Rev" || req.session.tipo == "Mer") {
     res.send(req.session.json);
   } else if (req.session.tipo == "Com") {
-    console.log("Click..");
     req.session.fileEliminate = JSON.parse(fs.readFileSync(req.session.repository + "/Eliminate/" + req.session.idCorrente + ".json"));
     loop(req, res);
   }
@@ -360,7 +357,6 @@ app.post('/caricaImmagine', function (req, res) {
 
 app.post('/readJsonMerge', function (req, res) {
   var imgJson = JSON.parse(req.body.mergeJson);
-  console.log(JSON.stringify(imgJson, null, '\t'));
   res.send(imgJson);
 });
 
@@ -380,7 +376,7 @@ app.post('/merge', function (req, res) {
   //JSON
   fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
     if (err) {
-      console.log("Errore scrittura JSON " + err);
+      console.log("Errore scrittura file JSON (merge): " + err);
     }
   });
 
@@ -396,7 +392,6 @@ app.post('/idRepo', function (req, res) {
 function loop(req, res) {
   ConnessioneDB.datiPadre(req, function (req) {
     if (req.session.tipo == "Com") {
-      console.log(req.session.path + "Stampa del percorso");
       var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
       req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
       loop(req, res);
