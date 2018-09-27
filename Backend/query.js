@@ -54,7 +54,7 @@ function insertRepository(req, callback) {
     var secondo = d.getSeconds();
     const dataCreazioneRepo = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
     var admin = req.session.nickname;
-    connection.query("INSERT INTO repository (nome,admin,dataCreazione,descrizione) VALUES (?,?,?,?)", [nomeRepository, admin, dataCreazioneRepo, descrizione], function (err, result) {
+    connection.query("INSERT INTO repository (nome,admin,dataCreazione,descrizione) VALUES (?,?,"+dataCreazioneRepo+",?)", [nomeRepository, admin, descrizione], function (err, result) {
         if (err) {
             console.log("Errore inserimento repository: " + err);
         }
@@ -74,19 +74,19 @@ function insertAddRevision(path, req, res, repository, callback) {
     var minuto = d.getMinutes();
     var secondo = d.getSeconds();
     const dataModifica = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
-    var path1 = path + "/Immagini/" + req.body.file_jpeg_name;
+    //var path1 = path + "/Immagini/" + req.body.file_jpeg_name;
     var path2 = path + "/JSON/" + req.body.file_json_name;
     var nome = req.body.file_jpeg_name;
     var nome1 = req.body.file_json_name;
     var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,`tipo`,`formato`) VALUES (?,?,?,?,?,?);";
-    connection.query(querySQL, [path1, nome, repository, req.session.nickname, 'Rev', 'jpeg'], function (err, results, fields) {
+/*     connection.query(querySQL, [path1, nome, repository, req.session.nickname, 'Rev', 'jpeg'], function (err, results, fields) {
         if (err) {
             console.log("Errore nell'inserimento della revisione: " + err);
         }
         else {
             console.log("Revisione inserita con successo! (IMG)");
         }
-    });
+    }); */
     connection.query(querySQL, [path2, nome1, repository, req.session.nickname, 'Rev', 'json'], function (err, results, fields) {
         if (err) {
             console.log("Errore nell'inserimento della revisione: " + err);
@@ -99,7 +99,8 @@ function insertAddRevision(path, req, res, repository, callback) {
     queryV = "Select * from file f where f.repository=? order by idFile desc";
     connection.query(queryV, [repository], function (err, result, fields) {
         var idModifiche = Math.random().toString(36).substring(7);
-        if (result.length == 2) {
+        if (result.length == 1) {
+            console.log("sono nell'if..");
             querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES (?,?,?,?,?,?," + dataModifica + ",?)";
             connection.query(querySQL, [idModifiche, 'init', 'init', result[0].idFile, req.session.nickname, req.body.desc, req.session.branch], function (err, result, fields) {
                 if (err) {
@@ -107,6 +108,7 @@ function insertAddRevision(path, req, res, repository, callback) {
                 }
             });
         } else {
+            console.log("sono qui... else");
             querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES (?,?,?,?,?,?," + dataModifica + ",?)";
             connection.query(querySQL, [idModifiche, req.session.idCorrente, 'init', result[0].idFile, req.session.nickname, req.body.desc, req.session.branch], function (err, result, fields) {
                 if (err) {
