@@ -255,6 +255,14 @@ app.post('/controllaselezionerepo', function (req, res) {
   res.send(repo);
 });
 
+app.post('/controllaSelezioneRevision', function (req, res) {
+  var revision = false;
+  if (req.session.idCorrente) {
+    revision = true;
+  }
+  res.send(revision);
+});
+
 app.post('/leggidatiutente', function (req, res) {
   var nomeUtente = req.session.nickname;
   ConnessioneDB.leggiDatiUtente(nomeUtente, function (result) {

@@ -112,7 +112,7 @@ class Add_Revision_Class{
                 }
             }
             else{
-                alertify.error("ERRORE: Non hai ancora selezionato la repository!"); 
+                alertify.error("ERRORE: Non hai ancora selezionato il repository!"); 
             }
         });
 

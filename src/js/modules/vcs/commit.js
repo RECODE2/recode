@@ -5,25 +5,23 @@ import Helper_class from './../../libs/helpers.js';
 import host from './../../host.js';
 import Dialog_class from './../../libs/popup.js';
 var request = require('ajax-request');
-
-
 var instance = null;
 
-class Commit_Class{
-    constructor() {
-        if (instance) {
+class Commit_Class {
+	constructor() {
+		if (instance) {
 			return instance;
 		}
 		instance = this;
-        this.Base_layers = new Base_layers_class();
+		this.Base_layers = new Base_layers_class();
 		this.Helper = new Helper_class();
 		this.POP = new Dialog_class();
-	
 
-        this.set_events();
-    }
 
-    set_events() {
+		this.set_events();
+	}
+
+	set_events() {
 		var _this = this;
 
 		document.addEventListener('keydown', function (event) {
@@ -37,79 +35,108 @@ class Commit_Class{
 				event.preventDefault();
 			}
 		}, false);
-    }
+	}
 
-    
 
-    commit(){
-        var _this = this;
-        this.POP.hide();
-        
-        var settings = {
-			title: 'Commit: ',
-			params: [
-				{name: "name", title: "Commit name:", value: "Nome..."},
-				{name: "desc", title: "Descrizione", value: ""},
-                {name: "layers",  values: ['All']},
-			],
-			on_change: function (params, canvas_preview, w, h) {
-                _this.save_dialog_onchange(params);
-                
-			}, 
-			on_finish: function (params) {
-               var json_file = _this._action(params);
-                request({
-                    url: host.name+'commit',
-                    method: 'POST',
-                    data: {
-                      file_json_name: json_file[1],
-                      file_json_data: json_file[0],
-                      desc: params.desc,
-                      name: params.name
-                    }
-                  }, function(err, res, body) {
-					if(err) {throw err;}
-					else{
-						alertify.success("Commit effettuato..");
+	controllaSelezioneRepo(callback) {
+		$.ajax({
+			url: host.name + 'controllaSelezioneRepo',
+			type: 'POST',
+			success: function (repo) {
+				return callback(repo);
+			}
+		});
+	}
+
+	controllaSelezioneRevision(callback) {
+		$.ajax({
+			url: host.name + 'controllaSelezioneRevision',
+			type: 'POST',
+			success: function (revision) {
+				return callback(revision);
+			}
+		})
+	}
+
+	commit() {
+		var _this = this;
+		_this.controllaSelezioneRepo(function (repo) {
+			if (repo) {
+
+				_this.controllaSelezioneRevision(function (revision) {
+					if (revision) {
+						_this.POP.hide();
+						var settings = {
+							title: 'Commit: ',
+							params: [
+								{ name: "name", title: "Commit name:", value: "Nome..." },
+								{ name: "desc", title: "Descrizione", value: "" },
+								{ name: "layers", values: ['All'] },
+							],
+							on_change: function (params, canvas_preview, w, h) {
+								_this.save_dialog_onchange(params);
+
+							},
+							on_finish: function (params) {
+								var json_file = _this._action(params);
+								request({
+									url: host.name + 'commit',
+									method: 'POST',
+									data: {
+										file_json_name: json_file[1],
+										file_json_data: json_file[0],
+										desc: params.desc,
+										name: params.name
+									}
+								}, function (err, res, body) {
+									if (err) { throw err; }
+									else {
+										alertify.success("Commit effettuato con successo!");
+									}
+								});
+							},
+						};
+						_this.POP.show(settings);
 					}
-                  });
-               
-			},
-		};
-		this.POP.show(settings);
-    }
+					else {
+						alertify.error("ERRORE: Seleziona un commit o una revision!");
+					}
+				});
+			}
+			else {
+				alertify.error("ERRORE: Non hai ancora selezionato il repository!");
+			}
+		});
 
-        _action(user_response) {
-        var fname = user_response.name;
-        
-        var only_one_layer = false;
-        
-        if (user_response.layers == 'All')
-            only_one_layer = false;
-            
-        var quality = parseInt(user_response.quality);
-        if (quality > 100 || quality < 1 || isNaN(quality) == true)
-            quality = 90;
-        quality = quality / 100;
-        var type = "JSON";
-        if (this.Helper.strpos(fname, '.json') !== false)
-            type = 'JSON';
-        
-       
-    
+	}
+	_action(user_response) {
+		var fname = user_response.name;
 
-        if (this.Helper.strpos(fname, '.json') == false)
-            fname = fname + ".json";
+		var only_one_layer = false;
 
-        var data_json = this.export_as_json();
+		if (user_response.layers == 'All')
+			only_one_layer = false;
 
-        var blob = new Blob([data_json], {type: "text/plain"});
-        var data = window.URL.createObjectURL(blob); //html5
-        return [data_json, fname];
-        
-    }
+		var quality = parseInt(user_response.quality);
+		if (quality > 100 || quality < 1 || isNaN(quality) == true)
+			quality = 90;
+		quality = quality / 100;
+		var type = "JSON";
+		if (this.Helper.strpos(fname, '.json') !== false)
+			type = 'JSON';
 
-    export_as_json() {
+		if (this.Helper.strpos(fname, '.json') == false)
+			fname = fname + ".json";
+
+		var data_json = this.export_as_json();
+
+		var blob = new Blob([data_json], { type: "text/plain" });
+		var data = window.URL.createObjectURL(blob); //html5
+		return [data_json, fname];
+
+	}
+
+	export_as_json() {
 		var export_data = {};
 
 		//get date
@@ -173,7 +200,7 @@ class Commit_Class{
 			canvas.width = 1;
 			canvas.height = 1;
 		}
-		
+
 		return JSON.stringify(export_data, null, "\t");
 	}
 

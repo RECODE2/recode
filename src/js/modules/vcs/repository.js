@@ -5,7 +5,6 @@ import Base_layers_class from "./../../core/base-layers"
 import Base_selection_class from "./../../core/base-selection"
 import File_open_class from "./../file/open.js";
 
-
 var moment = require('moment');
 var cytoscape = require('cytoscape');
 var cydagre = require('cytoscape-dagre');
@@ -25,7 +24,7 @@ cytoscape.use(cydagre, dagre);
 
 class VCS_class {
     constructor() {
-        this.POP = new Dialog_class(); //libreria popup
+        this.POP = new Dialog_class();
     }
 
     creaRepository() {
@@ -46,10 +45,10 @@ class VCS_class {
                     }
                 }).done(function (successo) {
                     if (successo) {
-                        alertify.success("Repository creata con successo");
+                        alertify.success("Repository creato con successo!");
                     }
                     else {
-                        alertify.error("ERRORE NELLA CREAZIONE DELLA REPOSITORY");
+                        alertify.error("Errore nella creazione del repository!");
                     }
                 });
             },
@@ -79,7 +78,7 @@ class VCS_class {
                                     nomeRepo: params.name,
                                 },
                                 success: function () {
-                                    alertify.success("Repository settata con successo, ATTENDERE...");
+                                    alertify.success("Repository settato con successo, ATTENDERE...");
                                     window.setTimeout(function () {
                                         window.location.href = host.name;
                                     }, 2500);
@@ -90,7 +89,7 @@ class VCS_class {
                     this.POP.show(settings);
                 }
                 else {
-                    alertify.error("ERRORE: attualmente non ci sono repository da visualizzare");
+                    alertify.error("ERRORE: attualmente non ci sono repository da visualizzare!");
                 }
             }
         });
@@ -124,10 +123,10 @@ class VCS_class {
                                     },
                                     success: function (successo) {
                                         if (successo) {
-                                            alertify.success("Repository modificata con successo");
+                                            alertify.success("Repository modificato con successo!");
                                         }
                                         else {
-                                            alertify.error("ERRORE NELLA MODIFICA!");
+                                            alertify.error("Errore nella modifica del repository!");
                                         }
                                     }
                                 });
@@ -138,7 +137,7 @@ class VCS_class {
                 });
             }
             else {
-                alertify.error("ERRORE: Non hai ancora selezionato la repository!");
+                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
             }
         })
     }
@@ -153,23 +152,22 @@ class VCS_class {
                         this.POP = new Dialog_class();
                         this.POP.hide();
                         var open = new File_open_class();
-                        var Base_layers = new Base_layers_class();
-                        //var File_open = new File_open_class();
                         var immagineJson;
                         var node;
                         var settings = {
                             title: 'Revision Graph',
                             on_load: function () {
-                                /**
-                                * Function created by NEGLIA-VESTITA
-                                * This function is used in operazioniVCS.js (Merge)
-                                * @param {*} jsonObject 
-                                * @param {*} contesto 
-                                */
-                                function createCanvasForMerge(jsonObject, contesto) {
-
-                                    //open.loadOurJson(jsonObject,contesto);
-
+                                
+                                function loadCanvas(jsonObject, contesto) {
+                                    var Base_layers = new Base_layers_class();
+                                    var isImage = false;
+                            
+                                    for(var i in jsonObject.layers){
+                                        if(jsonObject.layers[i].type=='image'){
+                                            isImage = true;
+                                        }
+                                    }
+                            
                                     for (var i in jsonObject.layers) {
                                         var value = jsonObject.layers[i];
                                         var initial_x = null;
@@ -180,68 +178,85 @@ class VCS_class {
                                             value.x = 0;
                                             value.y = 0;
                                         }
-
+                            
                                         if (initial_x != null && initial_x != null) {
                                             value.x = initial_x;
                                             value.y = initial_y;
                                         }
-
-                                        if (value.type == 'image') {
-                                            //add image data
-                                            value.link = null;
-                                            for (var j in jsonObject.data) {
-                                                if (jsonObject.data[j].id == value.id) {
-                                                    value.data = jsonObject.data[j].data;
-                                                }
-                                            }
-                                            if (value.link == null) {
-                                                if (typeof value.data == 'object') {
-                                                    //load actual image
-                                                    if (value.width == 0)
-                                                        value.width = value.data.width;
-                                                    if (value.height == 0)
-                                                        value.height = value.data.height;
-                                                    value.link = value.data.cloneNode(true);
-
-                                                    value.data = null;
-                                                }
-                                                else if (typeof value.data == 'string') {
-                                                    value.link = new Image();
-                                                    value.link.onload = function () {
-                                               
-                                                        //take data
-                                                        var layers_sorted = jsonObject.layers.concat().sort(
-                                                            //sort function
-                                                                (a, b) => b.order - a.order
-                                                            );
-
-                                                        //render main canvas
-                                                        for (var i = layers_sorted.length - 1; i >= 0; i--) {
-                                                            var value = layers_sorted[i];
-                                                            contesto.globalAlpha = value.opacity / 100;
-                                                            contesto.globalCompositeOperation = value.composition;
-                                                            Base_layers.render_object(contesto, value);
-                                                        }
-/* 
-                                                        for (var i in jsonObject.layers) {
-                                                            var value = jsonObject.layers[i];
-                                                            contesto.globalAlpha = value.opacity / 100;
-                                                            contesto.globalCompositeOperation = value.composition;
-                                                            Base_layers.render_object(contesto, value);
-                                                        } */
-                                                    };
-                                                    value.link.src = value.data;
-                                                }
-                                                else {
-                                                    alertify.error('Error: can not load image.');
-                                                }
-                                            }
+                            
+                                        if(isImage){
+                                            isIMG(value,jsonObject,contesto,Base_layers);
                                         }
-                                        Base_layers.render_object(contesto, value);
+                                        else{
+                                            isnotIMG(jsonObject,contesto,Base_layers);
+                                        }
                                     }
                                 }
+                            
+                                function isIMG(value,jsonObject,contesto,Base_layers){
+                                    if (value.type == 'image') {
+                                        //add image data
+                                        value.link = null;
+                                        for (var j in jsonObject.data) {
+                                            if (jsonObject.data[j].id == value.id) {
+                                                value.data = jsonObject.data[j].data;
+                                            }
+                                        }
+                                        if (value.link == null) {
+                                            if (typeof value.data == 'object') {
+                                                //load actual image
+                                                if (value.width == 0)
+                                                    value.width = value.data.width;
+                                                if (value.height == 0)
+                                                    value.height = value.data.height;
+                                                value.link = value.data.cloneNode(true);
+                            
+                                                value.data = null;
+                                            }
+                                            else if (typeof value.data == 'string') {
+                                                value.link = new Image();					
+                                                value.link.onload = function () {
+                                                    //render canvas
+                            
+                                                    //take data
+                                                    var layers_sorted = jsonObject.layers.concat().sort(
+                                                        //sort function
+                                                        (a, b) => b.order - a.order
+                                                    );
+                            
+                                                    //render main canvas
+                                                    for (var i = layers_sorted.length - 1; i >= 0; i--) {
+                                                        var value = layers_sorted[i];
+                                                        contesto.globalAlpha = value.opacity / 100;
+                                                        contesto.globalCompositeOperation = value.composition;
+                                                        Base_layers.render_object(contesto, value);
+                                                    }
+                                                };
+                                                value.link.src = value.data;
+                                            }
+                                            else {
+                                                alertify.error("Errore nel caricamento dell'immagine");
+                                            }
+                                        }
+                                    }
+                                    Base_layers.render_object(contesto, value);
+                                }
+                            
+                                function isnotIMG(jsonObject,contesto,Base_layers){
+                                            //take data
+                                            var layers_sorted = jsonObject.layers.concat().sort(
+                                                //sort function
+                                                (a, b) => b.order - a.order
+                                            );
+                            
+                                            //render main canvas
+                                            for (var i = layers_sorted.length - 1; i >= 0; i--) {
+                                                var value = layers_sorted[i];
+                                                Base_layers.render_object(contesto, value);
+                                            }
+                                }
 
-                                /* INIZIO REVG */
+                                /* REVG */
                                 var popupx = document.getElementById('popup');
                                 popupx.style.left = "25%";
                                 popupx.style.right = "25%";
@@ -260,15 +275,9 @@ class VCS_class {
 
                                 document.querySelector('#popup #dialog_content').appendChild(divRevg);
 
-
-                                /* INIZIO PREVIEW MINICANVAS:
-                                *  ci saranno due div:
-                                *  1) div al cui interno ci sarà un canvas
-                                *  2) div al cui interno ci saranno i dettagli del nodo selezionato
-                                */
                                 var divJSON = document.createElement('div');
                                 divJSON.setAttribute('id', 'divjson');
-                                divJSON.style.height = "40%";
+                                divJSON.style.height = "45%";
                                 divJSON.style.position = "relative";
                                 divJSON.style.marginTop = "5px";
 
@@ -279,7 +288,6 @@ class VCS_class {
                                 divMinicanvas1.style.border = "1px solid gray";
                                 divMinicanvas1.style.cssFloat = "left";
 
-
                                 var divDettagliNodo = document.createElement('div');
                                 divDettagliNodo.setAttribute('id', 'divdettaglinodo');
                                 divDettagliNodo.style.height = "100%";
@@ -287,20 +295,18 @@ class VCS_class {
                                 divDettagliNodo.style.border = "1px solid gray";
                                 divDettagliNodo.style.cssFloat = "left";
 
-                                //create temp canvas
                                 var canvas = document.createElement('canvas');
                                 canvas.setAttribute('id', 'minicanvas1');
                                 var ourctx = canvas.getContext("2d");
                                 //	var ctx = canvas.getContext("2d");
-                                canvas.width = "800";
-                                canvas.height = "600";
+/*                                 canvas.width = "800";
+                                canvas.height = "600"; */
 
                                 var titoloInformazioni = document.createElement('p');
                                 titoloInformazioni.setAttribute('align', 'center');
                                 titoloInformazioni.style.fontWeight = "bold";
                                 titoloInformazioni.innerHTML = "Informazioni nodo selezionato:";
 
-                                //creo l'elenco delle proprietà
                                 var elencoProp = document.createElement('ul');
                                 elencoProp.setAttribute('id', 'elencoprop');
 
@@ -479,24 +485,20 @@ class VCS_class {
                                         success: function (imgJson) {
                                             immagineJson = imgJson;
                                             node = evt.target;
+                                            canvas.width = imgJson.info.width;
+                                            canvas.height = imgJson.info.height;
                                             ourctx.clearRect(0, 0, canvas.width, canvas.height);
-                                            createCanvasForMerge(imgJson, ourctx);
+                                            loadCanvas(imgJson, ourctx);
                                             canvas.setAttribute('id', 'minicanvas1');
                                             canvas.setAttribute('class', 'transparent');
                                             canvas.style.height = "100%";
                                             canvas.style.width = "100%";
-
-
-
                                             document.querySelector('#divminicanvas1').appendChild(canvas);
-
                                         }
-
                                     })
                                 });
                             },
                             on_finish: function () {
-                                //alert("Questo nodo ha nome: " + node.data('nome'));
                                 $.ajax({
                                     url: host.name + 'readjson',
                                     type: 'POST',
@@ -532,7 +534,7 @@ class VCS_class {
                 });
             }
             else {
-                alertify.error("ERRORE: Non hai ancora selezionato la repository!");
+                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
             }
         });
     }
@@ -553,7 +555,7 @@ class VCS_class {
                                         this.POP = new Dialog_class();
                                         this.POP.hide();
                                         var settings = {
-                                            title: 'Seleziona utente da invitare alla Repository',
+                                            title: 'Seleziona utente da invitare al Repository',
                                             params: [
                                                 { name: "utente", values: result },
                                             ],
@@ -566,10 +568,10 @@ class VCS_class {
                                                     }
                                                 }).done(function (successo) {
                                                     if (successo) {
-                                                        alertify.success("Utente '" + params.utente + "' invitato con successo")
+                                                        alertify.success("Utente '" + params.utente + "' invitato con successo!")
                                                     }
                                                     else {
-                                                        alertify.error("ERRORE NELL'INVITO");
+                                                        alertify.error("Errore nell'invito dell'utente al repository!");
                                                     }
                                                 });
                                             }
@@ -577,7 +579,7 @@ class VCS_class {
                                         this.POP.show(settings);
                                     }
                                     else {
-                                        alertify.error("ERRORE: attualmente non ci sono utenti da invitare alla repository");
+                                        alertify.error("ERRORE: attualmente non ci sono utenti da invitare al repository");
                                     }
                                 }
                             });
@@ -589,7 +591,7 @@ class VCS_class {
                 });
             }
             else {
-                alertify.error("ERRORE: Non hai ancora selezionato la repository!");
+                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
             }
         })
     }
@@ -610,7 +612,7 @@ class VCS_class {
                                         this.POP = new Dialog_class();
                                         this.POP.hide();
                                         var settings = {
-                                            title: 'Seleziona utente da eliminare dalla repository',
+                                            title: 'Seleziona utente da eliminare dal repository',
                                             params: [
                                                 { name: "utente", values: result },
                                             ],
@@ -623,10 +625,10 @@ class VCS_class {
                                                     }
                                                 }).done(function (successo) {
                                                     if (successo) {
-                                                        alertify.success("Utente '" + params.utente + "' eliminato con successo")
+                                                        alertify.success("Utente '" + params.utente + "' eliminato con successo!")
                                                     }
                                                     else {
-                                                        alertify.error("ERRORE NELL'ELIMINAZIONE");
+                                                        alertify.error("Errore nell'eliminazione dell'utente!");
                                                     }
                                                 });
                                             }
@@ -634,19 +636,19 @@ class VCS_class {
                                         this.POP.show(settings);
                                     }
                                     else {
-                                        alertify.error("ERRORE: attualmente non ci sono utenti da eliminare dalla repository");
+                                        alertify.error("ERRORE: attualmente non ci sono utenti da eliminare dal repository!");
                                     }
                                 }
                             });
                         }
                         else {
-                            alertify.error("ERRORE: Non hai i permessi per eliminare gli utenti");
+                            alertify.error("ERRORE: Non hai i permessi per eliminare gli utenti!");
                         }
                     }
                 });
             }
             else {
-                alertify.error("ERRORE: Non hai ancora selezionato la repository!");
+                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
             }
         })
     }
@@ -681,7 +683,7 @@ class VCS_class {
                 })
             }
             else{
-                alertify.error("ERRORE: Non hai ancora selezionato la repository!");
+                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
             }
         })
     }
