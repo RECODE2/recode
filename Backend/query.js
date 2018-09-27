@@ -448,8 +448,8 @@ function elencoUtentiElimina(req, callback) {
 function eliminaUtente(req, callback) {
     var utente = req.body.utente;
     var repo = req.session.idRepository;
-    var queryU = "DELETE FROM partecipazione WHERE `utente`='" + utente + "' and`repository`=" + repo;
-    connection.query(queryU, function (err, result) {
+    var queryU = "DELETE FROM partecipazione WHERE `utente`= ? and`repository`= ?";
+    connection.query(queryU,[utente,repo], function (err, result) {
         if (err) {
             console.log("C'è un errore nella query: " + err);
         }
@@ -462,8 +462,8 @@ function eliminaUtente(req, callback) {
 
 function idRevision(req, res, callback) {
     console.log(req.session.nickname);
-    var queryRev = "SELECT * from commit c where utente ='" + req.session.nickname + "' order by file desc";
-    connection.query(queryRev, function (err, results, fields) {
+    var queryRev = "SELECT * from commit c where utente = ? order by file desc";
+    connection.query(queryRev,[req.session.nickname], function (err, results, fields) {
         if (err) {
             console.log("Sono in idRevision " + err);
         }
@@ -476,9 +476,8 @@ function idRevision(req, res, callback) {
 function branchMasterRev(req, idRev, result) {
     var idBranch = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
-    console.log(idRev + "SEI TU?")
-    queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('" + idBranch + "','" + idRev + "', 'master', '" + req.session.nickname + "', '" + req.session.idRepository + "');"
-    connection.query(queryB1, function (err, result) {
+    queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES (?,?,?,?,?)";
+    connection.query(queryB1,[idBranch,idRev,'master',req.session.nickname,req.session.idRepository], function (err, result) {
         if (err) throw err;
     });
 
@@ -490,8 +489,8 @@ function branchMasterC(req) {
     var idBranch = Math.random().toString(36).substring(7);
     var name = Math.random().toString(36).substring(7);
     //METTERE REVISION PRESA DAL GRAFO QUANDO SELEZION
-    queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES ('" + idBranch + "','" + req.session.idCorrente + "', '" + name + "', '" + req.session.nickname + "', '" + req.session.idRepository + "');"
-    connection.query(queryB1, function (err, result) {
+    queryB1 = "INSERT INTO `branch` (`idbranch`,`Revision`, `nome`, `utente`,`repository`) VALUES (?,?,?,?,?)"
+    connection.query(queryB1,[idBranch,req.session.idCorrente,name,req.session.nickname,req.session.idRepository], function (err, result) {
         if (err) throw err;
     });
     req.session.branch = idBranch;
@@ -500,13 +499,13 @@ function branchMasterC(req) {
 }
 
 function datiPadre(req, callback) {
-    var queryP = "SELECT padre1 FROM commit where file ='" + req.session.padre + "'";
-    connection.query(queryP, function (err, result) {
+    var queryP = "SELECT padre1 FROM commit where file = ?";
+    connection.query(queryP,[req.session.padre], function (err, result) {
         if (err) throw err;
         req.session.padre = result[0].padre1;
     });
-    var queryPath = "Select path, tipo from file where idFile='" + req.session.padre + "'";
-    connection.query(queryPath, function (err, result) {
+    var queryPath = "Select path, tipo from file where idFile= ?";
+    connection.query(queryPath,[req.session.padre], function (err, result) {
         if (err) throw err;
         req.session.path = result[0].path;
         req.session.tipo = result[0].tipo;
@@ -515,8 +514,8 @@ function datiPadre(req, callback) {
 }
 
 function setGlobal(req, res) {
-    var queryC = "Select * from revg where Utente ='" + req.session.nickname + "' order by dataModifica desc;";
-    connection.query(queryC, function (err, result) {
+    var queryC = "Select * from revg where Utente = ? order by dataModifica desc;";
+    connection.query(queryC,[req.session.nickname], function (err, result) {
         req.session.branch = result[0].branch;
         req.session.idCorrente = result[0].ID;
         req.session.tipo = result[0].tipo;
@@ -537,9 +536,8 @@ function setGlobal(req, res) {
 
 function setGlobal2(req, res, results) {
     req.session.branch = branchMasterRev(req, results);
-    console.log("SESSION BRANCH.. " + req.session.branch);
-    var queryC = "Select * from revg where Utente ='" + req.session.nickname + "' order by dataModifica desc;";
-    connection.query(queryC, function (err, result) {
+    var queryC = "Select * from revg where Utente = ? order by dataModifica desc;";
+    connection.query(queryC,[req.session.nickname], function (err, result) {
         req.session.idCorrente = result[0].ID;
         req.session.tipo = result[0].tipo;
         req.session.path = result[0].path;
@@ -551,7 +549,6 @@ function setGlobal2(req, res, results) {
         res.write(toString(req.session.branch));
 
         res.write(toString(req.session.eliminate));
-        console.log("SESSION BRANCH 222.. " + req.session.branch);
 
         res.end();
     });
@@ -560,8 +557,8 @@ function setGlobal2(req, res, results) {
 function saveMerge(path, req, res, fileData, fileName) {
 
     var idModifiche = Math.random().toString(36).substring(7);
-    queryV = "Select * from file f where f.repository ='" + req.session.idRepository + "'  order by idFile desc";
-    connection.query(queryV, function (err, result, fields) {
+    queryV = "Select * from file f where f.repository = ?  order by idFile desc";
+    connection.query(queryV,[req.session.idRepository], function (err, result, fields) {
         var d = new Date();
         var anno = d.getFullYear();
         var mese = d.getMonth() + 1;
@@ -573,8 +570,8 @@ function saveMerge(path, req, res, fileData, fileName) {
         var secondo = d.getSeconds();
         console.log("secondi: " + secondo);
         const dataModifica = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
-        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES ('" + idModifiche + "', '" + req.session.idCorrente + "', '" + req.session.padre2 + "', '" + result[0].idFile + "', '" + req.session.nickname + "', '', " + dataModifica + ", '" + req.session.branch + "');";
-        connection.query(querySQL, function (err, result) {
+        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES (?,?,?,?,?,?," + dataModifica +",?)";
+        connection.query(querySQL,[idModifiche,req.session.idCorrente,req.session.padre2,result[0].idFile,req.session.nickname,'',req.session.branch], function (err, result) {
             if (err) {
                 console.log("CIAO" + err);
             } else {
@@ -601,8 +598,8 @@ function saveMerge(path, req, res, fileData, fileName) {
 function insertMergeFile(req, res) {
     var nome = req.body.nomeFile;
     var path1 = req.session.repository + "/JSON/" + nome;
-    var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES ('" + path1 + "', '" + nome + "', '" + req.session.idRepository + "', '" + req.session.nickname + "', 'Mer', 'json');";
-    connection.query(querySQL, function (err, result) {
+    var querySQL = "INSERT INTO `file` (`path`, `nome`, `repository`, `utente`,tipo, `formato`) VALUES (?,?,?,?,?,?);";
+    connection.query(querySQL,[path1,nome,req.session.idRepository,req.session.nickname,'Mer','json'], function (err, result) {
         if (err) throw err;
     });
 }
