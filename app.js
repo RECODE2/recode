@@ -210,11 +210,8 @@ app.post('/addRevision', function (req, res) {
   }
 
   var img = req.body.file_jpeg_data;
-  var data = img.replace(/^data:image\/(jpeg);base64,/, '');
-  var buf = new Buffer(data, 'base64');
+  var data = img.replace(/^data:image\/\w+;base64,/, '')
   var percorsoRepo = req.session.repository;
-  var nomeFile = req.body.file_jpeg_name;
-  var successo = false;
 
   //JSON
   fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
@@ -223,17 +220,14 @@ app.post('/addRevision', function (req, res) {
     }
   });
 
-
-  //JPG (su GITHUB)
+    
+  //JPG (su GITHUB: https://github.com/recode18)
   var options = {
     author: { name: req.session.nickname, email: req.session.mail },
     committer: { name: 'recode18', email: 'davide300395@gmail.com' },
-    encode: true, // Whether to base64 encode the file. (default: true)
-    //date: variabiledata
+    encode: false //setto a false l'encoding in base64 dal momento che è già base64
   }
-  stringaIMG = buf.toString('base64'); //STRINGA FUNZIONANTE...
-
-  repo.writeFile('master', 'revision.txt', stringaIMG, 'Revision creata', options, function (err) {
+  repo.writeFile('master', 'revision.jpeg', data, 'Revision creata', options, function (err) {
     if (err) {
       console.log("Errore..." + err);
     }
