@@ -61,15 +61,6 @@ class Utente_class {
 				{name: "password", title: "Inserisci Password:", type: "password", value: ""},
 			],
 			on_finish: function (params){
-				$.ajax({
-					url: host.name + 'connessioneDB',
-					type: 'POST'	
-				}).done(
-					function(erroreConnessione){
-						if(erroreConnessione){
-							alertify.error("Errore nella connessione al database..");
-						}
-						else{
 							$.ajax({
 								url: host.name + 'login',
 								type: 'POST',
@@ -81,11 +72,6 @@ class Utente_class {
 								if(successo){
 									alertify.success("Login in corso, ATTENDERE...");
 									window.setTimeout(function(){
-			/* 							localStorage.setItem('idlogin', 'false');
-										localStorage.setItem('idregistrazione', 'false');
-										localStorage.setItem('idlogout','true');
-										localStorage.setItem('idvcs', 'true');
-										localStorage.setItem('idmodificadati','true'); */
 										window.location.href = host.name;
 									}, 2500);
 								}
@@ -95,10 +81,6 @@ class Utente_class {
 							});
 						}
 					}
-				);
-
-			}
-		};
 		this.POP.show(settings);
 	}
 	

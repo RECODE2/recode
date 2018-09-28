@@ -24,6 +24,7 @@ var user = github.getUser();
 var repo;
 
 // *** DATABASE ***
+ConnessioneDB.creaConnessione();
 //ConnessioneDB.usaDB();
 
 app.use(session({
@@ -64,15 +65,6 @@ app.post('/logout', function (req, res) {
   res.send();
 });
 
-app.post('/connessioneDB', function(req,res){
-  ConnessioneDB.creaConnessione(function(risultato){
-    var erroreConnessione = false;
-    if (risultato){
-      erroreConnessione = true;
-    }
-    res.send(erroreConnessione);
-  });
-});
 
 app.post('/login', function (req, res) {
   ConnessioneDB.login(req, function (result) {
