@@ -16,19 +16,15 @@ class Commit_Class {
 		this.Base_layers = new Base_layers_class();
 		this.Helper = new Helper_class();
 		this.POP = new Dialog_class();
-
-
 		this.set_events();
 	}
 
 	set_events() {
 		var _this = this;
-
 		document.addEventListener('keydown', function (event) {
 			var code = event.keyCode;
 			if (event.target.type == 'text' || event.target.tagName == 'INPUT' || event.target.type == 'textarea')
 				return;
-
 			if (code == 83) {
 				//save
 				_this.save();
@@ -36,7 +32,6 @@ class Commit_Class {
 			}
 		}, false);
 	}
-
 
 	controllaSelezioneRepo(callback) {
 		$.ajax({
@@ -111,9 +106,7 @@ class Commit_Class {
 	}
 	_action(user_response) {
 		var fname = user_response.name;
-
 		var only_one_layer = false;
-
 		if (user_response.layers == 'All')
 			only_one_layer = false;
 
@@ -133,7 +126,6 @@ class Commit_Class {
 		var blob = new Blob([data_json], { type: "text/plain" });
 		var data = window.URL.createObjectURL(blob); //html5
 		return [data_json, fname];
-
 	}
 
 	export_as_json() {
@@ -155,8 +147,8 @@ class Commit_Class {
 		export_data.info = {
 			width: config.WIDTH,
 			height: config.HEIGHT,
-			about: 'Image data with multi-layers. Can be opened using miniPaint - '
-				+ 'https://github.com/viliusle/miniPaint',
+			about: 'Image data with multi-layers. Can be opened using RECODE - '
+				+ 'https://github.com/saso93/recode',
 			date: today,
 			version: "4.0.0",
 			layer_active: config.layer.id
@@ -210,4 +202,6 @@ class Commit_Class {
 		ctx.msImageSmoothingEnabled = false;
 		ctx.imageSmoothingEnabled = false;
 	}
-} export default Commit_Class;
+}
+
+export default Commit_Class;

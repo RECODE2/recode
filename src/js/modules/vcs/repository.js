@@ -16,10 +16,11 @@ cytoscape.use(cydagre, dagre);
  * In questa classe ci sono le seguenti funzionalità:
  * - crea repository
  * - elenco (scegli) repository
- * - modifica repository
+ * - modifica repository (funzionalità rimossa dal menù principale)
  * - revision graph 
  * - invita utente
  * - elimina utente
+ * - clona repository (link repo GitHub)
  */
 
 class VCS_class {
@@ -299,10 +300,6 @@ class VCS_class {
                                 var canvas = document.createElement('canvas');
                                 canvas.setAttribute('id', 'minicanvas1');
                                 var ourctx = canvas.getContext("2d");
-                                //	var ctx = canvas.getContext("2d");
-/*                                 canvas.width = "800";
-                                canvas.height = "600"; */
-
                                 var titoloInformazioni = document.createElement('p');
                                 titoloInformazioni.setAttribute('align', 'center');
                                 titoloInformazioni.style.fontWeight = "bold";
@@ -580,13 +577,13 @@ class VCS_class {
                                         this.POP.show(settings);
                                     }
                                     else {
-                                        alertify.error("ERRORE: attualmente non ci sono utenti da invitare al repository");
+                                        alertify.error("ERRORE: attualmente non ci sono utenti da invitare al repository!");
                                     }
                                 }
                             });
                         }
                         else {
-                            alertify.error("ERRORE: Non hai i permessi per invitare gli utenti");
+                            alertify.error("ERRORE: Non hai i permessi per invitare gli utenti!");
                         }
                     }
                 });

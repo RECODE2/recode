@@ -32,7 +32,7 @@ fsPath.writeFile("C:/Users/Davide/Desktop/YAYO.json", JSON.stringify(obj3, null,
     if(err) {
       throw err;
     } else {
-      console.log('Json fatto');
+      //console.log('Json fatto');
     }
   });
 
@@ -234,7 +234,7 @@ function diffJSON(obj1, obj2/* ,idCommit, req*/,fileEliminate2) {
         if(err) {
           throw err;
         } else {
-          console.log('Eliminate Fatto');
+          //console.log('Eliminate Fatto');
         }
       });
 
@@ -246,7 +246,7 @@ function diffJSON(obj1, obj2/* ,idCommit, req*/,fileEliminate2) {
     result.info.layer_active = max;
 
     
-    console.log("ciao");
+    //console.log("ciao");
     return result;
 }
 

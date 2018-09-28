@@ -15,8 +15,6 @@ var imgJson1;
 var imgJson2;
 var imgJsonA;
 var imgJsonB;
-var imgJsonX;
-var imgJsonMerge;
 var imgJsonMergeX;
 var primoPadre;
 var primoNome = "";
@@ -26,7 +24,6 @@ var primoBranch;
 
 
 class OperazioniVCS {
-
 	constructor() {
 		this.POP = new Dialog_class();
 		this.Helper = new Helper_class();
@@ -59,7 +56,7 @@ class OperazioniVCS {
 									popupx.style.left = "25%";
 									popupx.style.right = "25%";
 									popupx.style.width = "50%";
-									
+
 									var divRevg = document.createElement('div');
 									document.getElementById('dialog_content').style.height = "400px";
 									divRevg.setAttribute('id', 'cy');
@@ -73,7 +70,7 @@ class OperazioniVCS {
 
 									document.querySelector('#popup #dialog_content').appendChild(divRevg);
 
-									/* INIZIO PREVIEW MINICANVAS */
+									/* INIZIO PREVIEW CANVAS */
 									var divJSON = document.createElement('div');
 									divJSON.setAttribute('id', 'divjson');
 									divJSON.style.height = "35%";
@@ -380,8 +377,8 @@ class OperazioniVCS {
 		var Base_layers = new Base_layers_class();
 		var isImage = false;
 
-		for(var i in jsonObject.layers){
-			if(jsonObject.layers[i].type=='image'){
+		for (var i in jsonObject.layers) {
+			if (jsonObject.layers[i].type == 'image') {
 				isImage = true;
 			}
 		}
@@ -402,16 +399,16 @@ class OperazioniVCS {
 				value.y = initial_y;
 			}
 
-			if(isImage){
-				this.isIMG(value,jsonObject,contesto,Base_layers);
+			if (isImage) {
+				this.isIMG(value, jsonObject, contesto, Base_layers);
 			}
-			else{
-				this.isnotIMG(jsonObject,contesto,Base_layers);
+			else {
+				this.isnotIMG(jsonObject, contesto, Base_layers);
 			}
 		}
 	}
 
-	isIMG(value,jsonObject,contesto,Base_layers){
+	isIMG(value, jsonObject, contesto, Base_layers) {
 		if (value.type == 'image') {
 			//add image data
 			value.link = null;
@@ -432,7 +429,7 @@ class OperazioniVCS {
 					value.data = null;
 				}
 				else if (typeof value.data == 'string') {
-					value.link = new Image();					
+					value.link = new Image();
 					value.link.onload = function () {
 						//render canvas
 
@@ -460,22 +457,21 @@ class OperazioniVCS {
 		Base_layers.render_object(contesto, value);
 	}
 
-	isnotIMG(jsonObject,contesto,Base_layers){
-				//take data
-				var layers_sorted = jsonObject.layers.concat().sort(
-					//sort function
-					(a, b) => b.order - a.order
-				);
+	isnotIMG(jsonObject, contesto, Base_layers) {
+		//take data
+		var layers_sorted = jsonObject.layers.concat().sort(
+			//sort function
+			(a, b) => b.order - a.order
+		);
 
-				//render main canvas
-				for (var i = layers_sorted.length - 1; i >= 0; i--) {
-					var value = layers_sorted[i];
-					Base_layers.render_object(contesto, value);
-				}
+		//render main canvas
+		for (var i = layers_sorted.length - 1; i >= 0; i--) {
+			var value = layers_sorted[i];
+			Base_layers.render_object(contesto, value);
+		}
 	}
 
 	caricaDiv1(node, evt, canvas, ourctx, imgJson) {
-
 		var _this = this;
 		node = evt.target;
 

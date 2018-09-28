@@ -86,7 +86,7 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
     for (i = 0; i < obj1.layers.length; i++) {
         if (!controllaJSON(obj1.layers[i].id, obj2)) {
             fileEliminate.eliminate[f] = obj1.layers[i].id;
-            console.log("Sto inserendo nell'eliminate" + fileEliminate.eliminate[f]);
+            //console.log("Sto inserendo nell'eliminate" + fileEliminate.eliminate[f]);
             f++;
         }
     }
@@ -96,7 +96,7 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
                 throw err;
             } else {
 
-                console.log('Eliminate Fatto');
+                //console.log('Eliminate Fatto');
             }
         });
     });
@@ -104,13 +104,13 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
     //SETTO IL L'ULTIMO LAYER ATTIVO
 
     if (result.layers.length == 0) {
-        console.log("Result non ha layers")
+        //console.log("Result non ha layers")
         for (var i = 0; i < obj2.layers.length; i++) {
             result.layers[i] = obj2.layers[i];
         }
         if (obj2.data.length !== 0) {
             for (var i = 0; i < obj2.data.length; i++) {
-                console.log("i" + i);
+                //console.log("i" + i);
                 result.data[i] = obj2.data[i];
             }
         }

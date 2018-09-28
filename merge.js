@@ -114,7 +114,7 @@ function decrementMerge(j) {
             j.layers[i].order = j.layers[i].order - 2;
         }
     } else {
-        console.log("Ehi, non puoi più andare indietro")
+        //console.log("Ehi, non puoi più andare indietro!")
     }
 
     //console.log("J IN DECREMENT MERGE prima del return: " + JSON.stringify(j, null, '\t'));
@@ -162,7 +162,7 @@ function mergeDG(j1, j2) {
     j3 = aggiustaOrder(j3);
     var max = 0;
     for (var z = 0; z < j3.layers.length; z++) {
-        console.log("max: " + max)
+        //console.log("max: " + max)
         max = Math.max(j3.layers[z].id, max)
     }
     j3.info.layer_active = max;
