@@ -25,7 +25,7 @@ var repo;
 
 // *** DATABASE ***
 //ConnessioneDB.usaDB();
-ConnessioneDB.creaConnessione();
+
 app.use(session({
   resave: true,
   secret: 'stringacasualepercrittografareilcookie',
@@ -62,6 +62,16 @@ app.get('*', (req, res) => {
 app.post('/logout', function (req, res) {
   req.session.destroy();
   res.send();
+});
+
+app.post('/connessioneDB', function(req,res){
+  ConnessioneDB.creaConnessione(function(risultato){
+    var erroreConnessione = false;
+    if (risultato){
+      erroreConnessione = true;
+    }
+    res.send(erroreConnessione);
+  });
 });
 
 app.post('/login', function (req, res) {

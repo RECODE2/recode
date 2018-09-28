@@ -46,6 +46,7 @@ class VCS_class {
                 }).done(function (successo) {
                     if (successo) {
                         alertify.success("Repository creato con successo!");
+                        alertify.warning("Dopo aver selezionato il repository inizia a lavorare creando una prima revision..");
                     }
                     else {
                         alertify.error("Errore nella creazione del repository!");

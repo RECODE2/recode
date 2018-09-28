@@ -5,7 +5,7 @@ const fsPath = require('fs-path');
 var fs = require('fs');
 var diffJ = require('./../diff.js')
 
-function creaConnessione() {
+function creaConnessione(callback) {
     connection.connect(function (err) {
         if (err) {
             console.log("Errore nella connessione al db: " + err);
@@ -17,6 +17,7 @@ function creaConnessione() {
             connection.query('SET GLOBAL interactive_timeout=28800')
             usaDB();
         }
+        return callback(err);
     })
 }
 
@@ -60,8 +61,8 @@ function insertRepository(req, callback) {
         }
         else {
             console.log("Repository inserito con successo!");
-            return callback(result);
         }
+        return callback(result);
     });
 }
 

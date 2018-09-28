@@ -62,28 +62,41 @@ class Utente_class {
 			],
 			on_finish: function (params){
 				$.ajax({
-					url: host.name + 'login',
-					type: 'POST',
-					data: {
-						nickname : params.nickname,
-						password : sha1(params.password),
+					url: host.name + 'connessioneDB',
+					type: 'POST'	
+				}).done(
+					function(erroreConnessione){
+						if(erroreConnessione){
+							alertify.error("Errore nella connessione al database..");
+						}
+						else{
+							$.ajax({
+								url: host.name + 'login',
+								type: 'POST',
+								data: {
+									nickname : params.nickname,
+									password : sha1(params.password),
+								}
+							}).done (function(successo) {
+								if(successo){
+									alertify.success("Login in corso, ATTENDERE...");
+									window.setTimeout(function(){
+			/* 							localStorage.setItem('idlogin', 'false');
+										localStorage.setItem('idregistrazione', 'false');
+										localStorage.setItem('idlogout','true');
+										localStorage.setItem('idvcs', 'true');
+										localStorage.setItem('idmodificadati','true'); */
+										window.location.href = host.name;
+									}, 2500);
+								}
+								else{
+									alertify.error("ERRORE: username e/o password non corretti");
+								}
+							});
+						}
 					}
-				}).done (function(successo) {
-					if(successo){
-						alertify.success("Login in corso, ATTENDERE...");
-						window.setTimeout(function(){
-/* 							localStorage.setItem('idlogin', 'false');
-							localStorage.setItem('idregistrazione', 'false');
-							localStorage.setItem('idlogout','true');
-							localStorage.setItem('idvcs', 'true');
-							localStorage.setItem('idmodificadati','true'); */
-							window.location.href = host.name;
-						}, 2500);
-					}
-					else{
-						alertify.error("ERRORE: username e/o password non corretti");
-					}
-				});
+				);
+
 			}
 		};
 		this.POP.show(settings);
