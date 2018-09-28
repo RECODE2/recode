@@ -2,7 +2,7 @@ var deepEqual = require('deep-equal')
 var fs = require('fs');
 const fsPath = require('fs-path');
 const ConnessioneDB = require('./Backend/query');
-  
+
 var filter = require('array-filter');
 
 function diffJSON(obj1, obj2, fileEliminate2, req, res) {
@@ -13,6 +13,25 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
     var k = 0;
     var g = 0;
 
+//Controllo se ci sono bug dovuti dall'id del modello dati
+/*
+    for (var i = 0; i < obj2.layers.length; i++) {
+        var idC = obj2.layers[i].id
+        var cont = 0;
+        for (var j = 0; j < obj2.layers.length; j++) {
+            if (idC == obj2.layers[i].id) {
+                cont++;
+                if (cont > 1) {
+                    delete obj2.layers[i];
+                    obj2.layers = filter(obj2.layers, function (undefined) {
+                        return true;
+                    });
+                }
+            }
+        }
+    }
+
+*/
     result.info = obj2.info;
     //INSERISCO NEL JSON RISULTATO TUTTI I LAYERS CON ID UGUALE, MA CON EVENTUALI MODIFICHE
     for (i = 0; i < obj1.layers.length; i++) {
@@ -62,32 +81,45 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
     }
     //MI SALVO NELLA CARTELLA ELIMINATE TUTTI GLI ID DEI LAYER ELIMINATI
     //E CHE QUINDI NON CONSIDERO NEL CARICAMENTO DEL COMMIT
-    fileEliminate = fileEliminate2;
+    fileEliminate = JSON.parse(JSON.stringify(fileEliminate2));
+    var f = fileEliminate2.eliminate.length;
     for (i = 0; i < obj1.layers.length; i++) {
         if (!controllaJSON(obj1.layers[i].id, obj2)) {
-            fileEliminate.eliminate[fileEliminate2.eliminate.length] = obj1.layers[i].id;
+            fileEliminate.eliminate[f] = obj1.layers[i].id;
+            console.log("Sto inserendo nell'eliminate" + fileEliminate.eliminate[f]);
+            f++;
         }
     }
-    ConnessioneDB.idRevision(req, res, function(result){
-        fsPath.writeFile(req.session.repository + "/Eliminate/"+result+".json", JSON.stringify(fileEliminate, null, "\t"), function(err){
-             if(err) {
-               throw err;
-             } else {
-                 
-               console.log('Eliminate Fatto');
-             }
-           });
-     });
+    ConnessioneDB.idRevision(req, res, function (result) {
+        fsPath.writeFile(req.session.repository + "/Eliminate/" + result + ".json", JSON.stringify(fileEliminate, null, "\t"), function (err) {
+            if (err) {
+                throw err;
+            } else {
+
+                console.log('Eliminate Fatto');
+            }
+        });
+    });
 
     //SETTO IL L'ULTIMO LAYER ATTIVO
+
+    if (result.layers.length == 0) {
+        console.log("Result non ha layers")
+        for (var i = 0; i < obj2.layers.length; i++) {
+            result.layers[i] = obj2.layers[i];
+        }
+        if (obj2.data.length !== 0) {
+            for (var i = 0; i < obj2.data.length; i++) {
+                console.log("i" + i);
+                result.data[i] = obj2.data[i];
+            }
+        }
+    }
     max = 0;
     for (j = 0; j < result.layers.length; j++) {
         max = Math.max(result.layers[j].id, max)
     }
     result.info.layer_active = max;
-
-
-    console.log("ciao");
     return result;
 }
 
@@ -126,10 +158,11 @@ function controllaFileEliminate(id2, fileEliminate) {
     return false;
 }
 
-function caricaJSONPadre(req){
+function caricaJSONPadre(req) {
     imgJson = JSON.parse(fs.readFileSync(req.session.path));
     return imgJson;
 }
+
 
 exports.correggiJSON = correggiJSON;
 exports.diffJSON = diffJSON;

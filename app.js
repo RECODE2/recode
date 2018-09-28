@@ -22,6 +22,7 @@ var github = new Github({
 });
 var user = github.getUser();
 var repo;
+var jsonP = {};
 
 // *** DATABASE ***
 ConnessioneDB.creaConnessione();
@@ -198,6 +199,7 @@ app.post('/addRevision', function (req, res) {
   var img = req.body.file_jpeg_data;
   var data = img.replace(/^data:image\/\w+;base64,/, '')
   var percorsoRepo = req.session.repository;
+  jsonP = JSON.parse(JSON.stringify(dataFile));
 
   //JSON
   fsPath.writeFile(percorsoRepo + '/JSON/' + nomedelfile, JSON.stringify(dataFile, null, '\t'), function (err) {
@@ -238,7 +240,8 @@ app.post('/commit', function (req, res) {
   fileName1 = req.body.file_json_name;
   fileData = req.body.file_json_data;
   ConnessioneDB.insertCommitFile(req, res);
-  ConnessioneDB.saveCommit(req, res, fileData, fileName1);
+  ConnessioneDB.saveCommit(req, res, fileData,jsonP, fileName1);
+  jsonP = JSON.parse(fileData);
 })
 
 
@@ -357,6 +360,7 @@ app.post('/readjson', function (req, res) {
 app.post('/caricaImmagine', function (req, res) {
   var imgJson = JSON.parse(fs.readFileSync(req.session.path));
   req.session.json = imgJson;
+  jsonP = req.session.json;
   if (req.session.tipo == "Rev" || req.session.tipo == "Mer") {
     res.send(req.session.json);
   } else if (req.session.tipo == "Com") {
@@ -409,6 +413,7 @@ function loop(req, res) {
     else {
       var jsonPadre = JSON.parse(fs.readFileSync(req.session.path));
       req.session.json = carica.caricaImmagine(req.session.json, jsonPadre, req.session.fileEliminate);
+      jsonP = JSON.parse(JSON.stringify(req.session.json));
       res.send(req.session.json);
       return;
     }
