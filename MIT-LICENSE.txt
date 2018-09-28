@@ -1,4 +1,7 @@
-Copyright (c) ViliusL
+Copyright (c) RECODE - miniPaint - ViliusL
+
+https://github.com/saso93/recode
+
 https://github.com/viliusle
 
 Permission is hereby granted, free of charge, to any person obtaining
