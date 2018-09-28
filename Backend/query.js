@@ -38,6 +38,7 @@ function usaDB() {
         }
         else {
             console.log("Stai utilizzando il db vit!");
+            console.log("Puoi navigare su: http://localhost:8081/");
         }
     });
 }

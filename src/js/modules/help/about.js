@@ -12,11 +12,12 @@ class Help_about_class {
 		var settings = {
 			title: 'About',
 			params: [
-				{title: "Name:", html: '<span class="about-name">NOME SOFTWARE</span>'},
-				{title: "Version:", value: VERSION},
-				{title: "Description:", value: "Version Control System for Image Editing"},
+				{title: "Name:", html: '<span class="about-name">RECODE</span>'},
+				{title: "Version:", value: "1.0.1"},
+				{title: "Description:", value: "Revision Control System for Digital Images"},
 				{title: "Author:", value: 'D. Mantellini, G. Neglia, S. Vestita'},
-				{title: "GitHub:", html: '<a href="https://github.com/viliusle/miniPaint">https://github.com/viliusle/miniPaint</a>'},
+				{title: "GitHub:", html: '<a href="https://github.com/saso93/recode">https://github.com/saso93/recode</a>'},
+				{title: "Image Editor:", html: '<a href="https://github.com/viliusle/miniPaint">https://github.com/viliusle/miniPaint</a>'},
 			],
 		};
 		this.POP.show(settings);
