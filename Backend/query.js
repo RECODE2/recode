@@ -293,7 +293,7 @@ function setIdBranchMaster(req, res, callback) {
     });
 }
 
-function saveCommit(req, res, fileData, fileName) {
+function saveCommit(req, res, fileData, jsonP, fileName) {
     var idModifiche = Math.random().toString(36).substring(7);
     queryV = "Select * from file f where f.repository=? order by idFile desc";
     connection.query(queryV, [req.session.idRepository], function (err, result, fields) {
@@ -314,8 +314,7 @@ function saveCommit(req, res, fileData, fileName) {
                 console.log("Commit inserito con successo!");
                 var fileEliminate = JSON.parse(fs.readFileSync(req.session.eliminate));
                 var j2 = JSON.parse(fileData);
-                var imgJson = diffJ.caricaJSONPadre(req);
-                var jCommit = diffJ.diffJSON(imgJson, j2, fileEliminate, req, res);
+                var jCommit = diffJ.diffJSON(jsonP, j2, fileEliminate, req, res);
                 fsPath.writeFile(req.session.repository + '/JSON/' + fileName, JSON.stringify(jCommit, null, '\t'), function (err) {
                     if (err) {
                         console.log("Errore nella scrittura del JSON (Commit): " + err);
