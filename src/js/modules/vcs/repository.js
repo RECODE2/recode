@@ -555,7 +555,7 @@ class VCS_class {
                                         var settings = {
                                             title: 'Seleziona utente da invitare al Repository',
                                             params: [
-                                                { name: "utente", values: result },
+                                                { name: "utente", values: result, type:"select" },
                                             ],
                                             on_finish: function (params) {
                                                 $.ajax({

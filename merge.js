@@ -145,7 +145,7 @@ function mergeDG(j1, j2) {
     var lastID = controllaID(jA);
     lastID++;
     var idProv;
-    for (var i = 1; i < jB.layers.length; i++) {
+    for (var i = 0; i < jB.layers.length; i++) {
         idProv = jB.layers[i].id;
         jB.layers[i].id = lastID;
         if (jB.layers[i].type == "image") {
