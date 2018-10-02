@@ -425,7 +425,15 @@ function elencoUtentiInvito(req, callback) {
 function invitaUtente(req, callback) {
     var utente = req.body.utente;
     var repo = req.session.idRepository;
-    var queryU = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`) VALUES (?,?,?)";
+    var d = new Date();
+    var anno = d.getFullYear();
+    var mese = d.getMonth() + 1;
+    var giorno = d.getDate();
+    var ora = d.getHours();
+    var minuto = d.getMinutes();
+    var secondo = d.getSeconds();
+    const dataModifica = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
+    var queryU = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`,`data` ) VALUES (?,?,?,"+dataModifica+")";
     connection.query(queryU, [utente, repo, '1'], function (err, result) {
         if (err) {
             console.log("Errore inserimento utente in partecipazione: " + err);
