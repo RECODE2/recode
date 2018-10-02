@@ -12,7 +12,7 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
     var j = 0;
     var k = 0;
     var g = 0;
-
+    correggiJSON(obj2);
 //Controllo se ci sono bug dovuti dall'id del modello dati
 /*
     for (var i = 0; i < obj2.layers.length; i++) {
@@ -126,6 +126,7 @@ function diffJSON(obj1, obj2, fileEliminate2, req, res) {
 function correggiJSON(j1) {
     for (var i = 0; i < j1.layers.length; i++) {
         var counter = 0;
+        var indice;
         for (var j = 0; j < j1.layers.length; j++) {
             if (j1.layers[i].id == j1.layers[j].id) {
                 counter++;

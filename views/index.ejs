@@ -464,7 +464,7 @@
 					</li>
 					<%if (username!="Guest") { %>
 						<li class="lead" data-step="1">
-							<a class="trn" href="#" id="idvcs" onclick="startIntroVCS();">VCS</a>
+							<a class="trn" href="#" id="idvcs" onclick="startIntroVCS();">Git</a>
 							<ul>
 								<li class="more">
 									<a class="trn" href="#" onclick="startIntroRepo();">Repository</a>
@@ -563,11 +563,6 @@
 										<li style="border-left: 1px solid #5cabfb">
 											<a class="trn" id="repository" style="pointer-events: none">Repository:
 												<%= repository %>
-											</a>
-										</li>
-										<li>
-											<a class="trn" id="branch" style="pointer-events: none">Branch:
-												<%= branch %>
 											</a>
 										</li>
 										<% } else{ %>

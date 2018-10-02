@@ -66,7 +66,7 @@ class Commit_Class {
 							params: [
 								{ name: "name", title: "Commit name:", value: "Nome..." },
 								{ name: "desc", title: "Descrizione", value: "" },
-								{ name: "layers", values: ['All'] },
+								//{ name: "layers", values: ['All'] },
 							],
 							on_change: function (params, canvas_preview, w, h) {
 								_this.save_dialog_onchange(params);
@@ -107,6 +107,7 @@ class Commit_Class {
 	_action(user_response) {
 		var fname = user_response.name;
 		var only_one_layer = false;
+		user_response.layers = 'All';
 		if (user_response.layers == 'All')
 			only_one_layer = false;
 
