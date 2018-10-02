@@ -647,6 +647,29 @@ function insertMergeFile(req, res) {
     });
 }
 
+function utentiPartecipanti(req, callback) {
+    var repo = req.session.idRepository;
+    var queryE = "SELECT p.utente FROM partecipazione p WHERE p.repository=?";
+
+    connection.query(queryE, [repo], function (err, result) {
+        if (err) {
+            console.log("Errore nella lista dei partecipanti al repository: " + err);
+        }
+        else {
+            var arrayR = [];
+            var i = 0;
+            var numRows = result.length;
+            while (i < numRows) {
+                arrayR[i] = result[i].utente;
+                i++;
+            }
+            result = "";
+            result = arrayR;
+            return callback(result);
+        }
+    })
+}
+
 exports.creaConnessione = creaConnessione;
 exports.chiudiConnessione = chiudiConnessione;
 exports.usaDB = usaDB;
@@ -679,3 +702,4 @@ exports.branchMasterC = branchMasterC;
 exports.datiPadre = datiPadre;
 exports.insertMergeFile = insertMergeFile;
 exports.saveMerge = saveMerge;
+exports.utentiPartecipanti = utentiPartecipanti;

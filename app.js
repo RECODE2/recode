@@ -420,6 +420,12 @@ function loop(req, res) {
   })
 }
 
+app.post('/utentiPartecipanti', function (req, res) {
+  ConnessioneDB.utentiPartecipanti(req, function (result) {
+    res.send(result);
+  })
+});
+
 
 
 module.exports = app;

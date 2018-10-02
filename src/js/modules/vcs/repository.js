@@ -407,7 +407,7 @@ class VCS_class {
                                                 tipo: result[i].tipo,
                                                 utente: result[i].utente
                                             }
-                                        }).style({ 'background-color': '#ff3300' });
+                                        }).style({ 'background-color': '#00ff00' });
                                     }
                                 }
 
@@ -679,6 +679,34 @@ class VCS_class {
                         this.POP.show(settings);
                     }
                 })
+            }
+            else{
+                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
+            }
+        })
+    }
+
+    utentiPartecipanti(){
+        this.controllaSelezioneRepo(function(repo){
+            if(repo){
+                $.ajax({
+                    url: host.name + 'utentiPartecipanti',
+                    type: 'POST',
+                    success: function (result) {
+                            var utenti = [];
+                            var i = 0;
+                            for (i in result){
+                                utenti.push({title: " - "+result[i], value: " "});
+                            }
+                            this.POP = new Dialog_class();
+                            this.POP.hide();
+                            var settings = {
+                                title: 'Utenti che partecipano al Repository',
+                                params: utenti,
+                            };
+                            this.POP.show(settings);
+                    }
+                });
             }
             else{
                 alertify.error("ERRORE: Non hai ancora selezionato il repository!");

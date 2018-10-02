@@ -241,7 +241,7 @@ class OperazioniVCS {
 													tipo: result[i].tipo,
 													utente: result[i].utente
 												}
-											}).style({ 'background-color': '#ff3300' });
+											}).style({ 'background-color': '#00ff00' });
 										}
 									}
 
