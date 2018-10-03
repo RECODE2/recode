@@ -4,7 +4,7 @@
       'host': 'recode_db',
       //'host': 'localhost',
       'user': 'root',
-      'password': 'recode123'
+      'password': ''
   },
 'database': 'vit',
 };
