@@ -64,8 +64,8 @@ class Commit_Class {
 						var settings = {
 							title: 'Commit: ',
 							params: [
-								{ name: "name", title: "Commit name:", value: "Nome..." },
-								{ name: "desc", title: "Descrizione", value: "" },
+								{ name: "name", title: "Commit name:", value: "Name commit.." },
+								{ name: "desc", title: "Description", value: "" },
 								//{ name: "layers", values: ['All'] },
 							],
 							on_change: function (params, canvas_preview, w, h) {
@@ -86,7 +86,7 @@ class Commit_Class {
 								}, function (err, res, body) {
 									if (err) { throw err; }
 									else {
-										alertify.success("Commit effettuato con successo!");
+										alertify.success("Commit carried out successfully!");
 									}
 								});
 							},
@@ -94,12 +94,12 @@ class Commit_Class {
 						_this.POP.show(settings);
 					}
 					else {
-						alertify.error("ERRORE: Seleziona un commit o una revision!");
+						alertify.error("ERROR: Select a commit or revision from the Revision Graph!");
 					}
 				});
 			}
 			else {
-				alertify.error("ERRORE: Non hai ancora selezionato il repository!");
+				alertify.error("ERROR: You have not yet selected the repository!");
 			}
 		});
 

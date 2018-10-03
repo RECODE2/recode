@@ -355,7 +355,7 @@ class OperazioniVCS {
 									}, function (err, res, body) {
 										if (err) { throw err; }
 										else {
-											alertify.success("Merge effettuato con successo!");
+											alertify.success("Merge successfully completed!");
 										}
 
 									});
@@ -367,7 +367,7 @@ class OperazioniVCS {
 					});
 				}
 				else {
-					alertify.error("Non hai ancora selezionato il repository!");
+					alertify.error("You have not yet selected the repository!");
 				}
 			}
 		});
@@ -450,7 +450,7 @@ class OperazioniVCS {
 					value.link.src = value.data;
 				}
 				else {
-					alertify.error("Errore nel caricamento dell'immagine!");
+					alertify.error("Error loading the image!");
 				}
 			}
 		}
