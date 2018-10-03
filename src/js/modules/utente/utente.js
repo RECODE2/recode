@@ -13,13 +13,13 @@ class Utente_class {
     registrazione() {
         this.POP.hide();
         var settings = {
-            title: 'Registrazione Utente',
+            title: 'Sign-up',
             params: [
-                { name: "nickname", title: "Inserisci Username:", value: "" },
-                { name: "password", title: "Inserisci Password:", type: "password", value: "" },
-                { name: "nome", title: "Inserisci Nome:", value: "" },
-                { name: "cognome", title: "Inserisci Cognome:", value: "" },
-                { name: "mail", title: "Inserisci Email:", value: "" },
+                { name: "nickname", title: "Insert Username:", value: "" },
+                { name: "password", title: "Insert Password:", type: "password", value: "" },
+                { name: "nome", title: "Insert Name:", value: "" },
+                { name: "cognome", title: "Insert Surname:", value: "" },
+                { name: "mail", title: "Insert Email:", value: "" },
             ],
             on_finish: function(params) {
                 $.ajax({
@@ -34,14 +34,14 @@ class Utente_class {
                     }
                 }).done(function(successo) {
                     if (successo == "ok") {
-                        alertify.success("Registrazione effetuata con successo!");
+                        alertify.success("Successful registration!");
                     }
                     else {
                         if (successo == "errore chiave") {
-                            alertify.error("ERRORE: username '" + params.nickname + "' già presente, inserirne uno diverso!");
+                            alertify.error("ERRORE: username '" + params.nickname + "' already present, insert a different one!");
                         }
                         else {
-                            alertify.error("Errore nella registrazione!");
+                            alertify.error("Registration error!");
                         }
                     }
                 });
@@ -53,7 +53,7 @@ class Utente_class {
 
     login() {
         var settings = {
-            title: 'Login Utente',
+            title: 'Sign-in',
             params: [
               /*   { name: "nickname", title: "Inserisci Nickname:", value: "" },
                 { name: "password", title: "Inserisci Password:", type: "password", value: "" }, */
@@ -69,13 +69,13 @@ class Utente_class {
                     }
                 }).done(function(successo) {
                     if (successo) {
-                        alertify.success("Login effettuato con successo, attendere...");
+                        alertify.success("Login successfully, wait ...");
                         window.setTimeout(function() {
                             window.location.href = host.name;
                         }, 2500);
                     }
                     else {
-                        alertify.error("ERRORE: username e/o password non corretti");
+                        alertify.error("ERROR: username and/or password not correct");
                     }
                 });
             }
@@ -104,7 +104,7 @@ class Utente_class {
         var settings = {
             title: 'Logout',
             params: [
-                { title: "", value: 'Sei sicuro di voler uscire?' },
+                { title: "", value: 'Are you sure you want to quit?' },
             ],
             on_finish: function() {
                 request({
@@ -128,10 +128,10 @@ class Utente_class {
                 var settings = {
                     title: 'Modifica dati utente',
                     params: [
-                        { name: "password", title: "Inserisci Password:", type: "password", value: "" },
-                        { name: "nome", title: "Inserisci Nome:", value: result[0].nome },
-                        { name: "cognome", title: "Inserisci Cognome:", value: result[0].cognome },
-                        { name: "mail", title: "Inserisci Email:", value: result[0].mail },
+                        { name: "password", title: "Insert Password:", type: "password", value: "" },
+                        { name: "nome", title: "Insert Name:", value: result[0].nome },
+                        { name: "cognome", title: "Insert Surname:", value: result[0].cognome },
+                        { name: "mail", title: "Insert Email:", value: result[0].mail },
                     ],
 
                     on_finish: function(params) {
@@ -146,10 +146,10 @@ class Utente_class {
                             }
                         }).done(function(successo) {
                             if (successo) {
-                                alertify.success("Dati modificati con successo!");
+                                alertify.success("Data changed successfully!");
                             }
                             else {
-                                alertify.error("Errore nella modifica dei dati.");
+                                alertify.error("Error in data modification.");
                             }
                         });
                     }

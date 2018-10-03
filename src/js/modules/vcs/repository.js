@@ -553,7 +553,7 @@ class VCS_class {
                                         this.POP = new Dialog_class();
                                         this.POP.hide();
                                         var settings = {
-                                            title: 'Seleziona utente da invitare al Repository',
+                                            title: 'Select user to invite to the Repository',
                                             params: [
                                                 { name: "utente", values: result, type:"select" },
                                             ],
@@ -566,10 +566,10 @@ class VCS_class {
                                                     }
                                                 }).done(function (successo) {
                                                     if (successo) {
-                                                        alertify.success("Utente '" + params.utente + "' invitato con successo!")
+                                                        alertify.success("User '" + params.utente + "' invited successfully!")
                                                     }
                                                     else {
-                                                        alertify.error("Errore nell'invito dell'utente al repository!");
+                                                        alertify.error("Error in the user's invitation to the repository!");
                                                     }
                                                 });
                                             }
@@ -577,19 +577,19 @@ class VCS_class {
                                         this.POP.show(settings);
                                     }
                                     else {
-                                        alertify.error("ERRORE: attualmente non ci sono utenti da invitare al repository!");
+                                        alertify.error("ERROR: currently there are no users to invite to the repository!");
                                     }
                                 }
                             });
                         }
                         else {
-                            alertify.error("ERRORE: Non hai i permessi per invitare gli utenti!");
+                            alertify.error("ERROR: You do not have permission to invite users!");
                         }
                     }
                 });
             }
             else {
-                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
+                alertify.error("ERROR: You have not yet selected the repository!");
             }
         })
     }
@@ -610,7 +610,7 @@ class VCS_class {
                                         this.POP = new Dialog_class();
                                         this.POP.hide();
                                         var settings = {
-                                            title: 'Seleziona utente da eliminare dal repository',
+                                            title: 'Select user to delete from the repository',
                                             params: [
                                                 { name: "utente", values: result },
                                             ],
@@ -623,10 +623,10 @@ class VCS_class {
                                                     }
                                                 }).done(function (successo) {
                                                     if (successo) {
-                                                        alertify.success("Utente '" + params.utente + "' eliminato con successo!")
+                                                        alertify.success("User '" + params.utente + "' successfully deleted!")
                                                     }
                                                     else {
-                                                        alertify.error("Errore nell'eliminazione dell'utente!");
+                                                        alertify.error("Error in deleting the user!");
                                                     }
                                                 });
                                             }
@@ -634,19 +634,19 @@ class VCS_class {
                                         this.POP.show(settings);
                                     }
                                     else {
-                                        alertify.error("ERRORE: attualmente non ci sono utenti da eliminare dal repository!");
+                                        alertify.error("ERROR: Currently there are no users to delete from the repository!");
                                     }
                                 }
                             });
                         }
                         else {
-                            alertify.error("ERRORE: Non hai i permessi per eliminare gli utenti!");
+                            alertify.error("ERROR: You do not have permission to delete users!");
                         }
                     }
                 });
             }
             else {
-                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
+                alertify.error("ERROR: You have not yet selected the repository!");
             }
         })
     }
@@ -671,7 +671,7 @@ class VCS_class {
                         this.POP = new Dialog_class();
                         this.POP.hide();
                         var settings = {
-                            title: 'Clona repository',
+                            title: 'Clone repository',
                             params: [
                                 {title: "Repository git:", value: 'https://github.com/recode18/'+idrepo+'.git'}
                             ],
@@ -681,7 +681,7 @@ class VCS_class {
                 })
             }
             else{
-                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
+                alertify.error("ERROR: You have not yet selected the repository!");
             }
         })
     }
@@ -701,7 +701,7 @@ class VCS_class {
                             this.POP = new Dialog_class();
                             this.POP.hide();
                             var settings = {
-                                title: 'Utenti che partecipano al Repository',
+                                title: 'Users participating in the Repository',
                                 params: utenti,
                             };
                             this.POP.show(settings);
@@ -709,7 +709,7 @@ class VCS_class {
                 });
             }
             else{
-                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
+                alertify.error("ERROR: You have not yet selected the repository!");
             }
         })
     }
