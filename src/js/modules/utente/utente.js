@@ -55,8 +55,9 @@ class Utente_class {
         var settings = {
             title: 'Login Utente',
             params: [
-                { name: "nickname", title: "Inserisci Nickname:", value: "" },
-                { name: "password", title: "Inserisci Password:", type: "password", value: "" },
+              /*   { name: "nickname", title: "Inserisci Nickname:", value: "" },
+                { name: "password", title: "Inserisci Password:", type: "password", value: "" }, */
+                { title: "Login with GitHub:", html: '<a href="https://github.com/login/oauth/authorize?client_id=4f43439652384f60ece7&redirect_uri=http://localhost:8081/oauth/redirect">Click here!</a>'},
             ],
             on_finish: function(params) {
                 $.ajax({
@@ -81,6 +82,23 @@ class Utente_class {
         }
         this.POP.show(settings);
     }
+
+    loginWithGitHub() {
+                $.ajax({
+                    url: host.name + 'loginWithGitHub',
+                    type: 'GET',
+                }).done(function(successo) {
+                    if (successo) {
+                        alertify.success("Login con GitHub effettuato con successo, attendere...");
+                        window.setTimeout(function() {
+                            window.location.href = host.name;
+                        }, 2000);
+                    }
+                    else {
+                        alertify.error("ERRORE: username e/o password non corretti");
+                    }
+                });
+            }
 
     logout() {
         var settings = {

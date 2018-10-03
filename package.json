@@ -45,6 +45,7 @@
     "alertifyjs": "^1.11.0",
     "array-filter": "^1.0.0",
     "aws-sdk": "^2.320.0",
+    "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "blueimp-canvas-to-blob": "^3.14.0",
     "body-parser": "^1.18.3",

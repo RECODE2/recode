@@ -200,6 +200,50 @@ function registrazione(req, callback) {
     });
 }
 
+function loginConGitHub(req, username, callback) {
+    var queryAA = "SELECT nickname FROM vit.utenti where nickname=?";
+    connection.query(queryAA,[username],function(err,result){
+        if(username!=result[0].nickname){
+            var queryR = "INSERT INTO `utenti` (`nickname`, `password`, `nome`, `cognome`, `mail`) VALUES (?,?,?,?,?)";
+            connection.query(queryR, [username, username, username, username, username], function (err, result) {
+                if (err) {
+                    console.log("Errore registrazione con GitHub: " + err);
+                }
+                else {
+                    console.log("Registrazione tramite GitHub effettuata con successo!");
+                }
+                return callback(result, err);
+            });        
+        }
+        var queryL = "SELECT * FROM utenti WHERE nickname=? AND password=?";
+        connection.query(queryL, [username, username], function (err, result) {
+            var controllo = false;
+            if (err) {
+                console.log("C'è un errore nel login: " + err);
+                return callback(err);
+            }
+            else {
+                console.log("");
+            }
+            if (!result.length) {
+                console.log("Utente non trovato!");
+                controllo = false;
+            }
+            else {
+                //console.log("Utente trovato: " + result[0].nickname);
+                controllo = true;
+                return callback(result[0]);
+            }
+        });
+    })
+    //prima registriamo l'utente sul db
+
+    //poi facciamo il login
+
+}
+
+
+
 function partecipazioneRepo(req, idRepository) {
     var d = new Date();
     var anno = d.getFullYear();
@@ -711,3 +755,4 @@ exports.datiPadre = datiPadre;
 exports.insertMergeFile = insertMergeFile;
 exports.saveMerge = saveMerge;
 exports.utentiPartecipanti = utentiPartecipanti;
+exports.loginConGitHub = loginConGitHub;

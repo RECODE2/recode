@@ -13,7 +13,12 @@ var flash = require('connect-flash');
 var morgan = require('morgan');
 var nomeUtente = "";
 var carica = require('./carica.js');
-
+const axios = require('axios')
+const clientID = '4f43439652384f60ece7'
+const clientSecret = '6e45c8fd9437e3e60459716337e74292aa44da3f'
+var loginGitHub = false;
+var accessToken;
+var refreshami = true;
 // *** Configurazione dati per GitHub ***
 var Github = require('github-api');
 var github = new Github({
@@ -23,7 +28,6 @@ var github = new Github({
 var user = github.getUser();
 var repo;
 var jsonP = {};
-
 // *** DATABASE ***
 ConnessioneDB.creaConnessione();
 //ConnessioneDB.usaDB();
@@ -46,21 +50,81 @@ app.listen(port, function () {
 //READ EJS ENGINE
 app.set('view engine', 'ejs');
 
+app.get('/oauth/redirect', (req, res) => {
+  const requestToken = req.query.code;
+  axios({
+    method: 'post',
+    url: `https://github.com/login/oauth/access_token?client_id=${clientID}&client_secret=${clientSecret}&code=${requestToken}`,
+    headers: {
+      accept: 'application/json'
+    }
+  }).then((response) => {
+    accessToken = response.data.access_token
+    loginGitHub = true;
+
+    axios.get(('https://api.github.com/user?access_token=' + accessToken))
+    .then(function (response) {
+      //console.log("dati: " + JSON.stringify(response.data));
+      //console.log("dati: " + response.data.login);
+      nomeUtente = response.data.login;
+      ConnessioneDB.loginConGitHub(req, nomeUtente,function(result){
+      });
+    })
+    .catch(function (error) {
+      console.log("Errore axios: " + error);
+    });
+
+    res.redirect('/');
+    })
+
+})
+
+
 //SET PAGINA INIZIALE
-app.get('*', (req, res) => {
-  if (!req.session.nickname) {
-    nomeUtente = "Guest";
+app.get('*', (req, res, next) => {
+  if (loginGitHub) {
+    axios.get(('https://api.github.com/user?access_token=' + accessToken))
+      .then(function (response) {
+        //console.log("dati: " + JSON.stringify(response.data));
+        nomeUtente = response.data.login;
+        ConnessioneDB.loginConGitHub(req, nomeUtente,function(result){
+        });
+      })
+      .catch(function (error) {
+        console.log("Errore axios: " + error);
+      });
+      req.session.nickname = nomeUtente;
+      if(nomeUtente!="Guest"){
+        refreshami=false;
+      }
   }
   else {
-    nomeUtente = req.session.nickname;
+    if (!req.session.nickname) {
+      nomeUtente = "Guest";
+    }
+    else {
+      nomeUtente = req.session.nickname;
+    }
+
   }
   res.render('index', {
     username: nomeUtente,
-    repository: req.session.nameRepository
+    repository: req.session.nameRepository,
+    loginGitHub: loginGitHub,
+    refreshami: refreshami
   });
+
+  //res.redirect('/carica'); //per refreshare...
 });
 
+
 app.post('/logout', function (req, res) {
+  if(loginGitHub){
+    loginGitHub=false;
+  }
+  if(nomeUtente=="Guest"){
+    refreshami=true;
+  }
   req.session.destroy();
   res.send();
 });
@@ -140,7 +204,7 @@ app.post('/creaRepository', function (req, res) {
     repo = github.getRepo('recode18', idRepository);
 
     var options = {
-      author: { name: req.session.nickname, email: req.session.mail },
+      author: { name: req.session.nickname, email: 'recode18@gmail.com' },
       committer: { name: 'recode18', email: 'davide300395@gmail.com' },
       encode: true
     }
@@ -207,10 +271,10 @@ app.post('/addRevision', function (req, res) {
     }
   });
 
-    
+
   //JPG (su GITHUB: https://github.com/recode18)
   var options = {
-    author: { name: req.session.nickname, email: req.session.mail },
+    author: { name: req.session.nickname, email: 'recode18@gmail.com' },
     committer: { name: 'recode18', email: 'davide300395@gmail.com' },
     encode: false //setto a false l'encoding in base64 dal momento che è già base64
   }
@@ -239,7 +303,7 @@ app.post('/commit', function (req, res) {
   fileName1 = req.body.file_json_name;
   fileData = req.body.file_json_data;
   ConnessioneDB.insertCommitFile(req, res);
-  ConnessioneDB.saveCommit(req, res, fileData,jsonP, fileName1);
+  ConnessioneDB.saveCommit(req, res, fileData, jsonP, fileName1);
   jsonP = JSON.parse(fileData);
 })
 
@@ -399,7 +463,7 @@ app.post('/merge', function (req, res) {
 
 app.post('/idRepo', function (req, res) {
   var idRepo = req.session.idRepository;
-  res.send(""+idRepo);
+  res.send("" + idRepo);
 });
 
 function loop(req, res) {

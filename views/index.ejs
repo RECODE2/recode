@@ -20,7 +20,7 @@
 	<meta name="twitter:title" content="RECODE" />
 	<meta name="twitter:description" content="RECODE is free online Revision Control System for Digital Images. Edit, adjust your images, add effects online in your browser, without installing anything..."
 	/>
-	
+
 	<!-- Facebook, Pinterest -->
 	<meta property="og:title" content="RECODE" />
 	<meta property="og:type" content="article" />
@@ -114,9 +114,9 @@
 				</a>
 				<ul>
 					<% if(username!="Guest"){ %>
-						<li id="idmodificadati">
+<!-- 						<li id="idmodificadati">
 							<a class="trn b" data-target="utente/utente.modificadati" href="#">Modifica dati</a>
-						</li>
+						</li> -->
 						<li id="idlogout">
 							<a class="trn b" data-target="utente/utente.logout" href="#">Logout</a>
 						</li>
@@ -124,9 +124,9 @@
 							<li id="idlogin">
 								<a class="trn" data-target="utente/utente.login" href="#">Login</a>
 							</li>
-							<li id="idregistrazione">
+<!-- 							<li id="idregistrazione">
 								<a class="trn" data-target="utente/utente.registrazione" href="#">Registrazione</a>
-							</li>
+							</li> -->
 							<% } %>
 				</ul>
 			</li>
@@ -466,7 +466,7 @@
 						<li class="lead" data-step="1">
 							<a class="trn" href="#" id="idvcs" onclick="startIntroVCS();">Git</a>
 							<ul>
-	
+
 								<li class="more">
 									<a class="trn" href="#" onclick="startIntroOPVCS();">Operazioni VCS</a>
 									<ul>
@@ -562,25 +562,45 @@
 										</li>
 								</ul>
 								</li>
-								<%if (username!="Guest") { %>
-									<% if(repository){ %>
-										<li style="border-left: 1px solid #5cabfb">
-											<a class="trn" id="repository" style="pointer-events: none">Repository:
-												<%= repository %>
-											</a>
-										</li>
-										<% } else{ %>
-											<li style="border-left: 1px solid #5cabfb">
-												<a class="trn" style="pointer-events: none">REPOSITORY NON SETTATO</a>
-											</li>
-											<% } %>
-												<% } %>
+								<% if(loginGitHub){ %>
+
+									<% if(refreshami){ %>
+										<script type="text/javascript">
+
+											window.setTimeout(function () {
+												window.location.href = "http://localhost:8081/";
+											}, 1000);
+
+										</script>
+									<% refreshami=false %>
+										<% }%>
+											<% }%>
+
+
+												<%if (username!="Guest") { %>
+													<% if(repository){ %>
+														<li style="border-left: 1px solid #5cabfb">
+															<a class="trn" id="repository" style="pointer-events: none">Repository:
+																<%= repository %>
+															</a>
+														</li>
+														<% } else{ %>
+															<li style="border-left: 1px solid #5cabfb">
+																<a class="trn" style="pointer-events: none">REPOSITORY NON SETTATO</a>
+															</li>
+															<% } %>
+																<% } %>
 		</ul>
 	</div>
 	<div class="hidden" id="tmp"></div>
 	<div id="popup"></div>
 
 	<script type="text/javascript">
+
+		function refresh() {
+			alert("YAYOOOOOO");
+		}
+
 		function startIntroVCS() {
 			var introVCS = introJs();
 			introVCS.setOptions({
