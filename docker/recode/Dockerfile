@@ -10,11 +10,14 @@ RUN apt update && \
 
 RUN mkdir -p /opt && \
     cd /opt && \
-    git clone https://github.com/saso93/recode.git && \
-    cd /opt/recode && \
+    git clone https://github.com/saso93/recode.git
+
+# Force DB configuration for docker setup
+COPY database.js /opt/recode/Backend
+
+RUN cd /opt/recode && \
     /usr/local/bin/npm install && \
-    /usr/local/bin/npm run build && \
-    echo attendere
+    /usr/local/bin/npm run build
 
 COPY recode_start.sh /usr/bin
 
