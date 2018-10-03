@@ -13,12 +13,15 @@ services:
     container_name:
       recode_db
     image:
-      library/mariadb:10.1.36
+      library/mariadb:10
     restart:
       always
     environment:
-      - MYSQL_ROOT_PASSWORD=
-      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ROOT_PASSWORD=recode123
+      - MYSQL_DATABASE=vit
+      - MYSQL_USER=recode
+      - MYSQL_PASSWORD=recode123
+      # - MYSQL_ALLOW_EMPTY_PASSWORD=1
     volumes:
       - /opt/docker/mariadb/conf.d:/etc/mysql/conf.d
       - /opt/docker/mariadb/datadir:/var/lib/mysql
@@ -36,6 +39,12 @@ services:
       always
     ports:
       - 8081:8081/tcp
+    environment:
+      - MYSQL_HOST=recode_db
+      - MYSQL_ROOT_PASSWORD=recode123
+      - MYSQL_DATABASE=vit
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=recode123
     volumes:
       - /opt/docker/recode:/home/recode
     depends_on:

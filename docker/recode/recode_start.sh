@@ -1,9 +1,17 @@
 #!/bin/sh
 
+MYSQL_OPTIONS="-w -h ${MYSQL_HOST} -u root"
+
+[ -z "${MYSQL_ROOT_PASSWORD}" ] || MYSQL_OPTIONS="${MYSQL_OPTIONS} --password=${MYSQL_ROOT_PASSWORD}"
+
+mkdir -p "/home/recode"
+
 if [ ! -e /home/recode/db.created ]; then
 	sleep 30s
-	mariadb -w -h recode_db -u root -e "CREATE DATABASE vit"
-	mariadb -w -h recode_db -u root vit < /opt/recode/database/recode.sql
+#	mysql ${MYSQL_OPTIONS} -e "CREATE USER '${MYSQL_USER}' IDENTIFIED BY '${MYSQL_PASSWORD}';" && \
+#	mysql ${MYSQL_OPTIONS} -e "CREATE TABLE ${MYSQL_DATABASE};" && \
+#	mysql ${MYSQL_OPTIONS} -e "GRANT ALL PRIVILEGES ON * . * TO ${MYSQL_USER};" &&
+	mysql ${MYSQL_OPTIONS} "${MYSQL_DATABASE}" < /opt/recode/database/recode.sql && \
 	touch /home/recode/db.created
 fi
 
