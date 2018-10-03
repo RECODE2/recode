@@ -203,11 +203,11 @@ function registrazione(req, callback) {
 function loginConGitHub(req, username, callback) {
     var queryAA = "SELECT nickname FROM vit.utenti where nickname=?";
     connection.query(queryAA,[username],function(err,result){
-        if(username!=result[0].nickname){
+        if(username!=result[0]){
             var queryR = "INSERT INTO `utenti` (`nickname`, `password`, `nome`, `cognome`, `mail`) VALUES (?,?,?,?,?)";
             connection.query(queryR, [username, username, username, username, username], function (err, result) {
                 if (err) {
-                    console.log("Errore registrazione con GitHub: " + err);
+                    console.log("");
                 }
                 else {
                     console.log("Registrazione tramite GitHub effettuata con successo!");
