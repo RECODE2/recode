@@ -129,12 +129,39 @@ class OperazioniVCS {
 									divMinicanvas1.style.border = "1px solid gray";
 									divMinicanvas1.style.cssFloat = "left";
 
+									var divPiu = document.createElement('div');
+									divPiu.setAttribute('id', 'divpiu');
+									divPiu.style.height = "100%";
+									divPiu.style.width = "5%";
+									divPiu.style.cssFloat = "left";
+
+									var spanPiu = document.createElement('span');
+									spanPiu.setAttribute('id', 'spanpiu');
+									spanPiu.style.marginTop = "45px";
+									spanPiu.style.fontSize = "30px";
+									spanPiu.innerHTML = "+";
+									spanPiu.style.display = "block";
+
+
 									var divMinicanvas2 = document.createElement('div');
 									divMinicanvas2.setAttribute('id', 'divminicanvas2');
 									divMinicanvas2.style.height = "100%";
-									divMinicanvas2.style.width = "40%";
+									divMinicanvas2.style.width = "30%";
 									divMinicanvas2.style.border = "1px solid gray";
 									divMinicanvas2.style.cssFloat = "left";
+
+									var divUguale = document.createElement('div');
+									divUguale.setAttribute('id', 'divuguale');
+									divUguale.style.height = "100%";
+									divUguale.style.width = "5%";
+									divUguale.style.cssFloat = "left";
+
+									var spanUguale = document.createElement('span');
+									spanUguale.setAttribute('id', 'spanuguale');
+									spanUguale.style.marginTop = "45px";
+									spanUguale.style.fontSize = "30px";
+									spanUguale.innerHTML = "=";
+									spanUguale.style.display = "block";
 
 									var divMinicanvas3 = document.createElement('div');
 									divMinicanvas3.setAttribute('id', 'divminicanvas3');
@@ -168,7 +195,13 @@ class OperazioniVCS {
 									document.querySelector('#divspan2').appendChild(span2b);
 
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divMinicanvas1);
+									document.querySelector('#popup #dialog_content #divjson').appendChild(divPiu);
+									document.querySelector('#divpiu').appendChild(spanPiu);
+
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divMinicanvas2);
+									document.querySelector('#popup #dialog_content #divjson').appendChild(divUguale);
+									document.querySelector('#divuguale').appendChild(spanUguale);
+
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divMinicanvas3);
 
 
@@ -503,6 +536,7 @@ class OperazioniVCS {
 		})
 	}
 
+	//questa diventa quella del merge
 	caricaDiv3(canvas3, ctx3, node, imgJson, callback) {
 		var _this = this;
 		canvas3.width = imgJson.info.width;
@@ -530,6 +564,7 @@ class OperazioniVCS {
 		callback();
 	}
 
+		//questa diventa quella che era la tre prima
 	caricaDiv2(open, canvas2, ctx2) {
 
 		var _this = this;
