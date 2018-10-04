@@ -61,19 +61,6 @@ app.get('/oauth/redirect', (req, res) => {
   }).then((response) => {
     accessToken = response.data.access_token
     loginGitHub = true;
-
-    axios.get(('https://api.github.com/user?access_token=' + accessToken))
-    .then(function (response) {
-      //console.log("dati: " + JSON.stringify(response.data));
-      //console.log("dati: " + response.data.login);
-      nomeUtente = response.data.login;
-      ConnessioneDB.loginConGitHub(req, nomeUtente,function(result){
-      });
-    })
-    .catch(function (error) {
-      console.log("Errore axios: " + error);
-    });
-
     res.redirect('/');
     })
 

@@ -464,16 +464,16 @@ class VCS_class {
                                             document.querySelector('#divdettaglinodo').appendChild(titoloInformazioni);
                                             document.querySelector('#divdettaglinodo').appendChild(elencoProp);
                                             document.querySelector('#elencoprop').appendChild(idProp);
-                                            document.querySelector('#elencoprop').appendChild(nomeFileProp);
+                                            //document.querySelector('#elencoprop').appendChild(nomeFileProp);
                                             document.querySelector('#elencoprop').appendChild(dataModificaProp);
                                             document.querySelector('#elencoprop').appendChild(utenteProp);
                                             document.querySelector('#elencoprop').appendChild(tipoProp);
-                                            document.querySelector('#elencoprop').appendChild(branchProp);
-                                            document.querySelector('#elencoprop').appendChild(padre1Prop);
+                                          //  document.querySelector('#elencoprop').appendChild(branchProp);
+                                           // document.querySelector('#elencoprop').appendChild(padre1Prop);
 
-                                            if (node.data('tipo') == "Mer") {
+/*                                             if (node.data('tipo') == "Mer") {
                                                 document.querySelector('#elencoprop').appendChild(padre2Prop);
-                                            }
+                                            } */
                                         }
 
                                     });
@@ -508,7 +508,7 @@ class VCS_class {
                                         branch: node.data('branch')
                                     },
                                     success: function (branch) {
-                                        document.getElementById('branch').innerHTML = branch;
+                                        //document.getElementById('branch').innerHTML = branch;
                                         var base_layer = new Base_layers_class();
                                         base_layer.reset_layers();
 

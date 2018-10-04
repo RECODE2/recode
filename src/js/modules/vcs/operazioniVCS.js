@@ -71,6 +71,18 @@ class OperazioniVCS {
 									document.querySelector('#popup #dialog_content').appendChild(divRevg);
 
 									/* INIZIO PREVIEW CANVAS */
+									var spanID1 = document.createElement('span');
+									spanID1.setAttribute('id','spanid1');
+									spanID1.style.marginLeft = "25%";
+									spanID1.style.fontSize = "15px";
+
+
+									var spanID2 = document.createElement('span');
+									spanID2.setAttribute('id','spanid2');
+									spanID2.style.marginLeft = "25%";
+									spanID2.style.fontSize = "15px";
+									
+									
 									var divJSON = document.createElement('div');
 									divJSON.setAttribute('id', 'divjson');
 									divJSON.style.height = "35%";
@@ -79,48 +91,68 @@ class OperazioniVCS {
 
 									var divSpan = document.createElement('div');
 									divSpan.setAttribute('id', 'divspan');
-									divSpan.style.height = '5%';
 									divSpan.style.position = "relative";
-									divSpan.style.marginTop = "5px";
 
 
 									var divSpan1 = document.createElement('div');
 									divSpan1.setAttribute('id', 'divspan1');
-									divSpan1.style.height = "100%";
-									divSpan1.style.width = "48%";
+									divSpan1.style.height = "35px";
+									divSpan1.style.width = "30%";
 									divSpan1.style.cssFloat = "left";
+									divSpan1.style.border = "1px solid gray";
 
 
 									var divSpan2 = document.createElement('div');
 									divSpan2.setAttribute('id', 'divspan2');
-									divSpan2.style.height = "100%";
-									divSpan2.style.width = "48%";
+									divSpan2.style.height = "35px";
+									divSpan2.style.width = "30%";
 									divSpan2.style.cssFloat = "left";
+									divSpan2.style.marginLeft = "5%";
+									divSpan2.style.border = "1px solid gray";
+
+									var divSpan3 = document.createElement('div');
+									divSpan3.setAttribute('id','divspan3');
+									divSpan3.style.height = "35px";
+									divSpan3.style.width = "30%";
+									divSpan3.style.cssFloat = "left";
+									divSpan3.style.marginLeft = "5%";
+									divSpan3.style.border = "1px solid gray";
 
 
 									var span1 = document.createElement('span');
 									span1.setAttribute('id', 'span1');
-									span1.style.marginLeft = "25%";
-									span1.style.fontSize = "30px";
-									span1.innerHTML = "&#8249;";
+									span1.style.marginLeft = "5%";
+									span1.style.fontSize = "20px";
+									span1.innerHTML = "↓";
+									span1.setAttribute('title','Layers move down');
 
 									var span2 = document.createElement('span');
 									span2.setAttribute('id', 'span2');
-									span2.style.marginLeft = "5%";
-									span2.style.fontSize = "30px";
-									span2.innerHTML = "&#8250;";
+									span2.style.marginLeft = "20%";
+									span2.style.fontSize = "20px";
+									span2.innerHTML = "↑";
+									span2.setAttribute('title','Layers move up')
+
 
 									var span1b = document.createElement('span');
 									span1b.setAttribute('id', 'span1b');
-									span1b.style.marginLeft = "50%";
-									span1b.style.fontSize = "30px";
-									span1b.innerHTML = "&#8249;";
+									span1b.style.marginLeft = "5%";
+									span1b.style.fontSize = "20px";
+									span1b.innerHTML = "↓";
+									span1b.setAttribute('title','Layers move down');
 
 									var span2b = document.createElement('span');
 									span2b.setAttribute('id', 'span2b');
-									span2b.style.marginLeft = "5%";
-									span2b.style.fontSize = "30px";
-									span2b.innerHTML = "&#8250;";
+									span2b.style.marginLeft = "20%";
+									span2b.style.fontSize = "20px";
+									span2b.innerHTML = "↑";
+									span2b.setAttribute('title','Layers move up')
+									
+
+									var span3 = document.createElement('span');
+									span3.setAttribute('id', 'span3');
+									span3.style.marginLeft = "20%";
+									span3.style.fontSize = "13px";
 
 									var divMinicanvas1 = document.createElement('div');
 									divMinicanvas1.setAttribute('id', 'divminicanvas1');
@@ -141,6 +173,7 @@ class OperazioniVCS {
 									spanPiu.style.fontSize = "30px";
 									spanPiu.innerHTML = "+";
 									spanPiu.style.display = "block";
+									spanPiu.style.marginLeft = "20%";
 
 
 									var divMinicanvas2 = document.createElement('div');
@@ -158,10 +191,12 @@ class OperazioniVCS {
 
 									var spanUguale = document.createElement('span');
 									spanUguale.setAttribute('id', 'spanuguale');
-									spanUguale.style.marginTop = "45px";
+									spanUguale.style.marginTop = "46px";
 									spanUguale.style.fontSize = "30px";
 									spanUguale.innerHTML = "=";
 									spanUguale.style.display = "block";
+									spanUguale.style.marginLeft = "20%";
+
 
 									var divMinicanvas3 = document.createElement('div');
 									divMinicanvas3.setAttribute('id', 'divminicanvas3');
@@ -183,16 +218,26 @@ class OperazioniVCS {
 
 
 									document.querySelector('#popup #dialog_content').appendChild(divJSON);
+
+									
+
+
+
 									document.querySelector('#popup #dialog_content').appendChild(divSpan);
 									document.querySelector('#popup #dialog_content #divspan').appendChild(divSpan1);
 									document.querySelector('#popup #dialog_content #divspan').appendChild(divSpan2);
+									document.querySelector('#popup #dialog_content #divspan').appendChild(divSpan3);
 
 									document.querySelector('#divspan1').appendChild(span1);
+									document.querySelector('#divspan1').appendChild(spanID1);
 									document.querySelector('#divspan1').appendChild(span2);
 
 
 									document.querySelector('#divspan2').appendChild(span1b);
+									document.querySelector('#divspan2').appendChild(spanID2);
 									document.querySelector('#divspan2').appendChild(span2b);
+
+									document.querySelector('#divspan3').appendChild(span3);
 
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divMinicanvas1);
 									document.querySelector('#popup #dialog_content #divjson').appendChild(divPiu);
@@ -325,12 +370,13 @@ class OperazioniVCS {
 											success: function (imgJson) {
 
 												if (selezionaDiv1 == true) {
-													_this.caricaDiv1(node, evt, canvas, ourctx, imgJson);
+													_this.caricaDiv1(node, evt, canvas, ourctx, imgJson, spanID1);
 													selezionaDiv1 = false;
 												}
+												
 												else {
-													_this.caricaDiv3(canvas3, ctx3, node, imgJson, function () {
-														_this.caricaDiv2(open, canvas2, ctx2);
+													_this.caricaDiv3(canvas2, ctx2, node, imgJson, function () {
+														_this.caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3);
 													});
 													selezionaDiv1 = true;
 												}
@@ -339,7 +385,7 @@ class OperazioniVCS {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson1 = merge.decrementMerge(imgJsonA);
-													_this.caricaDiv2(open, canvas2, ctx2);
+													_this.caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3);
 												})
 
 
@@ -347,14 +393,14 @@ class OperazioniVCS {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson1 = merge.incrementMerge(imgJsonA);
-													_this.caricaDiv2(open, canvas2, ctx2);
+													_this.caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3);
 												})
 
 												$('#span1b').click(function () {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson2 = merge.decrementMerge(imgJsonB);
-													_this.caricaDiv2(open, canvas2, ctx2);
+													_this.caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3);
 												})
 
 
@@ -363,7 +409,7 @@ class OperazioniVCS {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson2 = merge.incrementMerge(imgJsonB);
-													_this.caricaDiv2(open, canvas2, ctx2);
+													_this.caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3);
 												})
 											}
 										})
@@ -504,7 +550,7 @@ class OperazioniVCS {
 		}
 	}
 
-	caricaDiv1(node, evt, canvas, ourctx, imgJson) {
+	caricaDiv1(node, evt, canvas, ourctx, imgJson, spanID1) {
 		var _this = this;
 		node = evt.target;
 
@@ -518,6 +564,10 @@ class OperazioniVCS {
 		canvas.style.width = "100%";
 		document.querySelector('#divminicanvas1').appendChild(canvas);
 		imgJson1 = JSON.parse(JSON.stringify(merge.setMergeSx(imgJson)));
+
+
+		spanID1.innerHTML = "ID: " + node.id();
+
 
 		primoPadre = node.id();
 		primoBranch = node.data('branch');
@@ -537,17 +587,17 @@ class OperazioniVCS {
 	}
 
 	//questa diventa quella del merge
-	caricaDiv3(canvas3, ctx3, node, imgJson, callback) {
+	caricaDiv3(canvas2, ctx2, node, imgJson, callback) {
 		var _this = this;
-		canvas3.width = imgJson.info.width;
-		canvas3.height = imgJson.info.height;
-		ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
-		_this.loadCanvas(imgJson, ctx3);
-		canvas3.setAttribute('id', 'minicanvas3');
-		canvas3.setAttribute('class', 'transparent');
-		canvas3.style.height = "100%";
-		canvas3.style.width = "100%";
-		document.querySelector('#divminicanvas3').appendChild(canvas3);
+		canvas2.width = imgJson.info.width;
+		canvas2.height = imgJson.info.height;
+		ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+		_this.loadCanvas(imgJson, ctx2);
+		canvas2.setAttribute('id', 'minicanvas2');
+		canvas2.setAttribute('class', 'transparent');
+		canvas2.style.height = "100%";
+		canvas2.style.width = "100%";
+		document.querySelector('#divminicanvas2').appendChild(canvas2);
 		imgJson2 = JSON.parse(JSON.stringify(merge.setMergeDx(imgJson)));
 
 		secondoNome = node.data('nome');
@@ -565,21 +615,26 @@ class OperazioniVCS {
 	}
 
 		//questa diventa quella che era la tre prima
-	caricaDiv2(open, canvas2, ctx2) {
+	caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3) {
+
+		node = evt.target;
+		spanID2.innerHTML = "ID: " + node.id();
+
+		span3.innerHTML = "Risultato del merge";
 
 		var _this = this;
 		imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 		imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 		imgJsonMergeX = merge.mergeDG(imgJson1, imgJson2);
-		canvas2.width = imgJsonMergeX.info.width;
-		canvas2.height = imgJsonMergeX.info.height;
-		ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
-		_this.loadCanvas(imgJsonMergeX, ctx2);
-		canvas2.setAttribute('id', 'minicanvasmerge');
-		canvas2.setAttribute('class', 'transparent');
-		canvas2.style.height = "100%";
-		canvas2.style.width = "100%";
-		document.querySelector('#divminicanvas2').appendChild(canvas2);
+		canvas3.width = imgJsonMergeX.info.width;
+		canvas3.height = imgJsonMergeX.info.height;
+		ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
+		_this.loadCanvas(imgJsonMergeX, ctx3);
+		canvas3.setAttribute('id', 'minicanvasmerge');
+		canvas3.setAttribute('class', 'transparent');
+		canvas3.style.height = "100%";
+		canvas3.style.width = "100%";
+		document.querySelector('#divminicanvas3').appendChild(canvas3);
 	}
 }
 

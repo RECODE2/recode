@@ -60,9 +60,6 @@ class Add_Revision_Class {
                     params: [
                         { name: "name", title: "File name:", value: file_name },
                         { name: "desc", title: "Descrizione", value: "" },
-                        { name: "quality", title: "JPG qualità:", value: 90, range: [1, 100] },
-                        { name: "calc_size", title: "Show file size:", value: calc_size_value },
-                        { name: "layers", values: ['All'] },
                     ],
                     on_change: function (params, canvas_preview, w, h) {
                         _this.save_dialog_onchange(params);

@@ -98,12 +98,22 @@ function insertAddRevision(path, req, res, repository, callback) {
                 }
             });
         } else {
-            querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES (?,?,?,?,?,?," + dataModifica + ",?)";
-            connection.query(querySQL, [idModifiche, req.session.idCorrente, 'init', result[0].idFile, req.session.nickname, req.body.desc, req.session.branch], function (err, result, fields) {
-                if (err) {
-                    console.log("Errore inserimento (commit2): " + err);
-                }
-            });
+            if(!req.session.idCorrente){
+                querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES (?,?,?,?,?,?," + dataModifica + ",?)";
+                connection.query(querySQL, [idModifiche, 'init', 'init', result[0].idFile, req.session.nickname, req.body.desc, req.session.branch], function (err, result, fields) {
+                    if (err) {
+                        console.log("Errore inserimento (commit2): " + err);
+                    }
+                });
+            }
+            else{
+                querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`, `dataModifica`, `branch`) VALUES (?,?,?,?,?,?," + dataModifica + ",?)";
+                connection.query(querySQL, [idModifiche, req.session.idCorrente, 'init', result[0].idFile, req.session.nickname, req.body.desc, req.session.branch], function (err, result, fields) {
+                    if (err) {
+                        console.log("Errore inserimento (commit2): " + err);
+                    }
+                });
+            }
 
         }
         idRevision(req, res, function (results) {
@@ -203,11 +213,12 @@ function registrazione(req, callback) {
 function loginConGitHub(req, username, callback) {
     var queryAA = "SELECT nickname FROM vit.utenti where nickname=?";
     connection.query(queryAA,[username],function(err,result){
-        if(username!=result[0].nickname){
+
+        if(!result.length){
             var queryR = "INSERT INTO `utenti` (`nickname`, `password`, `nome`, `cognome`, `mail`) VALUES (?,?,?,?,?)";
             connection.query(queryR, [username, username, username, username, username], function (err, result) {
                 if (err) {
-                    console.log("Errore registrazione con GitHub: " + err);
+                    console.log("Errore registrazione con GitHub! " + err);
                 }
                 else {
                     console.log("Registrazione tramite GitHub effettuata con successo!");
@@ -215,26 +226,29 @@ function loginConGitHub(req, username, callback) {
                 return callback(result, err);
             });        
         }
-        var queryL = "SELECT * FROM utenti WHERE nickname=? AND password=?";
-        connection.query(queryL, [username, username], function (err, result) {
-            var controllo = false;
-            if (err) {
-                console.log("C'è un errore nel login: " + err);
-                return callback(err);
-            }
-            else {
-                console.log("");
-            }
-            if (!result.length) {
-                console.log("Utente non trovato!");
-                controllo = false;
-            }
-            else {
-                //console.log("Utente trovato: " + result[0].nickname);
-                controllo = true;
-                return callback(result[0]);
-            }
-        });
+            var queryL = "SELECT * FROM utenti WHERE nickname=? AND password=?";
+            connection.query(queryL, [username, username], function (err, result) {
+                var controllo = false;
+                if (err) {
+                    console.log("C'è un errore nel login: " + err);
+                    return callback(err);
+                }
+                if (!result.length) {
+                    console.log("Utente non trovato!");
+                    controllo = false;
+                }
+                else {
+                  /*   console.log("Utente: " + result[0].nickname);
+                    console.log("Login effettuato con successo!"); */
+                    controllo = true;
+                    return callback(result[0]);
+                }
+            });
+        
+
+
+
+
     })
     //prima registriamo l'utente sul db
 
