@@ -77,15 +77,23 @@ class VCS_class {
                                 url: host.name + 'settaRepo',
                                 type: 'POST',
                                 data: {
-                                    nomeRepo: params.name,
+                                    nomeRepo: params.name
                                 },
                                 success: function () {
+                                    $.ajax({
+                                        url: host.name + 'idRepo',
+                                        type: 'POST',
+                                        data: {
+                                            nomeRepo: params.name
+                                        }
+                                    });
                                     alertify.success("Repository set up successfully, WAIT A MOMENT...");
                                     window.setTimeout(function () {
                                         window.location.href = host.name;
                                     }, 2500);
                                 }
                             });
+
                         }
                     };
                     this.POP.show(settings);
@@ -667,13 +675,13 @@ class VCS_class {
                 $.ajax({
                     url: host.name + 'idRepo',
                     type: 'POST',
-                    success: function (idrepo) {
+                    success: function (repoCompl) {
                         this.POP = new Dialog_class();
                         this.POP.hide();
                         var settings = {
                             title: 'Clone repository',
                             params: [
-                                {title: "Repository git:", value: 'https://github.com/recode18/'+idrepo+'.git'}
+                                {title: "Repository git:", value: 'https://github.com/recode18/'+repoCompl}
                             ],
                         };
                         this.POP.show(settings);

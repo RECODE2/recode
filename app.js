@@ -219,7 +219,7 @@ app.post('/settaRepo', function (req, res) {
   ConnessioneDB.settaDatiRepo(req, res, function (result) {
     req.session.repository = "./Server/" + result;
     req.session.idRepository = result;
-    repo = github.getRepo('recode18', req.session.idRepository);
+    repo = github.getRepo('recode18', req.session.idRepository+"_"+req.session.nameRepository);
     res.write(res.toString(req.session.repository));
 
     ConnessioneDB.setIdBranchMaster(req, res, function (result) {
@@ -266,6 +266,7 @@ app.post('/addRevision', function (req, res) {
     committer: { name: 'recode18', email: 'davide300395@gmail.com' },
     encode: false //setto a false l'encoding in base64 dal momento che è già base64
   }
+  
   repo.writeFile('master', 'revision.jpeg', data, descrizioneCommit, options, function (err) {
     if (err) {
       console.log("Errore scrittura revision.jpg:" + err);
@@ -451,7 +452,9 @@ app.post('/merge', function (req, res) {
 
 app.post('/idRepo', function (req, res) {
   var idRepo = req.session.idRepository;
-  res.send("" + idRepo);
+  var nomeR = req.session.nameRepository;
+  var repoCompl = idRepo + "_" + nomeR + ".git";
+  res.send(repoCompl);
 });
 
 function loop(req, res) {
