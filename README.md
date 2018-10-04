@@ -56,6 +56,11 @@ Then you can use it on: http://localhost:8081/
 ## Wiki
 See [Wiki](https://github.com/saso93/recode/wiki)
 
+## User Stories
+
+### Index:
+![recode index](./User_Stories/index.png?raw=true)
+
 ## License
 MIT License
 
