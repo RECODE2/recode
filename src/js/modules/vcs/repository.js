@@ -31,9 +31,9 @@ class VCS_class {
     creaRepository() {
         this.POP.hide();
         var settings = {
-            title: 'Crea repository',
+            title: 'Create Repository',
             params: [
-                { name: "name", title: "Nome repository:", value: "" },
+                { name: "name", title: "Name repository:", value: "" },
                 { name: "readme", title: "Readme:", value: "", type: "textarea" },
             ],
             on_finish: function (params) {
@@ -46,11 +46,11 @@ class VCS_class {
                     }
                 }).done(function (successo) {
                     if (successo) {
-                        alertify.success("Repository creato con successo!");
-                        alertify.warning("Dopo aver selezionato il repository inizia a lavorare creando una prima revision..");
+                        alertify.success("Repository created successfully!");
+                        alertify.warning("After selecting the repository you have to create the first revision ...");
                     }
                     else {
-                        alertify.error("Errore nella creazione del repository!");
+                        alertify.error("Error creating repository!");
                     }
                 });
             },
@@ -68,7 +68,7 @@ class VCS_class {
                     this.POP = new Dialog_class();
                     this.POP.hide();
                     var settings = {
-                        title: 'Elenco repository',
+                        title: 'Repository list',
                         params: [
                             { name: "name", values: result, type:"select" },
                         ],
@@ -80,7 +80,7 @@ class VCS_class {
                                     nomeRepo: params.name,
                                 },
                                 success: function () {
-                                    alertify.success("Repository settato con successo, ATTENDERE...");
+                                    alertify.success("Repository set up successfully, WAIT A MOMENT...");
                                     window.setTimeout(function () {
                                         window.location.href = host.name;
                                     }, 2500);
@@ -91,7 +91,7 @@ class VCS_class {
                     this.POP.show(settings);
                 }
                 else {
-                    alertify.error("ERRORE: attualmente non ci sono repository da visualizzare!");
+                    alertify.error("ERROR: currently there are no repositories to display!");
                 }
             }
         });
@@ -237,7 +237,7 @@ class VCS_class {
                                                 value.link.src = value.data;
                                             }
                                             else {
-                                                alertify.error("Errore nel caricamento dell'immagine");
+                                                alertify.error("Error loading the image");
                                             }
                                         }
                                     }
@@ -532,7 +532,7 @@ class VCS_class {
                 });
             }
             else {
-                alertify.error("ERRORE: Non hai ancora selezionato il repository!");
+                alertify.error("ERROR: You have not yet selected the repository!");
             }
         });
     }

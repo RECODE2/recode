@@ -620,7 +620,7 @@ class OperazioniVCS {
 		node = evt.target;
 		spanID2.innerHTML = "ID: " + node.id();
 
-		span3.innerHTML = "Risultato del merge";
+		span3.innerHTML = "Merge Result";
 
 		var _this = this;
 		imgJsonA = JSON.parse(JSON.stringify(imgJson1));

@@ -13,7 +13,7 @@ class Utente_class {
     registrazione() {
         this.POP.hide();
         var settings = {
-            title: 'Sign-up',
+            title: 'Login',
             params: [
                 { name: "nickname", title: "Insert Username:", value: "" },
                 { name: "password", title: "Insert Password:", type: "password", value: "" },

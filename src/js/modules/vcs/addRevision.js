@@ -52,14 +52,14 @@ class Add_Revision_Class {
                 var i = 0;
                 var lunghezza = config.layers.length;
                 if (config.layers.length > 1) {
-                    alertify.error('Ci sono più di un livello, devi fare il Merge Down');
+                    alertify.error('There are more than one level, you have to do the "Merge Down"');
                     return false;
                 }
                 var settings = {
                     title: 'Add Revision: ',
                     params: [
                         { name: "name", title: "File name:", value: file_name },
-                        { name: "desc", title: "Descrizione", value: "" },
+                        { name: "desc", title: "Description", value: "" },
                     ],
                     on_change: function (params, canvas_preview, w, h) {
                         _this.save_dialog_onchange(params);
@@ -81,10 +81,10 @@ class Add_Revision_Class {
                             }
                         }).done(function (successo) {
                             if (successo) {
-                                alertify.success("La revision " + params.name + " è stata inserita!");
+                                alertify.success("The revision " + params.name + " has been successfully inserted!");
                             }
                             else {
-                                alertify.success("Errore nell'inserimento della revision!");
+                                alertify.success("Error in inserting the revision!");
                             }
                         });
                     },
@@ -96,7 +96,7 @@ class Add_Revision_Class {
                 }
             }
             else {
-                alertify.error("ERRORE: non hai ancora selezionato il repository!");
+                alertify.error("ERROR: You have not yet selected the repository!");
             }
         });
     }
