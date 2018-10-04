@@ -70,9 +70,6 @@ See [Wiki](https://github.com/saso93/recode/wiki)
 ### Add revision:
 ![add revision](./User_Stories/Add%20Revision.png?raw=true)
 
-### New branch:
-![recode branch](./User_Stories/Branch.png?raw=true)
-
 ### Merge:
 ![recode merge](./User_Stories/Merge.png?raw=true)
 
