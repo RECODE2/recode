@@ -61,6 +61,25 @@ See [Wiki](https://github.com/saso93/recode/wiki)
 ### Index:
 ![recode index](./User_Stories/index.png?raw=true)
 
+### Create repository:
+![recode crea repo](./User_Stories/Crea_repo.png?raw=true)
+
+### Revision graph:
+![recode revision graph](./User_Stories/Revision_Graph.png?raw=true)
+
+### Add revision:
+![add revision](./User_Stories/Add%20Revision.png?raw=true)
+
+### New branch:
+![recode branch](./User_Stories/Branch.png?raw=true)
+
+### Merge:
+![recode merge](./User_Stories/Merge.png?raw=true)
+
+### Conflict resolution:
+![recode conflict resolution](./User_Stories/Conflict.png?raw=true)
+
+
 ## License
 MIT License
 
