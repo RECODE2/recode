@@ -59,7 +59,7 @@ class Utente_class {
                 { name: "password", title: "Inserisci Password:", type: "password", value: "" }, */
                 { title: "Login with GitHub:", html: '<a href="https://github.com/login/oauth/authorize?client_id=4f43439652384f60ece7&redirect_uri=http://localhost:8081/oauth/redirect">Click here!</a>'},
             ],
-            on_finish: function(params) {
+            on_finish: function(params) {/*
                 $.ajax({
                     url: host.name + 'login',
                     type: 'POST',
@@ -77,7 +77,7 @@ class Utente_class {
                     else {
                         alertify.error("ERROR: username and/or password not correct");
                     }
-                });
+                });*/
             }
         }
         this.POP.show(settings);

@@ -168,8 +168,9 @@ app.post('/creaRepository', function (req, res) {
      * All'interno della repo su github invece verrà creato un file
      * README.md ed un file info.txt
      */
-
-    idRepository = result.idRepository;
+    idRepo = result.idRepository;
+    nomeRepo = result.nome;
+    idRepository = idRepo+"_"+nomeRepo;
     var pathR = "./Server/" + result.idRepository;
     ConnessioneDB.partecipazioneRepo(req, idRepository);
 
