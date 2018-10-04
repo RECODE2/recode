@@ -38,7 +38,7 @@ class Utente_class {
                     }
                     else {
                         if (successo == "errore chiave") {
-                            alertify.error("ERRORE: username '" + params.nickname + "' already present, insert a different one!");
+                            alertify.error("ERROR: username '" + params.nickname + "' already present, insert a different one!");
                         }
                         else {
                             alertify.error("Registration error!");

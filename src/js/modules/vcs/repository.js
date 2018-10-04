@@ -303,7 +303,7 @@ class VCS_class {
                                 var titoloInformazioni = document.createElement('p');
                                 titoloInformazioni.setAttribute('align', 'center');
                                 titoloInformazioni.style.fontWeight = "bold";
-                                titoloInformazioni.innerHTML = "Informazioni nodo selezionato:";
+                                titoloInformazioni.innerHTML = "Selected node information: ";
 
                                 var elencoProp = document.createElement('ul');
                                 elencoProp.setAttribute('id', 'elencoprop');
@@ -449,17 +449,17 @@ class VCS_class {
                                         }, success: function () {
 
                                             idProp.innerHTML = "ID: " + node.id();
-                                            nomeFileProp.innerHTML = "Nome file: " + node.data('nome');
+                                            nomeFileProp.innerHTML = "File name: " + node.data('nome');
 
                                             var data = node.data('dataModifica');
                                             var dataMoment = moment.utc(data).add(2, 'hours').format("DD-MM-YYYY HH:mm:ss");
 
-                                            dataModificaProp.innerHTML = "Data commit: " + dataMoment;
-                                            utenteProp.innerHTML = "Utente: " + node.data('utente');
-                                            tipoProp.innerHTML = "Tipo: " + node.data('tipo');
+                                            dataModificaProp.innerHTML = "Commit date: " + dataMoment;
+                                            utenteProp.innerHTML = "User: " + node.data('utente');
+                                            tipoProp.innerHTML = "Type: " + node.data('tipo');
                                             branchProp.innerHTML = "Branch: " + node.data('branch');
-                                            padre1Prop.innerHTML = "Padre: " + node.data('padre1');
-                                            padre2Prop.innerHTML = "Padre 2: " + node.data('padre2');
+                                            padre1Prop.innerHTML = "Father: " + node.data('padre1');
+                                            padre2Prop.innerHTML = "Father 2: " + node.data('padre2');
 
                                             document.querySelector('#divdettaglinodo').appendChild(titoloInformazioni);
                                             document.querySelector('#divdettaglinodo').appendChild(elencoProp);

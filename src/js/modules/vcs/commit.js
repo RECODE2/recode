@@ -64,7 +64,7 @@ class Commit_Class {
 						var settings = {
 							title: 'Commit: ',
 							params: [
-								{ name: "name", title: "Commit name:", value: "Name commit.." },
+								{ name: "name", title: "Commit name:", value: "Commit name.." },
 								{ name: "desc", title: "Description", value: "" },
 								//{ name: "layers", values: ['All'] },
 							],
