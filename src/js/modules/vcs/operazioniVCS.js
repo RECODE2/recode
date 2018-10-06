@@ -380,36 +380,40 @@ class OperazioniVCS {
 													});
 													selezionaDiv1 = true;
 												}
-
-												$('#span1').click(function () {
+												$('#span1').unbind("click").on('click', function(e) {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson1 = merge.decrementMerge(imgJsonA);
 													_this.caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3);
+													return false;
 												})
 
 
-												$('#span2').click(function () {
+												$('#span2').unbind("click").on('click', function(e) {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson1 = merge.incrementMerge(imgJsonA);
+													console.log("Ehi");
 													_this.caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3);
+													return false;
 												})
 
-												$('#span1b').click(function () {
+												$('#span1b').unbind("click").on('click', function(e) {
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson2 = merge.decrementMerge(imgJsonB);
 													_this.caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3);
+													return false;			
 												})
 
 
-												$('#span2b').click(function () {
+												$('#span2b').unbind("click").on('click', function(e) {
 
 													imgJsonA = JSON.parse(JSON.stringify(imgJson1));
 													imgJsonB = JSON.parse(JSON.stringify(imgJson2));
 													imgJson2 = merge.incrementMerge(imgJsonB);
 													_this.caricaDiv2(open, canvas3, ctx3, node, evt, spanID2, span3);
+													return false;
 												})
 											}
 										})
@@ -635,6 +639,7 @@ class OperazioniVCS {
 		canvas3.style.height = "100%";
 		canvas3.style.width = "100%";
 		document.querySelector('#divminicanvas3').appendChild(canvas3);
+		return false;
 	}
 }
 
