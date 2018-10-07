@@ -44,7 +44,8 @@ services:
       - MYSQL_ROOT_PASSWORD=
       - MYSQL_DATABASE=vit
       - MYSQL_USER=root
-      - MYSQL_PASSWORD=recode123
+      - MYSQL_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
     volumes:
       - /tmp/docker/recode:/home/recode
     depends_on:
