@@ -21,7 +21,7 @@ services:
       - MYSQL_DATABASE=vit
       - MYSQL_USER=recode
       - MYSQL_PASSWORD=
-       - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
     volumes:
       - /tmp/docker/mariadb/conf.d:/etc/mysql/conf.d
       - /tmp/docker/mariadb/datadir:/var/lib/mysql
