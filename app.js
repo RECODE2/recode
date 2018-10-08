@@ -172,11 +172,11 @@ app.post('/creaRepository', function (req, res) {
     nomeRepo = result.nome;
     idRepository = idRepo+"_"+nomeRepo;
     var pathR = "./Server/" + result.idRepository;
-    ConnessioneDB.partecipazioneRepo(req, idRepository);
+    ConnessioneDB.partecipazioneRepo(req, idRepo);
 
     var filesaver = new Filesaver({ safenames: true });
 
-    req.session.branch = ConnessioneDB.branchMaster(req, idRepository);
+    req.session.branch = ConnessioneDB.branchMaster(req, idRepo);
 
     filesaver.folder('JSON', pathR + "/JSON", function (err, data) {
       if (err) {
