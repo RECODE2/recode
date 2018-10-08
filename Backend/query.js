@@ -214,7 +214,7 @@ function loginConGitHub(req, username, callback) {
     var queryAA = "SELECT nickname FROM vit.utenti where nickname=?";
     connection.query(queryAA,[username],function(err,result){
 
-        if(!result.length){
+        if(result.length == 0){
             var queryR = "INSERT INTO `utenti` (`nickname`, `password`, `nome`, `cognome`, `mail`) VALUES (?,?,?,?,?)";
             connection.query(queryR, [username, username, username, username, username], function (err, result) {
                 if (err) {
@@ -267,7 +267,7 @@ function partecipazioneRepo(req, idRepository) {
     var minuto = d.getMinutes();
     var secondo = d.getSeconds();
     const dataPartecipazione = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
-    queryP = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`, `data`) VALUES (?,?,?, dataPartecipazione)";
+    queryP = "INSERT INTO `partecipazione` (`utente`, `repository`, `diritto`, `data`) VALUES (?,?,?, "+dataPartecipazione+")";
     connection.query(queryP, [req.session.nickname, idRepository, 0], function (err, res) {
         if (err) {
             console.log("Errore nella partecipazione al repository: " + err);
@@ -351,7 +351,7 @@ function saveCommit(req, res, fileData, jsonP, fileName) {
         var minuto = d.getMinutes();
         var secondo = d.getSeconds();
         const dataModifica = "'" + anno + "-" + mese + "-" + giorno + " " + ora + ":" + minuto + ":" + secondo + "'";
-        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES (?,?,?,?,?,?,dataModifica,?)";
+        querySQL = "INSERT INTO `commit` (`idModifiche`, `padre1`, `padre2`, `file`, `utente`, `descrizione`,`dataModifica`, `branch`) VALUES (?,?,?,?,?,?,"+dataModifica+",?)";
 
         connection.query(querySQL, [idModifiche, req.session.idCorrente, 'init', result[0].idFile, req.session.nickname, req.body.desc, req.session.branch], function (err, result) {
             if (err) {
